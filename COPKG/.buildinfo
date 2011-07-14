@@ -1,0 +1,59 @@
+/* target information */
+
+#product-info  {
+	product-name: "apr";
+	version: "trunk";
+	original-source-location: "https://github.com/apache/apr";
+	original-source-website: "http://apr.apache.org/";
+	license: "Apache License";
+	packager: "Hamish C";
+}
+
+x86 {
+    compiler: vc10-x86;
+    
+    uses: x86=@"..\expat";
+
+
+    targets: { 
+		"LibR\apr-2.lib",
+		"Release\libapr-2.lib",
+		"Release\libapr-2.dll",
+		"Release\libapr-2.exp",
+	};
+	
+    build-command:@"
+		msbuild /p:Platform=win32 /p:Configuration=Release apr.sln
+	";
+    
+    clean-command:@"
+       if exist ipch rmdir /s /q ipch > nul 2> nul
+       if exist LibR rmdir /s /q LibR > nul 2> nul
+       if exist Release rmdir /s /q Release > nul 2> nul
+       del /S /Q /A - *.sdf *.suo *.user *.exe *.pdb > nul 2>NUL
+       del /S /Q include\apr.h include\apr_ldap.h include\apu_want.h include\private\apu_select_dbm.h > nul 2>NUL
+    ";
+};
+
+x64 {
+    compiler: vc10-x64;
+
+    uses: x64=@"..\expat";
+    targets: { 
+		"x64\LibR\apr-2.lib",
+		"x64\Release\libapr-2.lib",
+		"x64\Release\libapr-2.dll",
+		"x64\Release\libapr-2.exp",
+	};
+	
+    build-command:@"
+        msbuild /p:Platform=x64 /p:Configuration=Release apr.sln
+    ";
+    clean-command:@"
+       if exist ipch rmdir /s /q ipch > nul 2> nul
+       if exist x64\LibR rmdir /s /q x64\LibR > nul 2> nul
+       if exist x64\Release rmdir /s /q x64\Release > nul 2> nul
+       del /S /Q /A - *.sdf *.suo *.user *.exe *.pdb > nul 2>NUL
+       del /S /Q include\apr.h include\apr_ldap.h include\apu_want.h include\private\apu_select_dbm.h > nul 2>NUL
+    ";
+};
