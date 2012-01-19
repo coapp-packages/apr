@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
@@ -198,7 +198,7 @@
       <ImportLibrary>x64\Release\libapr-2.lib</ImportLibrary>
       <AdditionalLibraryDirectories>..\expat\win32\bin\x64\Release;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <BaseAddress>0x6EEC0000</BaseAddress>
-      <AdditionalDependencies>ws2_32.lib;mswsock.lib;rpcrt4.lib;libexpat.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>Wldap32.lib;ws2_32.lib;mswsock.lib;rpcrt4.lib;libexpat.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalOptions> /MACHINE:X64</AdditionalOptions>
       <OptimizeReferences>true</OptimizeReferences>
       <SubSystem>Windows</SubSystem>
@@ -298,7 +298,7 @@
       <ImportLibrary>Release\libapr-2.lib</ImportLibrary>
       <AdditionalLibraryDirectories>..\expat\win32\bin\Release;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <BaseAddress>0x6EEC0000</BaseAddress>
-      <AdditionalDependencies>ws2_32.lib;mswsock.lib;rpcrt4.lib;libexpat.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>Wldap32.lib;ws2_32.lib;mswsock.lib;rpcrt4.lib;libexpat.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalOptions> /MACHINE:X86</AdditionalOptions>
       <OptimizeReferences>true</OptimizeReferences>
       <SubSystem>Windows</SubSystem>
