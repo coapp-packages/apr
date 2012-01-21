@@ -2604,11 +2604,6 @@ APU_PRELOAD
 
 dnl Find crypto libraries
 APU_CHECK_CRYPTO
-APU_CHECK_CRYPTO_OPENSSL
-APU_CHECK_CRYPTO_NSS
-
-dnl Find LDAP library
-APU_FIND_LDAP
 
 dnl Find DBM and DBD backends to use.
 APU_CHECK_DBM
@@ -2662,6 +2657,9 @@ AC_SUBST(APR_HAVE_MODULES)
 AC_SUBST(APR_DSO_LIBDIR)
 AC_SUBST(APR_DSO_MODULES)
 AC_SUBST(EXTRA_OBJECTS)
+
+dnl XXX FIXME; used for -lexpat, -liconv etc?
+AC_SUBST(APRUTIL_EXPORT_LIBS)
 
 dnl
 dnl Prep all the flags and stuff for compilation and export to other builds
@@ -2744,7 +2742,6 @@ if test -d $srcdir/test; then
 fi
 
 AC_CONFIG_FILES([include/private/apu_select_dbm.h
-                 include/apr_ldap.h
                  include/apu_want.h])
 
 dir=include/arch/unix

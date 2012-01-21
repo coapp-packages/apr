@@ -35,6 +35,7 @@ INSTALL_DATA = @INSTALL_DATA@
 APR_DSO_MODULES = @APR_DSO_MODULES@
 LINK_MODULE = $(LIBTOOL) $(LTFLAGS) --mode=link $(CC) $(LT_LDFLAGS) $(ALL_CFLAGS) $(ALL_LDFLAGS) $(APRUTIL_LDFLAGS) -release $(APR_MAJOR_VERSION) -module -rpath $(APR_DSO_LIBDIR)
 APR_DSO_LIBDIR = @APR_DSO_LIBDIR@
+APRUTIL_EXPORT_LIBS = @APRUTIL_EXPORT_LIBS@
 
 #
 # Rules for building specific targets, starting with 'all' for
@@ -56,7 +57,10 @@ DISTCLEAN_TARGETS = config.cache config.log config.status \
 	libtool $(APR_CONFIG) build/apr_rules.mk apr.pc \
 	build/pkg/pkginfo
 EXTRACLEAN_TARGETS = configure aclocal.m4 include/arch/unix/apr_private.h.in \
-	build-outputs.mk build/ltcf-c.sh build/ltmain.sh build/libtool.m4
+	build-outputs.mk build/ltcf-c.sh build/aclocal.m4 \
+	build/ltconfig build/ltmain.sh \
+	build/argz.m4 build/libtool.m4 build/ltoptions.m4 \
+	build/ltsugar.m4 build/ltversion.m4 build/lt~obsolete.m4
 
 prefix=@prefix@
 exec_prefix=@exec_prefix@
@@ -75,7 +79,6 @@ LDADD_dbd_odbc = @LDADD_dbd_odbc@
 LDADD_dbm_db = @LDADD_dbm_db@
 LDADD_dbm_gdbm = @LDADD_dbm_gdbm@
 LDADD_dbm_ndbm = @LDADD_dbm_ndbm@
-LDADD_ldap = @LDADD_ldap@
 LDADD_crypto_openssl = @LDADD_crypto_openssl@
 LDADD_crypto_nss = @LDADD_crypto_nss@
 
@@ -95,7 +98,7 @@ install: install-modules $(TARGETS)
 	for f in $(top_srcdir)/include/apr_*.h $(top_srcdir)/include/apu_*.h; do \
 	    $(INSTALL_DATA) $${f} $(DESTDIR)$(includedir); \
 	done
-	for f in $(top_blddir)/include/apr_*.h $(top_blddir)/include/apu_*.h; do \
+	for f in $(top_blddir)/include/apu_*.h; do \
 	    $(INSTALL_DATA) $${f} $(DESTDIR)$(includedir); \
 	done
 	$(LIBTOOL) --mode=install $(INSTALL) -m 755 $(TARGET_LIB) $(DESTDIR)$(libdir)
@@ -117,7 +120,7 @@ install: install-modules $(TARGETS)
 	fi
 
 $(TARGET_LIB): $(OBJECTS)
-	$(LINK) @lib_target@ $(ALL_LIBS)
+	$(LINK) @lib_target@ $(ALL_LIBS) $(APRUTIL_EXPORT_LIBS)
 
 install-modules: install-modules-@APR_HAVE_MODULES@
 

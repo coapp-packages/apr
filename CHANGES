@@ -1,6 +1,32 @@
                                                      -*- coding: utf-8 -*-
 Changes for APR 2.0.0
 
+  *) apr_file_open: Avoid fcntl() calls if support for O_CLOEXEC works.
+     PR 48557. [Mike Frysinger <vapier gentoo org>]
+
+  *) apr_socket_opt_set: Add support for APR_SO_BROADCAST. PR 46389.
+     [Armin Müller <mueller itestra com>]
+
+  *) apr_memcache_server_create: Fix possible segfault. PR 51064.
+     [Michajlo Matijkiw <michajlo_matijkiw comcast com>]
+
+  *) apr_dir_make_recursive: Fix race condition that could lead to EEXIST
+     being returned. PR 51254. [William Lee <william lee rainstor com>,
+     Wim Lewis <wiml omnigroup com>]
+
+  *) configure: Fix APR_RESTORE_THE_ENVIRONMENT if the original variable was
+     a single space. PR 50334. [Nathan Phillip Brink <binki gentoo org>]
+
+  *) apr_proc_create: Don't close any of the new stdin/stdout/stderr in the
+     child if it already has the correct FD. PR 51995.
+     [Dan Ports <drkp csail mit edu>]
+
+  *) apr_thread_pool: Fix thread unsafe pool usage. [Stefan Fritsch]
+
+  *) apr_brigades: add a check to prevent infinite while loop in case
+     of a corrupted brigade.  Problem evidenced in PR 51062.  Analysis by
+     Krzysztof Kostałkowicz <KKostalkowicz ivmx.pl>, patch [Nick Kew].
+
   *) apr_socket_connect() on Windows: Handle WSAEISCONN.  PR 48736.
      [<inoue ariel-networks.com>, Jeff Trawick]
 
@@ -20,9 +46,6 @@ Changes for APR 2.0.0
   *) Enable platform specific support for the opening of a file or
      pipe in non blocking module through the APR_FOPEN_NONBLOCK flag.
      [Graham Leggett]
-
-  *) Enable per-connection LDAP client certificates for
-     openldap by requesting a new SSL context. [Eric Covener]
 
   *) Support connecttimeout, readtimeout and writetimeout MySQL options
      PR 48251 [Marko Kevac <marko kevac.org>]

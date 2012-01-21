@@ -43,7 +43,7 @@ RSC=rc.exe
 # PROP Intermediate_Dir "LibR"
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /MD /W3 /O2 /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /FD /c
-# ADD CPP /nologo /MD /W3 /Zi /O2 /Oy- /I "./include" /I "./include/private" /I "./include/arch/win32" /I "./include/arch/unix" /I "../expat/lib" /D "NDEBUG" /D "APR_DECLARE_STATIC" /D "WIN32" /D "WINNT" /D "_WINDOWS" /Fo"$(INTDIR)\" /Fd"$(OUTDIR)\apr-2" /FD /c
+# ADD CPP /nologo /MD /W3 /Zi /O2 /Oy- /I "./include" /I "./include/private" /I "./include/arch/win32" /I "./include/arch/unix" /I "../expat/lib" /D "NDEBUG" /D "APR_DECLARE_STATIC" /D "XML_STATIC" /D "WIN32" /D "WINNT" /D "_WINDOWS" /Fo"$(INTDIR)\" /Fd"$(OUTDIR)\apr-2" /FD /c
 # ADD BASE RSC /l 0x409 /d "NDEBUG"
 # ADD RSC /l 0x409 /d "NDEBUG"
 BSC32=bscmake.exe
@@ -67,7 +67,7 @@ LIB32=link.exe -lib
 # PROP Ignore_Export_Lib 0
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /MDd /W3 /Zi /Od /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /FD /EHsc /c
-# ADD CPP /nologo /MDd /W3 /Zi /Od /I "./include" /I "./include/private" /I "./include/arch/win32" /I "./include/arch/unix" /I "../expat/lib" /D "_DEBUG" /D "APR_DECLARE_STATIC" /D "WIN32" /D "WINNT" /D "_WINDOWS" /Fo"$(INTDIR)\" /Fd"$(OUTDIR)\apr-2" /FD /EHsc /c
+# ADD CPP /nologo /MDd /W3 /Zi /Od /I "./include" /I "./include/private" /I "./include/arch/win32" /I "./include/arch/unix" /I "../expat/lib" /D "_DEBUG" /D "APR_DECLARE_STATIC" /D "XML_STATIC" /D "WIN32" /D "WINNT" /D "_WINDOWS" /Fo"$(INTDIR)\" /Fd"$(OUTDIR)\apr-2" /FD /EHsc /c
 # ADD BASE RSC /l 0x409 /d "_DEBUG"
 # ADD RSC /l 0x409 /d "_DEBUG"
 BSC32=bscmake.exe
@@ -90,7 +90,7 @@ LIB32=link.exe -lib
 # PROP Intermediate_Dir "x64\LibR"
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /MD /W3 /O2 /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /FD /c
-# ADD CPP /nologo /MD /W3 /Zi /O2 /Oy- /I "./include" /I "./include/private" /I "./include/arch/win32" /I "./include/arch/unix" /I "../expat/lib" /D "NDEBUG" /D "APR_DECLARE_STATIC" /D "WIN32" /D "WINNT" /D "_WINDOWS" /Fo"$(INTDIR)\" /Fd"$(OUTDIR)\apr-2" /FD /c
+# ADD CPP /nologo /MD /W3 /Zi /O2 /Oy- /I "./include" /I "./include/private" /I "./include/arch/win32" /I "./include/arch/unix" /I "../expat/lib" /D "NDEBUG" /D "APR_DECLARE_STATIC" /D "XML_STATIC" /D "WIN32" /D "WINNT" /D "_WINDOWS" /Fo"$(INTDIR)\" /Fd"$(OUTDIR)\apr-2" /FD /c
 # ADD BASE RSC /l 0x409 /d "NDEBUG"
 # ADD RSC /l 0x409 /d "NDEBUG"
 BSC32=bscmake.exe
@@ -114,7 +114,7 @@ LIB32=link.exe -lib
 # PROP Ignore_Export_Lib 0
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /MDd /W3 /Zi /Od /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /FD /EHsc /c
-# ADD CPP /nologo /MDd /W3 /Zi /Od /I "./include" /I "./include/private" /I "./include/arch/win32" /I "./include/arch/unix" /I "../expat/lib" /D "_DEBUG" /D "APR_DECLARE_STATIC" /D "WIN32" /D "WINNT" /D "_WINDOWS" /Fo"$(INTDIR)\" /Fd"$(OUTDIR)\apr-2" /FD /EHsc /c
+# ADD CPP /nologo /MDd /W3 /Zi /Od /I "./include" /I "./include/private" /I "./include/arch/win32" /I "./include/arch/unix" /I "../expat/lib" /D "_DEBUG" /D "APR_DECLARE_STATIC" /D "XML_STATIC" /D "WIN32" /D "WINNT" /D "_WINDOWS" /Fo"$(INTDIR)\" /Fd"$(OUTDIR)\apr-2" /FD /EHsc /c
 # ADD BASE RSC /l 0x409 /d "_DEBUG"
 # ADD RSC /l 0x409 /d "_DEBUG"
 BSC32=bscmake.exe
@@ -202,6 +202,10 @@ SOURCE=.\buckets\apr_buckets_socket.c
 # Begin Group "crypto"
 
 # PROP Default_Filter ""
+# Begin Source File
+
+SOURCE=.\crypto\apr_crypto.c
+# End Source File
 # Begin Source File
 
 SOURCE=.\crypto\apr_md4.c
@@ -372,30 +376,6 @@ SOURCE=.\file_io\unix\tempdir.c
 # Begin Source File
 
 SOURCE=.\hooks\apr_hooks.c
-# End Source File
-# End Group
-# Begin Group "ldap"
-
-# PROP Default_Filter ""
-# Begin Source File
-
-SOURCE=.\ldap\apr_ldap_init.c
-# End Source File
-# Begin Source File
-
-SOURCE=.\ldap\apr_ldap_option.c
-# End Source File
-# Begin Source File
-
-SOURCE=.\ldap\apr_ldap_rebind.c
-# End Source File
-# Begin Source File
-
-SOURCE=.\ldap\apr_ldap_stub.c
-# End Source File
-# Begin Source File
-
-SOURCE=.\ldap\apr_ldap_url.c
 # End Source File
 # End Group
 # Begin Group "locks"
@@ -931,61 +911,6 @@ SOURCE=.\include\apr_hash.h
 # Begin Source File
 
 SOURCE=.\include\apr_inherit.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\include\apr_ldap.h.in
-# End Source File
-# Begin Source File
-
-SOURCE=.\include\apr_ldap.hnw
-# End Source File
-# Begin Source File
-
-SOURCE=.\include\apr_ldap.hw
-
-!IF  "$(CFG)" == "apr - Win32 Release"
-
-# Begin Custom Build - Creating apr_ldap.h from apr_ldap.hw
-InputPath=.\include\apr_ldap.hw
-
-".\include\apr_ldap.h" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	type .\include\apr_ldap.hw > .\include\apr_ldap.h
-
-# End Custom Build
-
-!ELSEIF  "$(CFG)" == "apr - Win32 Debug"
-
-# Begin Custom Build - Creating apr_ldap.h from apr_ldap.hw
-InputPath=.\include\apr_ldap.hw
-
-".\include\apr_ldap.h" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	type .\include\apr_ldap.hw > .\include\apr_ldap.h
-
-# End Custom Build
-
-!ELSEIF  "$(CFG)" == "apr - x64 Release"
-
-# Begin Custom Build - Creating apr_ldap.h from apr_ldap.hw
-InputPath=.\include\apr_ldap.hw
-
-".\include\apr_ldap.h" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	type .\include\apr_ldap.hw > .\include\apr_ldap.h
-
-# End Custom Build
-
-!ELSEIF  "$(CFG)" == "apr - x64 Debug"
-
-# Begin Custom Build - Creating apr_ldap.h from apr_ldap.hw
-InputPath=.\include\apr_ldap.hw
-
-".\include\apr_ldap.h" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	type .\include\apr_ldap.hw > .\include\apr_ldap.h
-
-# End Custom Build
-
-!ENDIF 
-
 # End Source File
 # Begin Source File
 

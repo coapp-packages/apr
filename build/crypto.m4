@@ -34,6 +34,9 @@ AC_DEFUN([APU_CHECK_CRYPTO], [
       APU_CHECK_CRYPTO_OPENSSL
       APU_CHECK_CRYPTO_NSS
       dnl add checks for other varieties of ssl here
+      if test "$apu_have_crypto" = "0"; then
+        AC_ERROR(Crypto was requested but no crypto library was enabled)
+      fi
     fi
   ], [
       apu_have_crypto=0
@@ -163,7 +166,7 @@ AC_DEFUN([APU_CHECK_CRYPTO_NSS], [
       apu_have_nss=0
     elif test "x$withval" != "x"; then
 
-      nss_CPPFLAGS="-I$withval/include -I$withval/../public"
+      nss_CPPFLAGS="-I$withval/include/nss -I$withval/include/nss3 -I$withval/include/nspr -I$withval/include/nspr4 -I$withval/include -I$withval/../public"
       nss_LDFLAGS="-L$withval/lib "
 
       APR_ADDTO(CPPFLAGS, [$nss_CPPFLAGS])
