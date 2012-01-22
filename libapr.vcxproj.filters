@@ -32,9 +32,6 @@
     <Filter Include="Source Files\hooks">
       <UniqueIdentifier>{82fa06f0-04d7-4a41-8741-8b46e563bc75}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source Files\ldap">
-      <UniqueIdentifier>{6eb3e502-14fe-4394-8562-01c6160c11f7}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Source Files\locks">
       <UniqueIdentifier>{d7b99f00-1312-44fb-8602-e585c1b4f6c7}</UniqueIdentifier>
     </Filter>
@@ -258,21 +255,6 @@
     </ClCompile>
     <ClCompile Include="hooks\apr_hooks.c">
       <Filter>Source Files\hooks</Filter>
-    </ClCompile>
-    <ClCompile Include="ldap\apr_ldap_init.c">
-      <Filter>Source Files\ldap</Filter>
-    </ClCompile>
-    <ClCompile Include="ldap\apr_ldap_option.c">
-      <Filter>Source Files\ldap</Filter>
-    </ClCompile>
-    <ClCompile Include="ldap\apr_ldap_rebind.c">
-      <Filter>Source Files\ldap</Filter>
-    </ClCompile>
-    <ClCompile Include="ldap\apr_ldap_stub.c">
-      <Filter>Source Files\ldap</Filter>
-    </ClCompile>
-    <ClCompile Include="ldap\apr_ldap_url.c">
-      <Filter>Source Files\ldap</Filter>
     </ClCompile>
     <ClCompile Include="locks\win32\proc_mutex.c">
       <Filter>Source Files\locks</Filter>
@@ -645,15 +627,6 @@
       <Filter>Public Header Files</Filter>
     </CustomBuild>
     <CustomBuild Include="include\apr.hw">
-      <Filter>Public Header Files</Filter>
-    </CustomBuild>
-    <CustomBuild Include="include\apr_ldap.h.in">
-      <Filter>Public Header Files</Filter>
-    </CustomBuild>
-    <CustomBuild Include="include\apr_ldap.hnw">
-      <Filter>Public Header Files</Filter>
-    </CustomBuild>
-    <CustomBuild Include="include\apr_ldap.hw">
       <Filter>Public Header Files</Filter>
     </CustomBuild>
     <CustomBuild Include="include\private\apu_select_dbm.h.in">
