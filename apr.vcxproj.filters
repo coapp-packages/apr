@@ -626,15 +626,6 @@
     <CustomBuild Include="include\apr.hw">
       <Filter>Public Header Files</Filter>
     </CustomBuild>
-    <CustomBuild Include="include\apr_ldap.h.in">
-      <Filter>Public Header Files</Filter>
-    </CustomBuild>
-    <CustomBuild Include="include\apr_ldap.hnw">
-      <Filter>Public Header Files</Filter>
-    </CustomBuild>
-    <CustomBuild Include="include\apr_ldap.hw">
-      <Filter>Public Header Files</Filter>
-    </CustomBuild>
     <CustomBuild Include="include\private\apu_select_dbm.h.in">
       <Filter>Public Header Files</Filter>
     </CustomBuild>

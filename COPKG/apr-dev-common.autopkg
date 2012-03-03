@@ -1,0 +1,59 @@
+@import "version.inc" ;
+@import "outercurve.inc" ;
+
+package {
+    name: "apr-dev-common";
+    version: "${package-version}";
+    arch: any;
+    display-name: "apr Dev Library-common";
+}
+
+metadata {
+    summary: "The apr developer library (common)";
+    description: @"apr"; 
+        
+    icon: @"apr.png";
+    
+    author-version : "trunk";
+    bug-tracker: "https://github.com/coapp-packages/apr/issues";
+    stability : "0";
+    licenses : {
+        apr
+    };
+}
+
+files[headers] {
+    root: "..\\include\\apr";
+    include: {
+        "*.h"
+    };
+    
+    trim-path:all;
+    
+    // ensures that all the header files end up in a subfolder called 'include'
+    destination-path:"include";
+}
+
+files[docs] {
+    root: "..\\docs\\";
+    include: {
+        "*"
+    };
+    
+    trim-path:all;
+    
+    // ensures that all the documentation files end up in a subfolder called 'docs'
+    destination-path:"docs";
+
+}
+
+// the 'name' of the developer library isn't terribly important...
+developer-library[apr] {
+    headers: { 
+        headers
+    };
+    
+    docs: {
+        docs
+    };
+}
