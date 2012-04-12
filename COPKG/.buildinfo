@@ -42,8 +42,9 @@ package {
     build-command : @"
         pushd COPKG
         autopackage apr-dev-common.autopkg || goto failed
-        for %%a in (${COMP}) do
-            for %%b in (${PLAT}) do
+        
+        for %%a in (${COMP}) do (
+            for %%b in (${PLAT}) do (
                 autopackage --comp=%%a --plat=%%b apr.autopkg apr-dev.autopkg || goto failed
             )
         )
@@ -88,10 +89,19 @@ release {
 };
 
 sign {
-    set: COMP="${COMP??vc10}";
+    set: {
+        COMP="${COMP??vc10}";
+		PLAT="${PLAT??x86, x64}";
+    };
     default : false;
-    uses: release;
-    build-command: @"simplesigner.exe --nologo --sign output\${COMP}\x64\Release**.dll output\${COMP}\x86\Release\**.dll";
+    build-command: @"
+        if ""${BUILT}"" neq ""true"" ptk release --nologo --COMP=""${COMP}"" --PLAT=""${PLAT}""
+        for %%A in (${COMP}) do (
+            for %%B in (${PLAT}) do (
+                simplesigner.exe --nologo --sign output\%%A\%%B\Release\**.dll output\%%A\%%B\Release\**.dll
+            )
+        )
+    ";
 };
 
 x86 {

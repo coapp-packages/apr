@@ -24,7 +24,7 @@ metadata {
 }
 
 files[headers] {
-    root: "..\\include\\apr";
+    root: "..\\include";
     include: {
         "*.h"
     };
