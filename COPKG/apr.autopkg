@@ -1,0 +1,93 @@
+@import "version.inc";
+@import "compat.inc";
+@import "outercurve.inc";
+
+#define { 
+    flavor: "${comp??vc10}"; 
+    arch : "${plat??x86}";
+}
+
+package {
+    name: "apr[${flavor}]";
+    version: "${package-version}";
+    arch : "${arch}";
+    
+    display-name: "apr";
+    location: "http://coapp.org/repository/${OutputFilename}";
+
+    feed: "http://coapp.org/repository/packages.atom.xml";
+    publisher: "CoApp Project";
+}
+
+license[apr] {
+    license-url: "http://www.apache.org/licenses/LICENSE-2.0.html";
+    license-type: "apr";
+}
+
+files[files-to-sign] {
+    include: { 
+        dlls
+    };    
+}
+
+files[dlls] {
+    root: @"..\output\${flavor}\${arch}\Release\";
+  
+    include: {
+        "libapr-2.dll",
+    };
+    
+    trim-path: all;
+};
+
+requires {
+    package: "expat[${flavor}]-2.0.1-${Package.Architecture}-${Package.PublicKeyToken}";
+}
+
+
+metadata {
+    summary: "apr";
+    description:  @"apr"; 
+
+    icon: @"apr.png";
+    
+    author-version : "trunk";
+    bug-tracker: "https://github.com/coapp-packages/apr/issues";
+    stability : "0";
+    licenses : {
+        apache
+    };
+}
+
+manifest[things-that-need-them2] {
+    // all of our libraries need to get the manifest entries for the assemblies we're using in this package
+    
+    assembly : {
+        "expat[${flavor}]",
+    };
+    
+    include : { 
+        dlls
+    };
+}
+
+assembly[apr[${flavor}]] {
+    include : {
+        dlls
+    };
+}
+
+signing {
+    attributes : {
+        company="Outercurve Foundation",
+        description="apr",
+        product-name="apr",
+        product-version="${package-version}",
+        file-version="${package-version}",
+    };
+    
+    replace-signature: true; 
+    include: { 
+        files-to-sign
+    };    
+}

@@ -90,8 +90,8 @@
     <LinkIncremental>false</LinkIncremental>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <OutDir>.\output\x64\Release\</OutDir>
-    <IntDir>.\output\x64\Release\</IntDir>
+    <OutDir>.\output\vc10\x64\Release\</OutDir>
+    <IntDir>.\output\vc10\x64\Release\</IntDir>
     <LinkIncremental>false</LinkIncremental>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -100,8 +100,8 @@
     <LinkIncremental>false</LinkIncremental>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <OutDir>.\output\x86\Release\</OutDir>
-    <IntDir>.\output\x86\Release\</IntDir>
+    <OutDir>.\output\vc10\x86\Release\</OutDir>
+    <IntDir>.\output\vc10\x86\Release\</IntDir>
     <LinkIncremental>false</LinkIncremental>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
@@ -112,7 +112,7 @@
       <Optimization>Disabled</Optimization>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <WarningLevel>Level3</WarningLevel>
-      <AdditionalIncludeDirectories>./include;./include/private;./include/arch/win32;./include/arch/unix;../expat/lib;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>./include;./include/private;./include/arch/win32;./include/arch/unix;$(AllUsersProfile)/include/expat;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>_DEBUG;APR_DECLARE_EXPORT;WIN32;WINNT;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AssemblerListingLocation>.\Debug\</AssemblerListingLocation>
       <PrecompiledHeaderOutputFile>.\Debug\libapr.pch</PrecompiledHeaderOutputFile>
@@ -146,7 +146,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <OutputFile>Debug\libapr-2.dll</OutputFile>
       <ImportLibrary>Debug\libapr-2.lib</ImportLibrary>
-      <AdditionalLibraryDirectories>..\expat\win32\bin\Debug;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(AllUsersProfile)\lib\x86;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <BaseAddress>0x6EEC0000</BaseAddress>
       <AdditionalDependencies>ws2_32.lib;mswsock.lib;rpcrt4.lib;libexpat.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalOptions> /MACHINE:X86</AdditionalOptions>
@@ -163,10 +163,10 @@
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <WarningLevel>Level3</WarningLevel>
       <OmitFramePointers>false</OmitFramePointers>
-      <AdditionalIncludeDirectories>./include;./include/private;./include/arch/win32;./include/arch/unix;../expat/lib;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>./include;./include/private;./include/arch/win32;./include/arch/unix;$(AllUsersProfile)/include/expat;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>NDEBUG;APR_DECLARE_EXPORT;WIN32;WINNT;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AssemblerListingLocation>.\output\x64\Release\</AssemblerListingLocation>
-      <PrecompiledHeaderOutputFile>.\output\x64\Release\libapr.pch</PrecompiledHeaderOutputFile>
+      <AssemblerListingLocation>.\output\vc10\x64\Release\</AssemblerListingLocation>
+      <PrecompiledHeaderOutputFile>.\output\vc10\x64\Release\libapr.pch</PrecompiledHeaderOutputFile>
       <ObjectFileName>$(IntDir)</ObjectFileName>
       <ProgramDataBaseFileName>$(IntDir)libapr_src</ProgramDataBaseFileName>
     </ClCompile>
@@ -194,9 +194,9 @@
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <LinkDLL>true</LinkDLL>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <OutputFile>.\output\x64\Release\libapr-2.dll</OutputFile>
-      <ImportLibrary>.\output\x64\Release\libapr-2.lib</ImportLibrary>
-      <AdditionalLibraryDirectories>..\expat\win32\bin\x64\Release;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <OutputFile>.\output\vc10\x64\Release\libapr-2.dll</OutputFile>
+      <ImportLibrary>.\output\vc10\x64\Release\libapr-2.lib</ImportLibrary>
+      <AdditionalLibraryDirectories>$(AllUsersProfile)\lib\x64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <BaseAddress>0x6EEC0000</BaseAddress>
       <AdditionalDependencies>Wldap32.lib;ws2_32.lib;mswsock.lib;rpcrt4.lib;libexpat.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalOptions> /MACHINE:X64</AdditionalOptions>
@@ -212,7 +212,7 @@
       <Optimization>Disabled</Optimization>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <WarningLevel>Level3</WarningLevel>
-      <AdditionalIncludeDirectories>./include;./include/private;./include/arch/win32;./include/arch/unix;../expat/lib;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>./include;./include/private;./include/arch/win32;./include/arch/unix;$(AllUsersProfile)/include/expat;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>_DEBUG;APR_DECLARE_EXPORT;WIN32;WINNT;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AssemblerListingLocation>.\x64\Debug\</AssemblerListingLocation>
       <PrecompiledHeaderOutputFile>.\x64\Debug\libapr.pch</PrecompiledHeaderOutputFile>
@@ -246,7 +246,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <OutputFile>x64\Debug\libapr-2.dll</OutputFile>
       <ImportLibrary>x64\Debug\libapr-2.lib</ImportLibrary>
-      <AdditionalLibraryDirectories>..\expat\win32\bin\x64\Debug;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(AllUsersProfile)\lib\x64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <BaseAddress>0x6EEC0000</BaseAddress>
       <AdditionalDependencies>ws2_32.lib;mswsock.lib;rpcrt4.lib;libexpat.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalOptions> /MACHINE:X64</AdditionalOptions>
@@ -263,10 +263,10 @@
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <WarningLevel>Level3</WarningLevel>
       <OmitFramePointers>false</OmitFramePointers>
-      <AdditionalIncludeDirectories>./include;./include/private;./include/arch/win32;./include/arch/unix;../expat/lib;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>./include;./include/private;./include/arch/win32;./include/arch/unix;$(AllUsersProfile)/include/expat;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>NDEBUG;APR_DECLARE_EXPORT;WIN32;WINNT;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AssemblerListingLocation>.\output\x86\Release\</AssemblerListingLocation>
-      <PrecompiledHeaderOutputFile>.\output\x86\Release\libapr.pch</PrecompiledHeaderOutputFile>
+      <AssemblerListingLocation>.\output\vc10\x86\Release\</AssemblerListingLocation>
+      <PrecompiledHeaderOutputFile>.\output\vc10\x86\Release\libapr.pch</PrecompiledHeaderOutputFile>
       <ObjectFileName>$(IntDir)</ObjectFileName>
       <ProgramDataBaseFileName>$(IntDir)libapr_src</ProgramDataBaseFileName>
     </ClCompile>
@@ -294,9 +294,9 @@
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <LinkDLL>true</LinkDLL>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <OutputFile>.\output\x86\Release\libapr-2.dll</OutputFile>
-      <ImportLibrary>.\output\x86\Release\libapr-2.lib</ImportLibrary>
-      <AdditionalLibraryDirectories>..\expat\win32\bin\x86\Release;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <OutputFile>.\output\vc10\x86\Release\libapr-2.dll</OutputFile>
+      <ImportLibrary>.\output\vc10\x86\Release\libapr-2.lib</ImportLibrary>
+      <AdditionalLibraryDirectories>$(AllUsersProfile)\lib\x86;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <BaseAddress>0x6EEC0000</BaseAddress>
       <AdditionalDependencies>Wldap32.lib;ws2_32.lib;mswsock.lib;rpcrt4.lib;libexpat.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalOptions> /MACHINE:X86</AdditionalOptions>

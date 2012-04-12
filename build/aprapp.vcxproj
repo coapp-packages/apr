@@ -85,19 +85,19 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <OutDir>.\..\x64\LibD\</OutDir>
+    <OutDir>.\..\output\vc10\x64\LibD\</OutDir>
     <IntDir>.\x64\LibD\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <OutDir>.\..\x64\LibR\</OutDir>
+    <OutDir>.\..\output\vc10\x64\LibR\</OutDir>
     <IntDir>.\x64\LibR\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <OutDir>.\..\LibR\</OutDir>
+    <OutDir>.\..\output\vc10\x86\LibR\</OutDir>
     <IntDir>.\LibR\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <OutDir>.\..\LibD\</OutDir>
+    <OutDir>.\..\output\vc10\x86\LibD\</OutDir>
     <IntDir>.\LibD\</IntDir>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -125,7 +125,7 @@
     </Bscmake>
     <Lib>
       <SuppressStartupBanner>true</SuppressStartupBanner>
-      <OutputFile>..\x64\LibD\aprapp-2.lib</OutputFile>
+      <OutputFile>..\output\vc10\x64\LibD\aprapp-2.lib</OutputFile>
     </Lib>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -154,7 +154,7 @@
     </Bscmake>
     <Lib>
       <SuppressStartupBanner>true</SuppressStartupBanner>
-      <OutputFile>..\x64\LibR\aprapp-2.lib</OutputFile>
+      <OutputFile>..\output\vc10\x64\LibR\aprapp-2.lib</OutputFile>
     </Lib>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -183,7 +183,7 @@
     </Bscmake>
     <Lib>
       <SuppressStartupBanner>true</SuppressStartupBanner>
-      <OutputFile>..\LibR\aprapp-2.lib</OutputFile>
+      <OutputFile>..\output\vc10\x86\LibR\aprapp-2.lib</OutputFile>
     </Lib>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
@@ -211,7 +211,7 @@
     </Bscmake>
     <Lib>
       <SuppressStartupBanner>true</SuppressStartupBanner>
-      <OutputFile>..\LibD\aprapp-2.lib</OutputFile>
+      <OutputFile>..\output\vc10\x86\LibD\aprapp-2.lib</OutputFile>
     </Lib>
   </ItemDefinitionGroup>
   <ItemGroup>

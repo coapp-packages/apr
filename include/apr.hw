@@ -180,9 +180,16 @@
 #define _WIN32_WINNT 0x0501
 #endif
 
-#ifndef NOUSER
-#define NOUSER
+/* Isolation aware permits the proper use of Windows Side-by-Side,
+ * however defining it requires that NOUSER not be defined
+ */
+#ifdef NOUSER
+#undef NOUSER
 #endif
+#ifndef ISOLATION_AWARE_ENABLED
+#define ISOLATION_AWARE_ENABLED 1
+#endif
+
 #ifndef NOMCX
 #define NOMCX
 #endif

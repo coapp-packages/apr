@@ -71,8 +71,8 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <OutDir>.\output\x64\LibR\</OutDir>
-    <IntDir>.\output\x64\LibR\</IntDir>
+    <OutDir>.\output\vc10\x64\LibR\</OutDir>
+    <IntDir>.\output\vc10\x64\LibR\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <OutDir>.\LibD\</OutDir>
@@ -83,8 +83,8 @@
     <IntDir>.\x64\LibD\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <OutDir>.\output\x86\LibR\</OutDir>
-    <IntDir>.\output\x86\LibR\</IntDir>
+    <OutDir>.\output\vc10\x86\LibR\</OutDir>
+    <IntDir>.\output\vc10\x86\LibR\</IntDir>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
@@ -96,10 +96,10 @@
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <WarningLevel>Level3</WarningLevel>
       <OmitFramePointers>false</OmitFramePointers>
-      <AdditionalIncludeDirectories>./include;./include/private;./include/arch/win32;./include/arch/unix;../expat/lib;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>./include;./include/private;./include/arch/win32;./include/arch/unix;$(AllUsersProfile)/include/expat;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>NDEBUG;APR_DECLARE_STATIC;WIN32;WINNT;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AssemblerListingLocation>.\output\x64\LibR\</AssemblerListingLocation>
-      <PrecompiledHeaderOutputFile>.\output\x64\LibR\apr.pch</PrecompiledHeaderOutputFile>
+      <AssemblerListingLocation>.\output\vc10\x64\LibR\</AssemblerListingLocation>
+      <PrecompiledHeaderOutputFile>.\output\vc10\x64\LibR\apr.pch</PrecompiledHeaderOutputFile>
       <ObjectFileName>$(IntDir)</ObjectFileName>
       <ProgramDataBaseFileName>$(OutDir)apr-2</ProgramDataBaseFileName>
     </ClCompile>
@@ -113,7 +113,7 @@
     </Bscmake>
     <Lib>
       <SuppressStartupBanner>true</SuppressStartupBanner>
-      <OutputFile>.\output\x64\LibR\apr-2.lib</OutputFile>
+      <OutputFile>.\output\vc10\x64\LibR\apr-2.lib</OutputFile>
     </Lib>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
@@ -124,7 +124,7 @@
       <Optimization>Disabled</Optimization>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <WarningLevel>Level3</WarningLevel>
-      <AdditionalIncludeDirectories>./include;./include/private;./include/arch/win32;./include/arch/unix;../expat/lib;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>./include;./include/private;./include/arch/win32;./include/arch/unix;$(AllUsersProfile)/include/expat;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>_DEBUG;APR_DECLARE_STATIC;WIN32;WINNT;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AssemblerListingLocation>.\LibD\</AssemblerListingLocation>
       <PrecompiledHeaderOutputFile>.\LibD\apr.pch</PrecompiledHeaderOutputFile>
@@ -153,7 +153,7 @@
       <Optimization>Disabled</Optimization>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <WarningLevel>Level3</WarningLevel>
-      <AdditionalIncludeDirectories>./include;./include/private;./include/arch/win32;./include/arch/unix;../expat/lib;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>./include;./include/private;./include/arch/win32;./include/arch/unix;$(AllUsersProfile)/include/expat;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>_DEBUG;APR_DECLARE_STATIC;WIN32;WINNT;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AssemblerListingLocation>.\x64\LibD\</AssemblerListingLocation>
       <PrecompiledHeaderOutputFile>.\x64\LibD\apr.pch</PrecompiledHeaderOutputFile>
@@ -184,10 +184,10 @@
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <WarningLevel>Level3</WarningLevel>
       <OmitFramePointers>false</OmitFramePointers>
-      <AdditionalIncludeDirectories>./include;./include/private;./include/arch/win32;./include/arch/unix;../expat/lib;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>./include;./include/private;./include/arch/win32;./include/arch/unix;$(AllUsersProfile)/include/expat;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>NDEBUG;APR_DECLARE_STATIC;WIN32;WINNT;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AssemblerListingLocation>$(IntDir)</AssemblerListingLocation>
-      <PrecompiledHeaderOutputFile>.\output\x86\LibR\apr.pch</PrecompiledHeaderOutputFile>
+      <PrecompiledHeaderOutputFile>.\output\vc10\x86\LibR\apr.pch</PrecompiledHeaderOutputFile>
       <ObjectFileName>$(IntDir)</ObjectFileName>
       <ProgramDataBaseFileName>$(OutDir)apr-2</ProgramDataBaseFileName>
     </ClCompile>
@@ -201,7 +201,7 @@
     </Bscmake>
     <Lib>
       <SuppressStartupBanner>true</SuppressStartupBanner>
-      <OutputFile>.\output\x86\LibR\apr-2.lib</OutputFile>
+      <OutputFile>.\output\vc10\x86\LibR\apr-2.lib</OutputFile>
     </Lib>
   </ItemDefinitionGroup>
   <ItemGroup>
