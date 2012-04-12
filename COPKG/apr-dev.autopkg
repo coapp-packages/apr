@@ -46,7 +46,7 @@ files[staticlibs] {
 };
 
 files[libs] {
-    root: @"..\output\${arch}\Release\";
+    root: @"..\output\${flavor}\${arch}\Release\";
     
     include: {
         "libapr-2.lib",
