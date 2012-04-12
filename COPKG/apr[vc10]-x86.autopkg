@@ -1,8 +1,0 @@
-// details for x86 version of apr package
-// build with: autopackage x86.autopkg apr.autopkg  
-@import "apr.inc";
-
-#define { 
-    flavor: "vc10"; 
-    arch : "x86";
-}
