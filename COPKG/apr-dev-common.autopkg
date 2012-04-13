@@ -30,9 +30,16 @@ files[headers] {
     };
     
     trim-path:all;
+}
+
+files[headers2] {
+    root: @"..\include\arch\win32";
+    include: {
+        "*.h"
+    };
     
-    // ensures that all the header files end up in a subfolder called 'include'
-    destination-path:"include";
+    trim-path: minimal;
+    destination: @"arch\win32";
 }
 
 files[docs] {
@@ -42,15 +49,12 @@ files[docs] {
     };
     
     trim-path:all;
-    
-    // ensures that all the documentation files end up in a subfolder called 'docs'
-    destination-path:"docs";
-
 }
 
 developer-library[apr] {
     headers: { 
         headers
+        headers2
     };
     
     docs: {
