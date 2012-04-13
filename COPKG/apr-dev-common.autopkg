@@ -53,7 +53,7 @@ files[docs] {
 
 developer-library[apr] {
     headers: { 
-        headers
+        headers,
         headers2
     };
     
