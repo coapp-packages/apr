@@ -34,7 +34,7 @@ files[dlls] {
     root: @"..\output\${flavor}\${arch}\Release\";
   
     include: {
-        "libapr-2.dll",
+        "libapr-1.dll",
     };
     
     trim-path: all;

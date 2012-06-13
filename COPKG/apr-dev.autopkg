@@ -39,7 +39,7 @@ files[staticlibs] {
     root: @"..\output\${flavor}\${arch}\LibR\";
     
     include: {
-        "apr-2.lib",
+        "apr-1.lib",
     };
     
     trim-path: all;
@@ -49,7 +49,7 @@ files[libs] {
     root: @"..\output\${flavor}\${arch}\Release\";
     
     include: {
-        "libapr-2.lib",
+        "libapr-1.lib",
     };
     
     trim-path: all;
