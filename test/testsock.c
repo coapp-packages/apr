@@ -24,15 +24,10 @@
 #include "apr_strings.h"
 #include "apr_poll.h"
 
-#define UNIX_SOCKET_NAME    "/tmp/apr-socket"
-#define IPV4_SOCKET_NAME    "127.0.0.1"
-static char *socket_name = NULL;
-static int   socket_type = APR_INET;
-
 static void launch_child(abts_case *tc, apr_proc_t *proc, const char *arg1, apr_pool_t *p)
 {
     apr_procattr_t *procattr;
-    const char *args[4];
+    const char *args[3];
     apr_status_t rv;
 
     rv = apr_procattr_create(&procattr, p);
@@ -50,8 +45,7 @@ static void launch_child(abts_case *tc, apr_proc_t *proc, const char *arg1, apr_
 
     args[0] = "sockchild" EXTENSION;
     args[1] = arg1;
-    args[2] = socket_name;
-    args[3] = NULL;
+    args[2] = NULL;
     rv = apr_proc_create(proc, TESTBINPATH "sockchild" EXTENSION, args, NULL,
                          procattr, p);
     APR_ASSERT_SUCCESS(tc, "Couldn't launch program", rv);
@@ -114,7 +108,7 @@ static apr_socket_t *setup_socket(abts_case *tc)
     apr_sockaddr_t *sa;
     apr_socket_t *sock;
 
-    rv = apr_sockaddr_info_get(&sa, socket_name, socket_type, 8021, 0, p);
+    rv = apr_sockaddr_info_get(&sa, "127.0.0.1", APR_INET, 8021, 0, p);
     APR_ASSERT_SUCCESS(tc, "Problem generating sockaddr", rv);
 
     rv = apr_socket_create(&sock, sa->family, SOCK_STREAM, APR_PROTO_TCP, p);
@@ -345,8 +339,8 @@ static void test_get_addr(abts_case *tc, void *data)
 
     APR_ASSERT_SUCCESS(tc, "create subpool", apr_pool_create(&subp, p));
 
-    ld = setup_socket(tc);
-    if (!ld) return;
+    if ((ld = setup_socket(tc)) != APR_SUCCESS)
+        return;
 
     APR_ASSERT_SUCCESS(tc,
                        "get local address of bound socket",
@@ -433,73 +427,10 @@ static void test_get_addr(abts_case *tc, void *data)
     apr_pool_destroy(subp);
 }
 
-static void test_wait(abts_case *tc, void *data)
-{
-    apr_status_t rv;
-    apr_socket_t *server;
-    apr_socket_t *server_connection;
-    apr_sockaddr_t *server_addr;
-    apr_socket_t *client;
-    apr_interval_time_t delay = 200000;
-    apr_time_t start_time;
-    apr_time_t end_time;
-    apr_size_t nbytes;
-    int connected = FALSE;
-
-    server = setup_socket(tc);
-    if (!server) return;
-
-    rv = apr_sockaddr_info_get(&server_addr, socket_name, socket_type, 8021, 0, p);
-    APR_ASSERT_SUCCESS(tc, "setting up sockaddr", rv);
-
-    rv = apr_socket_create(&client, server_addr->family, SOCK_STREAM, 0, p);
-    APR_ASSERT_SUCCESS(tc, "creating client socket", rv);
-
-    rv = apr_socket_timeout_set(client, 0);
-    APR_ASSERT_SUCCESS(tc, "setting client socket timeout", rv);
-
-    rv = apr_socket_connect(client, server_addr);
-
-    if (rv == APR_SUCCESS) {
-        connected = TRUE;
-    }
-    else {
-        ABTS_ASSERT(tc, "connecting client to server", APR_STATUS_IS_EINPROGRESS(rv));
-    }
-
-    rv = apr_socket_accept(&server_connection, server, p);
-    APR_ASSERT_SUCCESS(tc, "accepting client connection", rv);
-
-    if (!connected) {
-        rv = apr_socket_connect(client, server_addr);
-        APR_ASSERT_SUCCESS(tc, "connecting client to server", rv);
-    }
-
-    rv = apr_socket_timeout_set(client, delay);
-    APR_ASSERT_SUCCESS(tc, "setting client socket timeout", rv);
-
-    start_time = apr_time_now();
-    rv = apr_socket_wait(client, APR_WAIT_READ);
-    ABTS_INT_EQUAL(tc, 1, APR_STATUS_IS_TIMEUP(rv));
-
-    end_time = apr_time_now();
-    ABTS_ASSERT(tc, "apr_socket_wait() waited for the time out", end_time - start_time >= delay);
-
-    nbytes = 4;
-    rv = apr_socket_send(server_connection, "data", &nbytes);
-    APR_ASSERT_SUCCESS(tc, "Couldn't write to client", rv);
-
-    rv = apr_socket_wait(client, APR_WAIT_READ);
-    APR_ASSERT_SUCCESS(tc, "Wait for socket failed", rv);
-
-    rv = apr_socket_close(server);
-    APR_ASSERT_SUCCESS(tc, "couldn't close server socket", rv);
-}
-
 abts_suite *testsock(abts_suite *suite)
 {
     suite = ADD_SUITE(suite)
-    socket_name = IPV4_SOCKET_NAME;
+
     abts_run_test(suite, test_addr_info, NULL);
     abts_run_test(suite, test_serv_by_name, NULL);
     abts_run_test(suite, test_create_bind_listen, NULL);
@@ -509,18 +440,7 @@ abts_suite *testsock(abts_suite *suite)
     abts_run_test(suite, test_timeout, NULL);
     abts_run_test(suite, test_print_addr, NULL);
     abts_run_test(suite, test_get_addr, NULL);
-    abts_run_test(suite, test_wait, NULL);
-#if APR_HAVE_SOCKADDR_UN
-    socket_name = UNIX_SOCKET_NAME;
-    socket_type = APR_UNIX;
-    /* in case AF_UNIX socket exists from a previous run: */
-    apr_file_remove(socket_name, p);
-    abts_run_test(suite, test_create_bind_listen, NULL);
-    abts_run_test(suite, test_send, NULL);
-    abts_run_test(suite, test_recv, NULL);
-    abts_run_test(suite, test_timeout, NULL);
-    abts_run_test(suite, test_wait, NULL);
-#endif
+
     return suite;
 }
 

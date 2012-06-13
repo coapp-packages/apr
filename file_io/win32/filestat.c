@@ -567,7 +567,7 @@ APR_DECLARE(apr_status_t) apr_stat(apr_finfo_t *finfo, const char *fname,
 #if APR_HAS_ANSI_FS
     ELSE_WIN_OS_IS_ANSI
     {
-        const char *root = NULL;
+        char *root = NULL;
         const char *test = fname;
         rv = apr_filepath_root(&root, &test, APR_FILEPATH_NATIVE, pool);
         isroot = (root && *root && !(*test));

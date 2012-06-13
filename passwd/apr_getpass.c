@@ -51,12 +51,9 @@
 #if APR_HAVE_STRINGS_H
 #include <strings.h>
 #endif
-#if APR_HAVE_STDIO_H
-#include <stdio.h>
-#endif
 
 /* Disable getpass() support when PASS_MAX is defined and is "small",
- * for an arbitrary definition of "small". 
+ * for an arbitrary definition of "small".
  * HP-UX truncates passwords (PR49496) so we disable getpass() for
  * this platform too.
  */
@@ -83,9 +80,9 @@
 
 #if !defined(HAVE_GETPASS) && !defined(HAVE_GETPASSPHRASE) && !defined(HAVE_GETPASS_R)
 
-/* MPE, Win32, and BeOS all lack a native getpass() */
+/* MPE, Win32, NetWare and BeOS all lack a native getpass() */
 
-#if !defined(HAVE_TERMIOS_H) && !defined(WIN32)
+#if !defined(HAVE_TERMIOS_H) && !defined(WIN32) && !defined(NETWARE)
 /*
  * MPE lacks getpass() and a way to suppress stdin echo.  So for now, just
  * issue the prompt and read the results with echo.  (Ugh).
@@ -101,7 +98,46 @@ static char *get_password(const char *prompt)
     return (char *) &password;
 }
 
-#elif defined(WIN32)
+#elif defined (HAVE_TERMIOS_H)
+#include <stdio.h>
+
+static char *get_password(const char *prompt)
+{
+    struct termios attr;
+    static char password[MAX_STRING_LEN];
+    int n=0;
+    fputs(prompt, stderr);
+    fflush(stderr);
+
+    if (tcgetattr(STDIN_FILENO, &attr) != 0)
+        return NULL;
+    attr.c_lflag &= ~(ECHO);
+
+    if (tcsetattr(STDIN_FILENO, TCSAFLUSH, &attr) != 0)
+        return NULL;
+    while ((password[n] = getchar()) != '\n') {
+        if (n < sizeof(password) - 1 && password[n] >= ' ' && password[n] <= '~') {
+            n++;
+        } else {
+            fprintf(stderr,"\n");
+            fputs(prompt, stderr);
+            fflush(stderr);
+            n = 0;
+        }
+    }
+ 
+    password[n] = '\0';
+    printf("\n");
+    if (n > (MAX_STRING_LEN - 1)) {
+        password[MAX_STRING_LEN - 1] = '\0';
+    }
+
+    attr.c_lflag |= ECHO;
+    tcsetattr(STDIN_FILENO, TCSANOW, &attr);
+    return (char*) &password;
+}
+
+#else
 
 /*
  * Windows lacks getpass().  So we'll re-implement it here.
@@ -170,44 +206,6 @@ static char *get_password(const char *prompt)
     password[n] = '\0';
     return password;
 #endif
-}
-
-#elif defined (HAVE_TERMIOS_H)
-
-static char *get_password(const char *prompt)
-{
-    struct termios attr;
-    static char password[MAX_STRING_LEN];
-    int n=0;
-    fputs(prompt, stderr);
-    fflush(stderr);
-
-    if (tcgetattr(STDIN_FILENO, &attr) != 0)
-        return NULL;
-    attr.c_lflag &= ~(ECHO);
-
-    if (tcsetattr(STDIN_FILENO, TCSAFLUSH, &attr) != 0)
-        return NULL;
-    while ((password[n] = getchar()) != '\n') {
-        if (n < sizeof(password) - 1 && password[n] >= ' ' && password[n] <= '~') {
-            n++;
-        } else {
-            fprintf(stderr,"\n");
-            fputs(prompt, stderr);
-            fflush(stderr);
-            n = 0;
-        }
-    }
- 
-    password[n] = '\0';
-    printf("\n");
-    if (n > (MAX_STRING_LEN - 1)) {
-        password[MAX_STRING_LEN - 1] = '\0';
-    }
-
-    attr.c_lflag |= ECHO;
-    tcsetattr(STDIN_FILENO, TCSANOW, &attr);
-    return (char*) &password;
 }
 
 #endif /* no getchar or _getch */

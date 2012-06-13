@@ -196,8 +196,15 @@ APR_DECLARE(void) apr_pool_terminate(void);
 APR_DECLARE(apr_status_t) apr_pool_create_ex(apr_pool_t **newpool,
                                              apr_pool_t *parent,
                                              apr_abortfunc_t abort_fn,
-                                             apr_allocator_t *allocator)
-                          __attribute__((nonnull(1)));
+                                             apr_allocator_t *allocator);
+
+/**
+ * Create a new pool.
+ * @deprecated @see apr_pool_create_unmanaged_ex.
+ */
+APR_DECLARE(apr_status_t) apr_pool_create_core_ex(apr_pool_t **newpool,
+                                                  apr_abortfunc_t abort_fn,
+                                                  apr_allocator_t *allocator);
 
 /**
  * Create a new unmanaged pool.
@@ -210,15 +217,10 @@ APR_DECLARE(apr_status_t) apr_pool_create_ex(apr_pool_t **newpool,
  *         destroyed by calling apr_pool_destroy, to prevent memory leaks.
  *         Use of this function is discouraged, think twice about whether
  *         you really really need it.
- * @warning Any child cleanups registered against the new pool, or
- *         against sub-pools thereof, will not be executed during an
- *         invocation of apr_proc_create(), so resources created in an
- *         "unmanaged" pool heirarchy will leak to child processes.
  */
 APR_DECLARE(apr_status_t) apr_pool_create_unmanaged_ex(apr_pool_t **newpool,
                                                    apr_abortfunc_t abort_fn,
-                                                   apr_allocator_t *allocator)
-                          __attribute__((nonnull(1)));
+                                                   apr_allocator_t *allocator);
 
 /**
  * Debug version of apr_pool_create_ex.
@@ -240,8 +242,7 @@ APR_DECLARE(apr_status_t) apr_pool_create_ex_debug(apr_pool_t **newpool,
                                                    apr_pool_t *parent,
                                                    apr_abortfunc_t abort_fn,
                                                    apr_allocator_t *allocator,
-                                                   const char *file_line)
-                          __attribute__((nonnull(1)));
+                                                   const char *file_line);
 
 #if APR_POOL_DEBUG
 #define apr_pool_create_ex(newpool, parent, abort_fn, allocator)  \
@@ -249,7 +250,16 @@ APR_DECLARE(apr_status_t) apr_pool_create_ex_debug(apr_pool_t **newpool,
                              APR_POOL__FILE_LINE__)
 #endif
 
-  /**
+/**
+ * Debug version of apr_pool_create_core_ex.
+ * @deprecated @see apr_pool_create_unmanaged_ex_debug.
+ */
+APR_DECLARE(apr_status_t) apr_pool_create_core_ex_debug(apr_pool_t **newpool,
+                                                   apr_abortfunc_t abort_fn,
+                                                   apr_allocator_t *allocator,
+                                                   const char *file_line);
+
+/**
  * Debug version of apr_pool_create_unmanaged_ex.
  * @param newpool @see apr_pool_create_unmanaged.
  * @param abort_fn @see apr_pool_create_unmanaged.
@@ -261,16 +271,19 @@ APR_DECLARE(apr_status_t) apr_pool_create_ex_debug(apr_pool_t **newpool,
  *         calls in a wrapper function and wish to override
  *         the file_line argument to reflect the caller of
  *         your wrapper function.  If you do not have
- *         apr_pool_create_unmanaged_ex in a wrapper, trust the macro
- *         and don't call apr_pool_create_unmanaged_ex_debug directly.
+ *         apr_pool_create_core_ex in a wrapper, trust the macro
+ *         and don't call apr_pool_create_core_ex_debug directly.
  */
 APR_DECLARE(apr_status_t) apr_pool_create_unmanaged_ex_debug(apr_pool_t **newpool,
                                                    apr_abortfunc_t abort_fn,
                                                    apr_allocator_t *allocator,
-                                                   const char *file_line)
-                          __attribute__((nonnull(1)));
+                                                   const char *file_line);
 
 #if APR_POOL_DEBUG
+#define apr_pool_create_core_ex(newpool, abort_fn, allocator)  \
+    apr_pool_create_unmanaged_ex_debug(newpool, abort_fn, allocator, \
+                                  APR_POOL__FILE_LINE__)
+
 #define apr_pool_create_unmanaged_ex(newpool, abort_fn, allocator)  \
     apr_pool_create_unmanaged_ex_debug(newpool, abort_fn, allocator, \
                                   APR_POOL__FILE_LINE__)
@@ -308,13 +321,19 @@ APR_DECLARE(apr_status_t) apr_pool_create(apr_pool_t **newpool,
  * @param newpool The pool we have just created.
  */
 #if defined(DOXYGEN)
+APR_DECLARE(apr_status_t) apr_pool_create_core(apr_pool_t **newpool);
 APR_DECLARE(apr_status_t) apr_pool_create_unmanaged(apr_pool_t **newpool);
 #else
 #if APR_POOL_DEBUG
+#define apr_pool_create_core(newpool) \
+    apr_pool_create_unmanaged_ex_debug(newpool, NULL, NULL, \
+                                  APR_POOL__FILE_LINE__)
 #define apr_pool_create_unmanaged(newpool) \
     apr_pool_create_unmanaged_ex_debug(newpool, NULL, NULL, \
                                   APR_POOL__FILE_LINE__)
 #else
+#define apr_pool_create_core(newpool) \
+    apr_pool_create_unmanaged_ex(newpool, NULL, NULL)
 #define apr_pool_create_unmanaged(newpool) \
     apr_pool_create_unmanaged_ex(newpool, NULL, NULL)
 #endif
@@ -324,8 +343,7 @@ APR_DECLARE(apr_status_t) apr_pool_create_unmanaged(apr_pool_t **newpool);
  * Find the pool's allocator
  * @param pool The pool to get the allocator from.
  */
-APR_DECLARE(apr_allocator_t *) apr_pool_allocator_get(apr_pool_t *pool)
-                               __attribute__((nonnull(1)));
+APR_DECLARE(apr_allocator_t *) apr_pool_allocator_get(apr_pool_t *pool);
 
 /**
  * Clear all memory in the pool and run all the cleanups. This also destroys all
@@ -335,7 +353,7 @@ APR_DECLARE(apr_allocator_t *) apr_pool_allocator_get(apr_pool_t *pool)
  *         to re-use this memory for the next allocation.
  * @see apr_pool_destroy()
  */
-APR_DECLARE(void) apr_pool_clear(apr_pool_t *p) __attribute__((nonnull(1)));
+APR_DECLARE(void) apr_pool_clear(apr_pool_t *p);
 
 /**
  * Debug version of apr_pool_clear.
@@ -351,8 +369,7 @@ APR_DECLARE(void) apr_pool_clear(apr_pool_t *p) __attribute__((nonnull(1)));
  *         and don't call apr_pool_destroy_clear directly.
  */
 APR_DECLARE(void) apr_pool_clear_debug(apr_pool_t *p,
-                                       const char *file_line)
-                  __attribute__((nonnull(1)));
+                                       const char *file_line);
 
 #if APR_POOL_DEBUG
 #define apr_pool_clear(p) \
@@ -365,7 +382,7 @@ APR_DECLARE(void) apr_pool_clear_debug(apr_pool_t *p,
  * @param p The pool to destroy
  * @remark This will actually free the memory
  */
-APR_DECLARE(void) apr_pool_destroy(apr_pool_t *p) __attribute__((nonnull(1)));
+APR_DECLARE(void) apr_pool_destroy(apr_pool_t *p);
 
 /**
  * Debug version of apr_pool_destroy.
@@ -381,8 +398,7 @@ APR_DECLARE(void) apr_pool_destroy(apr_pool_t *p) __attribute__((nonnull(1)));
  *         and don't call apr_pool_destroy_debug directly.
  */
 APR_DECLARE(void) apr_pool_destroy_debug(apr_pool_t *p,
-                                         const char *file_line)
-                  __attribute__((nonnull(1)));
+                                         const char *file_line);
 
 #if APR_POOL_DEBUG
 #define apr_pool_destroy(p) \
@@ -400,8 +416,7 @@ APR_DECLARE(void) apr_pool_destroy_debug(apr_pool_t *p,
  * @param size The amount of memory to allocate
  * @return The allocated memory
  */
-APR_DECLARE(void *) apr_palloc(apr_pool_t *p, apr_size_t size)
-                    __attribute__((nonnull(1)));
+APR_DECLARE(void *) apr_palloc(apr_pool_t *p, apr_size_t size);
 
 /**
  * Debug version of apr_palloc
@@ -412,8 +427,7 @@ APR_DECLARE(void *) apr_palloc(apr_pool_t *p, apr_size_t size)
  * @return See: apr_palloc
  */
 APR_DECLARE(void *) apr_palloc_debug(apr_pool_t *p, apr_size_t size,
-                                     const char *file_line)
-                    __attribute__((nonnull(1)));
+                                     const char *file_line);
 
 #if APR_POOL_DEBUG
 #define apr_palloc(p, size) \
@@ -441,8 +455,7 @@ APR_DECLARE(void *) apr_pcalloc(apr_pool_t *p, apr_size_t size);
  * @return See: apr_pcalloc
  */
 APR_DECLARE(void *) apr_pcalloc_debug(apr_pool_t *p, apr_size_t size,
-                                      const char *file_line)
-                    __attribute__((nonnull(1)));
+                                      const char *file_line);
 
 #if APR_POOL_DEBUG
 #define apr_pcalloc(p, size) \
@@ -463,24 +476,21 @@ APR_DECLARE(void *) apr_pcalloc_debug(apr_pool_t *p, apr_size_t size,
  *      deal with the error accordingly.
  */
 APR_DECLARE(void) apr_pool_abort_set(apr_abortfunc_t abortfunc,
-                                     apr_pool_t *pool)
-                  __attribute__((nonnull(2)));
+                                     apr_pool_t *pool);
 
 /**
  * Get the abort function associated with the specified pool.
  * @param pool The pool for retrieving the abort function.
  * @return The abort function for the given pool.
  */
-APR_DECLARE(apr_abortfunc_t) apr_pool_abort_get(apr_pool_t *pool)
-                             __attribute__((nonnull(1)));
+APR_DECLARE(apr_abortfunc_t) apr_pool_abort_get(apr_pool_t *pool);
 
 /**
  * Get the parent pool of the specified pool.
  * @param pool The pool for retrieving the parent pool.
  * @return The parent of the given pool.
  */
-APR_DECLARE(apr_pool_t *) apr_pool_parent_get(apr_pool_t *pool)
-                          __attribute__((nonnull(1)));
+APR_DECLARE(apr_pool_t *) apr_pool_parent_get(apr_pool_t *pool);
 
 /**
  * Determine if pool a is an ancestor of pool b.
@@ -500,8 +510,7 @@ APR_DECLARE(int) apr_pool_is_ancestor(apr_pool_t *a, apr_pool_t *b);
  * @param pool The pool to tag
  * @param tag  The tag
  */
-APR_DECLARE(void) apr_pool_tag(apr_pool_t *pool, const char *tag)
-                  __attribute__((nonnull(1)));
+APR_DECLARE(void) apr_pool_tag(apr_pool_t *pool, const char *tag);
 
 
 /*
@@ -527,11 +536,11 @@ APR_DECLARE(void) apr_pool_tag(apr_pool_t *pool, const char *tag)
  *      key names is a typical way to help ensure this uniqueness.
  *
  */
-APR_DECLARE(apr_status_t) apr_pool_userdata_set(const void *data,
-                                                const char *key,
-                                                apr_status_t (*cleanup)(void *),
-                                                apr_pool_t *pool)
-                          __attribute__((nonnull(2,4)));
+APR_DECLARE(apr_status_t) apr_pool_userdata_set(
+    const void *data,
+    const char *key,
+    apr_status_t (*cleanup)(void *),
+    apr_pool_t *pool);
 
 /**
  * Set the data associated with the current pool
@@ -553,10 +562,10 @@ APR_DECLARE(apr_status_t) apr_pool_userdata_set(const void *data,
  *
  */
 APR_DECLARE(apr_status_t) apr_pool_userdata_setn(
-                                const void *data, const char *key,
-                                apr_status_t (*cleanup)(void *),
-                                apr_pool_t *pool)
-                          __attribute__((nonnull(2,4)));
+    const void *data,
+    const char *key,
+    apr_status_t (*cleanup)(void *),
+    apr_pool_t *pool);
 
 /**
  * Return the data associated with the current pool.
@@ -565,8 +574,7 @@ APR_DECLARE(apr_status_t) apr_pool_userdata_setn(
  * @param pool The current pool.
  */
 APR_DECLARE(apr_status_t) apr_pool_userdata_get(void **data, const char *key,
-                                                apr_pool_t *pool)
-                          __attribute__((nonnull(1,2,3)));
+                                                apr_pool_t *pool);
 
 
 /**
@@ -593,10 +601,10 @@ APR_DECLARE(apr_status_t) apr_pool_userdata_get(void **data, const char *key,
  *                      to exec - this function is called in the child, obviously!
  */
 APR_DECLARE(void) apr_pool_cleanup_register(
-                            apr_pool_t *p, const void *data,
-                            apr_status_t (*plain_cleanup)(void *),
-                            apr_status_t (*child_cleanup)(void *))
-                  __attribute__((nonnull(3,4)));
+    apr_pool_t *p,
+    const void *data,
+    apr_status_t (*plain_cleanup)(void *),
+    apr_status_t (*child_cleanup)(void *));
 
 /**
  * Register a function to be called when a pool is cleared or destroyed.
@@ -611,9 +619,9 @@ APR_DECLARE(void) apr_pool_cleanup_register(
  *                      or destroyed
  */
 APR_DECLARE(void) apr_pool_pre_cleanup_register(
-                            apr_pool_t *p, const void *data,
-                            apr_status_t (*plain_cleanup)(void *))
-                  __attribute__((nonnull(3)));
+    apr_pool_t *p,
+    const void *data,
+    apr_status_t (*plain_cleanup)(void *));
 
 /**
  * Remove a previously registered cleanup function.
@@ -628,8 +636,7 @@ APR_DECLARE(void) apr_pool_pre_cleanup_register(
  *          function
  */
 APR_DECLARE(void) apr_pool_cleanup_kill(apr_pool_t *p, const void *data,
-                                        apr_status_t (*cleanup)(void *))
-                  __attribute__((nonnull(3)));
+                                        apr_status_t (*cleanup)(void *));
 
 /**
  * Replace the child cleanup function of a previously registered cleanup.
@@ -644,10 +651,10 @@ APR_DECLARE(void) apr_pool_cleanup_kill(apr_pool_t *p, const void *data,
  * @param child_cleanup The function to register as the child cleanup
  */
 APR_DECLARE(void) apr_pool_child_cleanup_set(
-                        apr_pool_t *p, const void *data,
-                        apr_status_t (*plain_cleanup)(void *),
-                        apr_status_t (*child_cleanup)(void *))
-                  __attribute__((nonnull(3,4)));
+    apr_pool_t *p,
+    const void *data,
+    apr_status_t (*plain_cleanup)(void *),
+    apr_status_t (*child_cleanup)(void *));
 
 /**
  * Run the specified cleanup function immediately and unregister it.
@@ -660,9 +667,10 @@ APR_DECLARE(void) apr_pool_child_cleanup_set(
  * @param data The data to remove from cleanup
  * @param cleanup The function to remove from cleanup
  */
-APR_DECLARE(apr_status_t) apr_pool_cleanup_run(apr_pool_t *p, void *data,
-                                               apr_status_t (*cleanup)(void *))
-                          __attribute__((nonnull(3)));
+APR_DECLARE(apr_status_t) apr_pool_cleanup_run(
+    apr_pool_t *p,
+    void *data,
+    apr_status_t (*cleanup)(void *));
 
 /**
  * An empty cleanup function.
@@ -731,8 +739,7 @@ APR_DECLARE(void) apr_pool_cleanup_for_exec(void);
  * @param p The parent pool
  * @param sub The subpool
  */
-APR_DECLARE(void) apr_pool_join(apr_pool_t *p, apr_pool_t *sub)
-                  __attribute__((nonnull(2)));
+APR_DECLARE(void) apr_pool_join(apr_pool_t *p, apr_pool_t *sub);
 
 /**
  * Find a pool from something allocated in it.
@@ -747,8 +754,7 @@ APR_DECLARE(apr_pool_t *) apr_pool_find(const void *mem);
  * @param recurse Recurse/include the subpools' sizes
  * @return The number of bytes
  */
-APR_DECLARE(apr_size_t) apr_pool_num_bytes(apr_pool_t *p, int recurse)
-                        __attribute__((nonnull(1)));
+APR_DECLARE(apr_size_t) apr_pool_num_bytes(apr_pool_t *p, int recurse);
 
 /**
  * Lock a pool

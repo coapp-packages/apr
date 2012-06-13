@@ -235,11 +235,6 @@ do_select:
 #endif
 }
 
-apr_status_t apr_socket_wait(apr_socket_t *sock, apr_wait_type_t direction)
-{
-    return apr_wait_for_io_or_timeout(NULL, sock, direction == APR_WAIT_READ);
-}
-
 #if APR_HAS_SENDFILE
 
 /* TODO: Verify that all platforms handle the fd the same way,
@@ -553,7 +548,7 @@ apr_status_t apr_socket_sendfile(apr_socket_t * sock, apr_file_t * file,
 
         /* On early versions of FreeBSD sendfile, the number of bytes to send 
          * must include the length of the headers.  Don't look at the man page 
-         * for this :(  Instead, look at the logic in 
+         * for this :(  Instead, look at the the logic in 
          * src/sys/kern/uipc_syscalls::sendfile().
          *
          * This was fixed in the middle of 4.6-STABLE

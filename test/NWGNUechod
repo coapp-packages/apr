@@ -17,7 +17,7 @@ endif
 #
 XINCDIRS	+= \
 			$(APR)/include \
-			$(APR)/include/arch/netware \
+			$(APR)/include/arch/NetWare \
 			$(EOLIST)
 
 #
@@ -249,5 +249,5 @@ install :: nlms FORCE
 # in this makefile
 #
 
-include $(APRBUILD)/NWGNUtail.inc
+include $(APR_WORK)/build/NWGNUtail.inc
 

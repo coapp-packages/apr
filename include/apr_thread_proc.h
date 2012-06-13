@@ -26,7 +26,6 @@
 #include "apr_file_io.h"
 #include "apr_pools.h"
 #include "apr_errno.h"
-#include "apr_perms_set.h"
 
 #if APR_HAVE_STRUCT_RLIMIT
 #include <sys/time.h>
@@ -114,7 +113,7 @@ typedef enum {
  */
 #define APR_OC_REASON_DEATH         0     /**< child has died, caller must call
                                            * unregister still */
-#define APR_OC_REASON_UNWRITABLE    1     /**< currently unused. */
+#define APR_OC_REASON_UNWRITABLE    1     /**< write_fd is unwritable */
 #define APR_OC_REASON_RESTART       2     /**< a restart is occuring, perform
                                            * any necessary cleanup (including
                                            * sending a special signal to child)
@@ -198,9 +197,7 @@ typedef struct apr_other_child_rec_t  apr_other_child_rec_t;
 typedef void *(APR_THREAD_FUNC *apr_thread_start_t)(apr_thread_t*, void*);
 
 typedef enum {
-    APR_KILL_NEVER,             /**< process is never killed (i.e., never sent
-                                 * any signals), but it will be reaped if it exits
-                                 * before the pool is cleaned up */
+    APR_KILL_NEVER,             /**< process is never sent any signals */
     APR_KILL_ALWAYS,            /**< process is sent SIGKILL on apr_pool_t cleanup */
     APR_KILL_AFTER_TIMEOUT,     /**< SIGTERM, wait 3 seconds, SIGKILL */
     APR_JUST_WAIT,              /**< wait forever for the process to complete */
@@ -580,18 +577,6 @@ APR_DECLARE(apr_status_t) apr_procattr_group_set(apr_procattr_t *attr,
                                                  const char *groupname);
 
 
-/**
- * Register permission set function
- * @param attr The procattr we care about. 
- * @param perms_set_fn Permission set callback
- * @param data Data to pass to permission callback function
- * @param perms Permissions to set
- */
-APR_DECLARE(apr_status_t) apr_procattr_perms_set_register(apr_procattr_t *attr,
-                                                 apr_perms_setfn_t *perms_set_fn,
-                                                 void *data,
-                                                 apr_fileperms_t perms);
-
 #if APR_HAS_FORK
 /**
  * This is currently the only non-portable call in APR.  This executes 
@@ -708,9 +693,14 @@ APR_DECLARE(apr_status_t) apr_proc_detach(int daemonize);
  * @param maintenance maintenance is a function that is invoked with a 
  *                    reason and the data pointer passed here.
  * @param data Opaque context data passed to the maintenance function.
- * @param write_fd This argument is currently unused and should be passed 
- *                 as NULL.
+ * @param write_fd An fd that is probed for writing.  If it is ever unwritable
+ *                 then the maintenance is invoked with reason 
+ *                 OC_REASON_UNWRITABLE.
  * @param p The pool to use for allocating memory.
+ * @bug write_fd duplicates the proc->out stream, it's really redundant
+ * and should be replaced in the APR 1.0 API with a bitflag of which
+ * proc->in/out/err handles should be health checked.
+ * @bug no platform currently tests the pipes health.
  */
 APR_DECLARE(void) apr_proc_other_child_register(apr_proc_t *proc, 
                                            void (*maintenance) (int reason, 

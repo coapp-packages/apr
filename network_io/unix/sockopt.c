@@ -141,18 +141,6 @@ apr_status_t apr_socket_opt_set(apr_socket_t *sock,
             apr_set_option(sock, APR_SO_DEBUG, on);
         }
         break;
-    case APR_SO_BROADCAST:
-#ifdef SO_BROADCAST
-        if (on != apr_is_option_set(sock, APR_SO_BROADCAST)) {
-            if (setsockopt(sock->socketdes, SOL_SOCKET, SO_BROADCAST, (void *)&one, sizeof(int)) == -1) {
-                return errno;
-            }
-            apr_set_option(sock, APR_SO_BROADCAST, on);
-        }
-#else
-        return APR_ENOTIMPL;
-#endif
-        break;
     case APR_SO_REUSEADDR:
         if (on != apr_is_option_set(sock, APR_SO_REUSEADDR)) {
             if (setsockopt(sock->socketdes, SOL_SOCKET, SO_REUSEADDR, (void *)&one, sizeof(int)) == -1) {
@@ -407,24 +395,3 @@ apr_status_t apr_socket_accept_filter(apr_socket_t *sock, char *name,
     return APR_SUCCESS;
 }
 #endif
-
-APR_PERMS_SET_IMPLEMENT(socket)
-{
-#if APR_HAVE_SOCKADDR_UN
-    apr_status_t rv = APR_SUCCESS;
-    apr_socket_t *socket = (apr_socket_t *)thesocket;
-
-    if (socket->local_addr->family == APR_UNIX) {
-        if (!(perms & APR_FPROT_GSETID))
-            gid = -1;
-        if (fchown(socket->socketdes, uid, gid) < 0) {
-            rv = errno;
-        }
-    }
-    else
-        rv = APR_EINVAL;
-    return rv;
-#else
-    return APR_ENOTIMPL;
-#endif
-}

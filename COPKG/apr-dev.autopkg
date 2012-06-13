@@ -21,7 +21,7 @@ metadata {
 
     icon: @"apr.png";
     
-    author-version : "trunk";
+    author-version : "1.4.6";
     bug-tracker: "https://github.com/coapp-packages/apr/issues";
     stability : "0";
     licenses : {

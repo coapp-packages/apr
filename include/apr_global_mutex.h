@@ -124,7 +124,6 @@ APR_DECLARE(apr_status_t) apr_global_mutex_destroy(apr_global_mutex_t *mutex);
  * Return the name of the lockfile for the mutex, or NULL
  * if the mutex doesn't use a lock file
  */
-
 APR_DECLARE(const char *) apr_global_mutex_lockfile(apr_global_mutex_t *mutex);
 
 /**
@@ -134,11 +133,6 @@ APR_DECLARE(const char *) apr_global_mutex_lockfile(apr_global_mutex_t *mutex);
  * @param mutex the name of the mutex
  */
 APR_DECLARE(const char *) apr_global_mutex_name(apr_global_mutex_t *mutex);
-
-/**
- * Set mutex permissions.
- */
-APR_PERMS_SET_IMPLEMENT(global_mutex);
 
 /**
  * Get the pool used by this global_mutex.

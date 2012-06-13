@@ -49,7 +49,7 @@ APR_DECLARE(apr_status_t) apr_shm_create(apr_shm_t **m,
     rc = DosAllocSharedMem(&(newm->memblock), name, reqsize, flags);
 
     if (rc) {
-        return APR_FROM_OS_ERROR(rc);
+        return APR_OS2_STATUS(rc);
     }
 
     *m = newm;
@@ -112,8 +112,6 @@ APR_DECLARE(apr_size_t) apr_shm_size_get(const apr_shm_t *m)
     DosQueryMem(m->memblock, &size, &flags);
     return size;
 }
-
-APR_PERMS_SET_ENOTIMPL(shm)
 
 APR_POOL_IMPLEMENT_ACCESSOR(shm)
 

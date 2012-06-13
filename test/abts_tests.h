@@ -39,7 +39,6 @@ const struct testlist {
     {testglobalmutex},
 #endif
     {testhash},
-    {testhooks},
     {testipsub},
     {testlock},
     {testcond},
@@ -67,26 +66,7 @@ const struct testlist {
     {testtime},
     {testud},
     {testuser},
-    {testvsn},
-    {teststrmatch},
-    {testuri},
-    {testuuid},
-    {testbuckets},
-    {testpass},
-    {testbase64},
-    {testmd4},
-    {testmd5},
-    {testcrypto},
-    {testdbd},
-    {testdate},
-    {testmemcache},
-    {testxml},
-    {testxlate},
-    {testrmm},
-    {testdbm},
-    {testqueue},
-    {testreslist},
-    {testlfsabi}
+    {testvsn}
 };
 
 #endif /* APR_TEST_INCLUDES */

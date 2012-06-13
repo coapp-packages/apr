@@ -26,30 +26,16 @@ sinclude(build/ltoptions.m4)
 sinclude(build/ltversion.m4)
 sinclude(build/lt~obsolete.m4)
 
-sinclude(build/apu-conf.m4)
-sinclude(build/xml.m4)
-sinclude(build/apu-hints.m4)
-sinclude(build/crypto.m4)
-sinclude(build/dbm.m4)
-sinclude(build/dbd.m4)
-sinclude(build/dso.m4)
-sinclude(build/iconv.m4)
-
 dnl Hard-coded top of apr_private.h:
 AH_TOP([
 #ifndef APR_PRIVATE_H
 #define APR_PRIVATE_H
-
-/* Pick up publicly advertised headers and symbols before the
- * APR internal private headers and symbols
- */
-#include <apr.h>
 ])
 
 dnl Hard-coded inclusion at the tail end of apr_private.h:
 AH_BOTTOM([
 /* switch this on if we have a BeOS version below BONE */
-#if defined(BEOS) && !defined(HAVE_BONE_VERSION)
+#if BEOS && !HAVE_BONE_VERSION
 #define BEOS_R5 1
 #else
 #define BEOS_BONE 1
@@ -109,6 +95,10 @@ AH_BOTTOM([
  
 #endif /* DARWIN_10 */
 
+/*
+ * Include common private declarations.
+ */
+#include "../apr_private_common.h"
 #endif /* APR_PRIVATE_H */
 ])
 
@@ -251,9 +241,8 @@ case $host in
 *-os2*)
     # Use a custom-made libtool replacement
     echo "using aplibtool"
-    LIBTOOL="$apr_builddir/build/aplibtool"
-    LIBTOOL_SRC="$apr_srcdir/build/aplibtool.c"
-    $CC $CFLAGS $CPPFLAGS -o $LIBTOOL.exe $LIBTOOL_SRC
+    LIBTOOL="$srcdir/build/aplibtool"
+    gcc $CFLAGS $CPPFLAGS -o $LIBTOOL.exe $LIBTOOL.c
     ;;
 *)
     if test "x$LTFLAGS" = "x"; then
@@ -293,7 +282,7 @@ AC_ARG_WITH(libtool, [  --without-libtool       avoid using libtool to link the 
 if test "x$use_libtool" = "xyes"; then
       lt_compile='$(LIBTOOL) $(LTFLAGS) --mode=compile $(COMPILE) -o $@ -c $< && touch $@'
       LT_VERSION="-version-info `$get_version libtool $version_hdr APR`"
-      link="\$(LIBTOOL) \$(LTFLAGS) --mode=link \$(COMPILE) \$(LT_LDFLAGS) \$(LT_VERSION) \$(ALL_LDFLAGS) -o \$@"
+      link="\$(LIBTOOL) \$(LTFLAGS) --mode=link \$(LT_LDFLAGS) \$(COMPILE) \$(LT_VERSION) \$(ALL_LDFLAGS) -o \$@"
       so_ext='lo'
       lib_target='-rpath $(libdir) $(OBJECTS)'
       export_lib_target='-rpath \$(libdir) \$(OBJECTS)'
@@ -308,9 +297,6 @@ fi
 case $host in
     *-solaris2*)
         apr_platform_runtime_link_flag="-R"
-        ;;
-    *-mingw* | *-cygwin*)
-        LT_LDFLAGS="$LT_LDFLAGS -no-undefined"
         ;;
     *)
         ;;
@@ -446,19 +432,6 @@ case "$host:$CC" in
 	APR_SETVAR(CC,mwcc)
 	APR_SETVAR(AR,ar)
 	;;
-
-    dnl If building static APR, both the APR build and the app build
-    dnl need -DAPR_DECLARE_STATIC to generate the right linkage from    
-    dnl APR_DECLARE et al.
-    dnl If building dynamic APR, the APR build needs APR_DECLARE_EXPORT
-    dnl and the app build should have neither define.
-    *-mingw* | *-cygwin*)
-        if test "$enable_shared" = "yes"; then
-            APR_ADDTO(INTERNAL_CPPFLAGS, -DAPR_DECLARE_EXPORT)
-        else
-            APR_ADDTO(CPPFLAGS, -DAPR_DECLARE_STATIC)
-        fi
-        ;;
 esac
 
 AC_CACHE_CHECK([whether the compiler provides atomic builtins], [ap_cv_atomic_builtins],
@@ -694,7 +667,7 @@ dnl It should check for LIBS being empty and set LIBS equal to the new value
 dnl without the extra " " in that case, but they didn't do that.  So, we
 dnl end up LIBS="-lm -lcrypt -lnsl  -ldl" which is an annoyance.
 case $host in
-   *-mingw*)
+   *mingw*)
       APR_ADDTO(LIBS,[-lshell32 -ladvapi32 -lws2_32 -lrpcrt4 -lmswsock])
       ac_cv_func_CreateFileMapping=yes
       ;;
@@ -899,43 +872,78 @@ if test "$apr_cv_dup3" = "yes"; then
    AC_DEFINE([HAVE_DUP3], 1, [Define if dup3 function is supported])
 fi
 
-# Test for accept4().  Create a non-blocking socket, bind it to
-# an unspecified port & address (kernel picks), and attempt to
-# call accept4() on it.  If the syscall is wired up (i.e. the
-# kernel is new enough), it should return EAGAIN.
+# test for accept4
 AC_CACHE_CHECK([for accept4 support], [apr_cv_accept4],
 [AC_TRY_RUN([
+#include <unistd.h>
 #include <sys/types.h>
 #include <sys/socket.h>
+#include <sys/un.h>
 #include <sys/wait.h>
-#include <netinet/in.h>
-#include <netinet/tcp.h>
+#include <signal.h>
 #include <errno.h>
-#include <string.h>
-#include <unistd.h>
 
-int main(int argc, char **argv)
+#define A4_SOCK "./apr_accept4_test_socket"
+
+int main()
 {
+    pid_t pid;
     int fd;
-    struct sockaddr_in sin;
+    struct sockaddr_un loc, rem;
+    socklen_t rem_sz;
 
-    if ((fd = socket(AF_INET, SOCK_STREAM | SOCK_NONBLOCK, 0)) == -1)
+    if ((pid = fork())) {
+        int status;
+
+        unlink(A4_SOCK);
+
+        if ((fd = socket(AF_UNIX, SOCK_STREAM, 0)) == -1)
+            goto cleanup_failure2;
+
+        loc.sun_family = AF_UNIX;
+        strncpy(loc.sun_path, A4_SOCK, sizeof(loc.sun_path) - 1);
+
+        if (bind(fd, (struct sockaddr *) &loc,
+                 sizeof(struct sockaddr_un)) == -1)
+            goto cleanup_failure;
+
+        if (listen(fd, 5) == -1)
+            goto cleanup_failure;
+
+        rem_sz = sizeof(struct sockaddr_un);
+        if (accept4(fd, (struct sockaddr *) &rem, &rem_sz, 0) == -1) {
+            goto cleanup_failure;
+        }
+        else {
+            close(fd);
+            waitpid(pid, &status, 0);
+            unlink(A4_SOCK);
+            return 0;
+        }
+
+cleanup_failure:
+        close(fd);
+cleanup_failure2:
+        kill(pid, SIGKILL);
+        waitpid(pid, &status, 0);
+        unlink(A4_SOCK);
         return 1;
+    }
+    else {
+        if ((fd = socket(AF_UNIX, SOCK_STREAM, 0)) == -1)
+            return 1; /* this will be bad: we'll hang */
 
-    memset(&sin, 0, sizeof sin);
-    sin.sin_family = AF_INET;
-    
-    if (bind(fd, (struct sockaddr *) &sin, sizeof sin) == -1)
-        return 2;
-    
-    if (listen(fd, 5) == -1)
-        return 3;
+        loc.sun_family = AF_UNIX;
+        strncpy(loc.sun_path, A4_SOCK, sizeof(loc.sun_path) - 1);
 
-    if (accept4(fd, NULL, 0, SOCK_NONBLOCK) == 0
-        || errno == EAGAIN || errno == EWOULDBLOCK)
+        while(connect(fd, (struct sockaddr *) &loc,
+                      sizeof(struct sockaddr_un)) == -1 &&
+              (errno==ENOENT || errno==ECONNREFUSED))
+            ;
+
+        close(fd);
         return 0;
-
-    return 4;
+    }
 }], [apr_cv_accept4=yes], [apr_cv_accept4=no], [apr_cv_accept4=no])])
 
 if test "$apr_cv_accept4" = "yes"; then
@@ -958,6 +966,128 @@ fi
 
 dnl ----------------------------- Checking for fdatasync: OS X doesn't have it
 AC_CHECK_FUNCS(fdatasync)
+
+dnl ----------------------------- Checking for extended file descriptor handling
+# test for epoll_create1
+AC_CACHE_CHECK([for epoll_create1 support], [apr_cv_epoll_create1],
+[AC_TRY_RUN([
+#include <sys/epoll.h>
+#include <unistd.h>
+
+int main()
+{
+    return epoll_create1(0) == -1;
+}], [apr_cv_epoll_create1=yes], [apr_cv_epoll_create1=no], [apr_cv_epoll_create1=no])])
+
+if test "$apr_cv_epoll_create1" = "yes"; then
+   AC_DEFINE([HAVE_EPOLL_CREATE1], 1, [Define if epoll_create1 function is supported])
+fi
+
+# test for dup3
+AC_CACHE_CHECK([for dup3 support], [apr_cv_dup3],
+[AC_TRY_RUN([
+#include <unistd.h>
+
+int main()
+{
+    return dup3(STDOUT_FILENO, STDERR_FILENO, 0) == -1;
+}], [apr_cv_dup3=yes], [apr_cv_dup3=no], [apr_cv_dup3=no])])
+
+if test "$apr_cv_dup3" = "yes"; then
+   AC_DEFINE([HAVE_DUP3], 1, [Define if dup3 function is supported])
+fi
+
+# test for accept4
+AC_CACHE_CHECK([for accept4 support], [apr_cv_accept4],
+[AC_TRY_RUN([
+#include <unistd.h>
+#include <sys/types.h>
+#include <sys/socket.h>
+#include <sys/un.h>
+#include <sys/wait.h>
+#include <signal.h>
+#include <errno.h>
+
+#define A4_SOCK "./apr_accept4_test_socket"
+
+int main()
+{
+    pid_t pid;
+    int fd;
+    struct sockaddr_un loc, rem;
+    socklen_t rem_sz;
+
+    if ((pid = fork())) {
+        int status;
+
+        unlink(A4_SOCK);
+
+        if ((fd = socket(AF_UNIX, SOCK_STREAM, 0)) == -1)
+            goto cleanup_failure2;
+
+        loc.sun_family = AF_UNIX;
+        strncpy(loc.sun_path, A4_SOCK, sizeof(loc.sun_path) - 1);
+
+        if (bind(fd, (struct sockaddr *) &loc,
+                 sizeof(struct sockaddr_un)) == -1)
+            goto cleanup_failure;
+
+        if (listen(fd, 5) == -1)
+            goto cleanup_failure;
+
+        rem_sz = sizeof(struct sockaddr_un);
+        if (accept4(fd, (struct sockaddr *) &rem, &rem_sz, 0) == -1) {
+            goto cleanup_failure;
+        }
+        else {
+            close(fd);
+            waitpid(pid, &status, 0);
+            unlink(A4_SOCK);
+            return 0;
+        }
+
+cleanup_failure:
+        close(fd);
+cleanup_failure2:
+        kill(pid, SIGKILL);
+        waitpid(pid, &status, 0);
+        unlink(A4_SOCK);
+        return 1;
+    }
+    else {
+        if ((fd = socket(AF_UNIX, SOCK_STREAM, 0)) == -1)
+            return 1; /* this will be bad: we'll hang */
+
+        loc.sun_family = AF_UNIX;
+        strncpy(loc.sun_path, A4_SOCK, sizeof(loc.sun_path) - 1);
+
+        while(connect(fd, (struct sockaddr *) &loc,
+                      sizeof(struct sockaddr_un)) == -1 &&
+              (errno==ENOENT || errno==ECONNREFUSED))
+            ;
+
+        close(fd);
+        return 0;
+    }
+}], [apr_cv_accept4=yes], [apr_cv_accept4=no], [apr_cv_accept4=no])])
+
+if test "$apr_cv_accept4" = "yes"; then
+   AC_DEFINE([HAVE_ACCEPT4], 1, [Define if accept4 function is supported])
+fi
+
+AC_CACHE_CHECK([for SOCK_CLOEXEC support], [apr_cv_sock_cloexec],
+[AC_TRY_RUN([
+#include <sys/types.h>
+#include <sys/socket.h>
+
+int main()
+{
+    return socket(AF_INET, SOCK_STREAM|SOCK_CLOEXEC, 0) == -1;
+}], [apr_cv_sock_cloexec=yes], [apr_cv_sock_cloexec=no], [apr_cv_sock_cloexec=no])])
+
+if test "$apr_cv_sock_cloexec" = "yes"; then
+   AC_DEFINE([HAVE_SOCK_CLOEXEC], 1, [Define if the SOCK_CLOEXEC flag is supported])
+fi
 
 dnl ----------------------------- Checking for missing POSIX thread functions
 AC_CHECK_FUNCS([getpwnam_r getpwuid_r getgrnam_r getgrgid_r])
@@ -1282,7 +1412,6 @@ APR_FLAG_HEADERS(
     errno.h		\
     fcntl.h		\
     grp.h		\
-    ifaddrs.h           \
     io.h		\
     limits.h		\
     mach-o/dyld.h	\
@@ -1311,7 +1440,6 @@ APR_FLAG_HEADERS(
     unix.h		\
     windows.h		\
     winsock2.h		\
-    ws2tcpip.h		\
     arpa/inet.h		\
     kernel/OS.h		\
     net/errno.h		\
@@ -1339,18 +1467,6 @@ APR_FLAG_HEADERS(
     sys/un.h		\
     sys/wait.h)
 
-# Windows' <mswsock.h> requires <windows.h> first
-AC_CACHE_CHECK([for mswsock.h], [apr_cv_hdr_mswsock_h],
-[AC_TRY_CPP(
-[#include <windows.h>
-#include <mswsock.h>
-], [apr_cv_hdr_mswsock_h=yes], [apr_cv_hdr_mswsock_h=no])])
-if test "$apr_cv_hdr_mswsock_h" = "yes"; then
-   mswsockh=1
-else
-   mswsockh=0
-fi
-
 # IRIX 6.5 has a problem in <netinet/tcp.h> which prevents it from
 # being included by itself.  Check for <netinet/tcp.h> manually,
 # including another header file first.
@@ -1376,16 +1492,14 @@ AC_SUBST(errnoh)
 AC_SUBST(direnth)
 AC_SUBST(fcntlh)
 AC_SUBST(ioh)
-AC_SUBST(ifaddrsh)
 AC_SUBST(limitsh)
-AC_SUBST(mswsockh)
 AC_SUBST(netdbh)
+AC_SUBST(sys_syslimitsh)
 AC_SUBST(netinet_inh)
 AC_SUBST(netinet_sctph)
 AC_SUBST(netinet_sctp_uioh)
 AC_SUBST(netinet_tcph)
 AC_SUBST(stdargh)
-AC_SUBST(stddefh)
 AC_SUBST(stdioh)
 AC_SUBST(stdlibh)
 AC_SUBST(stringh)
@@ -1395,7 +1509,6 @@ AC_SUBST(sys_sendfileh)
 AC_SUBST(sys_signalh)
 AC_SUBST(sys_socketh)
 AC_SUBST(sys_sockioh)
-AC_SUBST(sys_syslimitsh)
 AC_SUBST(sys_typesh)
 AC_SUBST(sys_timeh)
 AC_SUBST(sys_uioh)
@@ -1409,7 +1522,6 @@ AC_SUBST(pthreadh)
 AC_SUBST(semaphoreh)
 AC_SUBST(windowsh)
 AC_SUBST(winsock2h)
-AC_SUBST(ws2tcpiph)
 
 # Checking for h_errno in <netdb.h>
 if test "$netdbh" = "1"; then
@@ -1420,13 +1532,13 @@ if test "$netdbh" = "1"; then
 fi
 
 AC_ARG_ENABLE(allocator-uses-mmap,
-  [  --enable-allocator-uses-mmap    Use mmap in apr_allocator instead of malloc ],
+  [  --enable-allocator-uses-mmap    Use mmap in apr_allocator instead of malloc (experimental)],
   [ if test "$enableval" = "yes"; then
         APR_IFALLYES(header:sys/mman.h func:mmap func:munmap define:MAP_ANON,
                      [AC_DEFINE(APR_ALLOCATOR_USES_MMAP, 1,
                                 [Define if apr_allocator should use mmap]) ],
-                     [AC_MSG_ERROR([mmap()/MAP_ANON not supported]) ]
-                   )
+		     [AC_MSG_ERROR([mmap()/MAP_ANON not supported]) ]
+		    )
     fi ]
 )
 
@@ -1624,7 +1736,7 @@ case $host in
         int64_value="__int64"
         long_value="__int64"
         int64_strfn="_strtoi64"
-        ;;
+        ;; 
 esac
 
 APR_CHECK_TYPES_COMPATIBLE(ssize_t, int, [ssize_t_fmt="d"])
@@ -1719,10 +1831,10 @@ elif test "$ac_cv_type_off_t" = "yes"; then
         ;;
     esac
 else
-    # Fallback on int
-    off_t_value=apr_int64_t
-    off_t_fmt='#define APR_OFF_T_FMT "d"'
-    off_t_strfn='strtoi'
+   # Fallback on int
+   off_t_value=apr_int32_t
+   off_t_fmt=d
+   off_t_strfn='strtoi'
 fi
 AC_MSG_RESULT($off_t_value)
 
@@ -1855,7 +1967,7 @@ if test "$dsotype" = "any"; then
           if test "$ac_cv_sizeof_voidp$have_shl" = "41"; then
             dsotype=shl; APR_ADDTO(LIBS,-ldld)
           fi;;
-        *-mingw*|*-os2*)
+        *mingw*|*-os2*)
           # several 'other's below probably belong up here.  If they always
           # use a platform implementation and shouldn't test the dlopen/dlfcn
           # features, then bring them up here.
@@ -2536,7 +2648,6 @@ APR_CHECK_NEGATIVE_EAI
 APR_CHECK_WORKING_GETNAMEINFO
 APR_CHECK_SOCKADDR_IN6
 APR_CHECK_SOCKADDR_STORAGE
-APR_CHECK_SOCKADDR_UN
 
 have_ipv6="0"
 if test "$user_disabled_ipv6" = 1; then
@@ -2598,78 +2709,6 @@ AC_SUBST(apr_thread_func)
 APR_SETIFNULL(apr_has_user, [1])
 AC_SUBST(apr_has_user)
 
-dnl ------------------------------ APR-util stuff 
-
-APU_PRELOAD
-
-dnl Find crypto libraries
-APU_CHECK_CRYPTO
-
-dnl Find DBM and DBD backends to use.
-APU_CHECK_DBM
-APU_CHECK_DBD
-APU_CHECK_DBD_MYSQL
-APU_CHECK_DBD_SQLITE3
-APU_CHECK_DBD_SQLITE2
-APU_CHECK_DBD_ORACLE
-APU_CHECK_DBD_FREETDS
-APU_CHECK_DBD_ODBC
-
-dnl select an XML parser
-APU_FIND_XML
-
-dnl Find iconv implementations
-APU_FIND_ICONV
-
-dnl Enable DSO build; must be last:
-APR_MODULAR_DSO
-
-AC_SEARCH_LIBS(crypt, crypt ufc)
-AC_MSG_CHECKING(if system crypt() function is threadsafe)
-if test "x$apu_crypt_threadsafe" = "x1"; then
-  AC_DEFINE(APU_CRYPT_THREADSAFE, 1, [Define if the system crypt() function is threadsafe])
-  msg="yes"
-else
-  msg="no"
-fi
-AC_MSG_RESULT([$msg])
-
-AC_CHECK_FUNCS(crypt_r, [ crypt_r="1" ], [ crypt_r="0" ])
-if test "$crypt_r" = "1"; then
-  APU_CHECK_CRYPT_R_STYLE
-fi
-
-APRUTIL_LIBNAME="aprutil${libsuffix}"
-AC_SUBST(APRUTIL_LIBNAME)
-
-# Set up destination directory for DSOs.
-APR_DSO_LIBDIR="\${libdir}/apr-${APR_MAJOR_VERSION}"
-# Set APU_HAVE_MODULES appropriately for the Makefile
-if test -n "$APR_DSO_MODULES"; then 
-   APR_HAVE_MODULES=yes
-else
-   APR_HAVE_MODULES=no
-fi
-APR_EXPAND_VAR(abs_dso_libdir, $APR_DSO_LIBDIR)
-AC_DEFINE_UNQUOTED([APR_DSO_LIBDIR], ["$abs_dso_libdir"],
-                   [Define to be absolute path to DSO directory])
-AC_SUBST(APR_HAVE_MODULES)
-AC_SUBST(APR_DSO_LIBDIR)
-AC_SUBST(APR_DSO_MODULES)
-AC_SUBST(EXTRA_OBJECTS)
-
-dnl XXX FIXME; used for -lexpat, -liconv etc?
-AC_SUBST(APRUTIL_EXPORT_LIBS)
-
-dnl
-dnl Prep all the flags and stuff for compilation and export to other builds
-dnl
-APR_ADDTO(LIBS, [$APRUTIL_LIBS])
-
-AC_SUBST(LDFLAGS)
-
-
-
 dnl ----------------------------- Finalize the variables
 
 echo "${nl}Restore user-defined environment settings..."
@@ -2687,7 +2726,6 @@ AC_SUBST(NOTEST_INCLUDES)
 
 dnl ----------------------------- Construct the files
 
-AC_SUBST(INTERNAL_CPPFLAGS)
 AC_SUBST(LDLIBS)
 AC_SUBST(INCLUDES)
 AC_SUBST(AR)
@@ -2740,9 +2778,6 @@ AC_CONFIG_FILES([Makefile
 if test -d $srcdir/test; then
    AC_CONFIG_FILES([test/Makefile test/internal/Makefile])
 fi
-
-AC_CONFIG_FILES([include/private/apu_select_dbm.h
-                 include/apu_want.h])
 
 dir=include/arch/unix
 test -d $dir || $MKDIR $dir

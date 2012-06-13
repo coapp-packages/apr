@@ -18,7 +18,7 @@
 #include "apr_strings.h"
 #include "apr_arch_proc_mutex.h"
 #include "apr_arch_file_io.h" /* for apr_mkstemp() */
-#include "apr_md5.h" /* for apr_md5() */
+#include "apr_hash.h"
 
 APR_DECLARE(apr_status_t) apr_proc_mutex_destroy(apr_proc_mutex_t *mutex)
 {
@@ -34,17 +34,6 @@ static apr_status_t proc_mutex_no_child_init(apr_proc_mutex_t **mutex,
     return APR_SUCCESS;
 }
 #endif    
-
-#if APR_HAS_POSIXSEM_SERIALIZE || APR_HAS_PROC_PTHREAD_SERIALIZE
-static apr_status_t proc_mutex_no_perms_set(apr_proc_mutex_t *mutex,
-                                            apr_fileperms_t perms,
-                                            apr_uid_t uid,
-                                            apr_gid_t gid)
-{
-    return APR_ENOTIMPL;
-}
-#endif    
-
 
 #if APR_HAS_POSIXSEM_SERIALIZE
 
@@ -63,13 +52,27 @@ static apr_status_t proc_mutex_posix_cleanup(void *mutex_)
     return APR_SUCCESS;
 }    
 
+static unsigned int rshash (char *p) {
+    /* hash function from Robert Sedgwicks 'Algorithms in C' book */
+   unsigned int b    = 378551;
+   unsigned int a    = 63689;
+   unsigned int retval = 0;
+
+   for( ; *p; p++)
+   {
+      retval = retval * a + (*p);
+      a *= b;
+   }
+
+   return retval;
+}
+
 static apr_status_t proc_mutex_posix_create(apr_proc_mutex_t *new_mutex,
                                             const char *fname)
 {
-    #define APR_POSIXSEM_NAME_MAX 30
     #define APR_POSIXSEM_NAME_MIN 13
     sem_t *psem;
-    char semname[APR_MD5_DIGESTSIZE * 2 + 2];
+    char semname[32];
     
     new_mutex->interproc = apr_palloc(new_mutex->pool,
                                       sizeof(*new_mutex->interproc));
@@ -80,10 +83,11 @@ static apr_status_t proc_mutex_posix_create(apr_proc_mutex_t *new_mutex,
      *   - be at most 14 chars
      *   - be unique and not match anything on the filesystem
      *
-     * Because of this, we use fname to generate an md5 hex checksum
+     * Because of this, we use fname to generate a (unique) hash
      * and use that as the name of the semaphore. If no filename was
      * given, we create one based on the time. We tuck the name
-     * away, since it might be useful for debugging.
+     * away, since it might be useful for debugging. We use 2 hashing
+     * functions to try to avoid collisions.
      *
      * To  make this as robust as possible, we initially try something
      * larger (and hopefully more unique) and gracefully fail down to the
@@ -95,17 +99,12 @@ static apr_status_t proc_mutex_posix_create(apr_proc_mutex_t *new_mutex,
      *
      */
     if (fname) {
-        unsigned char digest[APR_MD5_DIGESTSIZE];   /* note dependency on semname here */
-        const char *hex = "0123456789abcdef";
-        char *p = semname;
-        int i;
-        apr_md5(digest, fname, strlen(fname));
-        *p++ = '/';     /* must start with /, right? */
-        for (i = 0; i < sizeof(digest); i++) {
-            *p++ = hex[digest[i] >> 4];
-            *p++ = hex[digest[i] & 0xF];
-        }
-        semname[APR_POSIXSEM_NAME_MAX] = '\0';
+        apr_ssize_t flen = strlen(fname);
+        char *p = apr_pstrndup(new_mutex->pool, fname, strlen(fname));
+        unsigned int h1, h2;
+        h1 = apr_hashfunc_default((const char *)p, &flen);
+        h2 = rshash(p);
+        apr_snprintf(semname, sizeof(semname), "/ApR.%xH%x", h1, h2);
     } else {
         apr_time_t now;
         unsigned long sec;
@@ -184,7 +183,6 @@ static const apr_proc_mutex_unix_lock_methods_t mutex_posixsem_methods =
     proc_mutex_posix_release,
     proc_mutex_posix_cleanup,
     proc_mutex_no_child_init,
-    proc_mutex_no_perms_set,
     "posixsem"
 };
 
@@ -293,24 +291,6 @@ static apr_status_t proc_mutex_sysv_release(apr_proc_mutex_t *mutex)
     return APR_SUCCESS;
 }
 
-static apr_status_t proc_mutex_sysv_perms_set(apr_proc_mutex_t *mutex,
-                                              apr_fileperms_t perms,
-                                              apr_uid_t uid,
-                                              apr_gid_t gid)
-{
-
-    union semun ick;
-    struct semid_ds buf;
-    buf.sem_perm.uid = uid;
-    buf.sem_perm.gid = gid;
-    buf.sem_perm.mode = apr_unix_perms2mode(perms);
-    ick.buf = &buf;
-    if (semctl(mutex->interproc->filedes, 0, IPC_SET, ick) < 0) {
-        return errno;
-    }
-    return APR_SUCCESS;
-}
-
 static const apr_proc_mutex_unix_lock_methods_t mutex_sysv_methods =
 {
 #if APR_PROCESS_LOCK_IS_GLOBAL || !APR_HAS_THREADS || defined(SYSVSEM_IS_GLOBAL)
@@ -324,7 +304,6 @@ static const apr_proc_mutex_unix_lock_methods_t mutex_sysv_methods =
     proc_mutex_sysv_release,
     proc_mutex_sysv_cleanup,
     proc_mutex_no_child_init,
-    proc_mutex_sysv_perms_set,
     "sysvsem"
 };
 
@@ -520,7 +499,6 @@ static const apr_proc_mutex_unix_lock_methods_t mutex_proc_pthread_methods =
     proc_mutex_proc_pthread_release,
     proc_mutex_proc_pthread_cleanup,
     proc_mutex_no_child_init,
-    proc_mutex_no_perms_set,
     "pthread"
 };
 
@@ -642,22 +620,6 @@ static apr_status_t proc_mutex_fcntl_release(apr_proc_mutex_t *mutex)
     return APR_SUCCESS;
 }
 
-static apr_status_t proc_mutex_fcntl_perms_set(apr_proc_mutex_t *mutex,
-                                               apr_fileperms_t perms,
-                                               apr_uid_t uid,
-                                               apr_gid_t gid)
-{
-
-    if (mutex->fname) {
-        if (!(perms & APR_FPROT_GSETID))
-            gid = -1;
-        if (fchown(mutex->interproc->filedes, uid, gid) < 0) {
-            return errno;
-        }
-    }
-    return APR_SUCCESS;
-}
-
 static const apr_proc_mutex_unix_lock_methods_t mutex_fcntl_methods =
 {
 #if APR_PROCESS_LOCK_IS_GLOBAL || !APR_HAS_THREADS || defined(FCNTL_IS_GLOBAL)
@@ -671,7 +633,6 @@ static const apr_proc_mutex_unix_lock_methods_t mutex_fcntl_methods =
     proc_mutex_fcntl_release,
     proc_mutex_fcntl_cleanup,
     proc_mutex_no_child_init,
-    proc_mutex_fcntl_perms_set,
     "fcntl"
 };
 
@@ -797,22 +758,6 @@ static apr_status_t proc_mutex_flock_child_init(apr_proc_mutex_t **mutex,
     return APR_SUCCESS;
 }
 
-static apr_status_t proc_mutex_flock_perms_set(apr_proc_mutex_t *mutex,
-                                               apr_fileperms_t perms,
-                                               apr_uid_t uid,
-                                               apr_gid_t gid)
-{
-
-    if (mutex->fname) {
-        if (!(perms & APR_FPROT_GSETID))
-            gid = -1;
-        if (fchown(mutex->interproc->filedes, uid, gid) < 0) {
-            return errno;
-        }
-    }
-    return APR_SUCCESS;
-}
-
 static const apr_proc_mutex_unix_lock_methods_t mutex_flock_methods =
 {
 #if APR_PROCESS_LOCK_IS_GLOBAL || !APR_HAS_THREADS || defined(FLOCK_IS_GLOBAL)
@@ -826,7 +771,6 @@ static const apr_proc_mutex_unix_lock_methods_t mutex_flock_methods =
     proc_mutex_flock_release,
     proc_mutex_flock_cleanup,
     proc_mutex_flock_child_init,
-    proc_mutex_flock_perms_set,
     "flock"
 };
 
@@ -997,12 +941,6 @@ APR_DECLARE(const char *) apr_proc_mutex_lockfile(apr_proc_mutex_t *mutex)
     }
 #endif
     return NULL;
-}
-
-APR_PERMS_SET_IMPLEMENT(proc_mutex)
-{
-    apr_proc_mutex_t *mutex = (apr_proc_mutex_t *)theproc_mutex;
-    return mutex->meth->perms_set(mutex, perms, uid, gid);
 }
 
 APR_POOL_IMPLEMENT_ACCESSOR(proc_mutex)

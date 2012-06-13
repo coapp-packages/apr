@@ -23,10 +23,6 @@
 
 #define TESTSTR "This is a test"
 
-#define PROC_CHILD_NAME TESTBINPATH "proc_child" EXTENSION
-
-static char *proc_child;
-
 static apr_proc_t newproc;
 
 static void test_create_proc(abts_case *tc, void *data)
@@ -54,7 +50,7 @@ static void test_create_proc(abts_case *tc, void *data)
     args[0] = "proc_child" EXTENSION;
     args[1] = NULL;
     
-    rv = apr_proc_create(&newproc, proc_child, args, NULL, 
+    rv = apr_proc_create(&newproc, "../" TESTBINPATH "proc_child" EXTENSION, args, NULL, 
                          attr, p);
     ABTS_INT_EQUAL(tc, APR_SUCCESS, rv);
 
@@ -130,7 +126,7 @@ static void test_file_redir(abts_case *tc, void *data)
     args[0] = "proc_child";
     args[1] = NULL;
 
-    rv = apr_proc_create(&newproc, proc_child, args, NULL, 
+    rv = apr_proc_create(&newproc, "../" TESTBINPATH "proc_child" EXTENSION, args, NULL, 
                          attr, p);
     ABTS_INT_EQUAL(tc, APR_SUCCESS, rv);
 
@@ -164,7 +160,6 @@ abts_suite *testproc(abts_suite *suite)
 {
     suite = ADD_SUITE(suite)
 
-    apr_filepath_merge(&proc_child, NULL, PROC_CHILD_NAME, 0, p);
     abts_run_test(suite, test_create_proc, NULL);
     abts_run_test(suite, test_proc_wait, NULL);
     abts_run_test(suite, test_file_redir, NULL);

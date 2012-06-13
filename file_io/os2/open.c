@@ -36,7 +36,7 @@ APR_DECLARE(apr_status_t) apr_file_open(apr_file_t **new, const char *fname, apr
     int mflags = OPEN_FLAGS_FAIL_ON_ERROR|OPEN_SHARE_DENYNONE|OPEN_FLAGS_NOINHERIT;
     int rv;
     ULONG action;
-    apr_file_t *dafile = (apr_file_t *)apr_pcalloc(pool, sizeof(apr_file_t));
+    apr_file_t *dafile = (apr_file_t *)apr_palloc(pool, sizeof(apr_file_t));
 
     dafile->pool = pool;
     dafile->isopen = FALSE;
@@ -44,7 +44,6 @@ APR_DECLARE(apr_status_t) apr_file_open(apr_file_t **new, const char *fname, apr
     dafile->buffer = NULL;
     dafile->flags = flag;
     dafile->blocking = BLK_ON;
-    dafile->ungetchar = -1;
     
     if ((flag & APR_FOPEN_READ) && (flag & APR_FOPEN_WRITE)) {
         mflags |= OPEN_ACCESS_READWRITE;
@@ -62,14 +61,10 @@ APR_DECLARE(apr_status_t) apr_file_open(apr_file_t **new, const char *fname, apr
     if (dafile->buffered) {
         dafile->buffer = apr_palloc(pool, APR_FILE_DEFAULT_BUFSIZE);
         dafile->bufsize = APR_FILE_DEFAULT_BUFSIZE;
+        rv = apr_thread_mutex_create(&dafile->mutex, 0, pool);
 
-        if (flag & APR_FOPEN_XTHREAD) {
-            rv = apr_thread_mutex_create(&dafile->mutex, 0, pool);
-
-            if (rv) {
-                return rv;
-            }
-        }
+        if (rv)
+            return rv;
     }
 
     if (flag & APR_FOPEN_CREATE) {
@@ -126,6 +121,7 @@ APR_DECLARE(apr_status_t) apr_file_close(apr_file_t *file)
     apr_status_t status;
     
     if (file && file->isopen) {
+        /* XXX: flush here is not mutex protected */
         status = apr_file_flush(file);
         rc = DosClose(file->filedes);
     
@@ -143,10 +139,8 @@ APR_DECLARE(apr_status_t) apr_file_close(apr_file_t *file)
         }
     }
 
-    if (file->mutex) {
+    if (file->buffered)
         apr_thread_mutex_destroy(file->mutex);
-        file->mutex = NULL;
-    }
 
     return status;
 }
@@ -199,7 +193,6 @@ APR_DECLARE(apr_status_t) apr_os_file_put(apr_file_t **file, apr_os_file_t *thef
     (*file)->flags = flags;
     (*file)->pipe = FALSE;
     (*file)->buffered = (flags & APR_FOPEN_BUFFERED) > 0;
-    (*file)->ungetchar = -1;
 
     if ((*file)->buffered) {
         apr_status_t rv;
@@ -284,8 +277,7 @@ APR_DECLARE(apr_status_t) apr_file_inherit_set(apr_file_t *thefile)
     rv = DosQueryFHState(thefile->filedes, &state);
 
     if (rv == 0 && (state & OPEN_FLAGS_NOINHERIT) != 0) {
-        state &= OPEN_FLAGS_WRITE_THROUGH|OPEN_FLAGS_FAIL_ON_ERROR|OPEN_FLAGS_NO_CACHE;
-        rv = DosSetFHState(thefile->filedes, state);
+        rv = DosSetFHState(thefile->filedes, state & ~OPEN_FLAGS_NOINHERIT);
     }
 
     return APR_FROM_OS_ERROR(rv);
@@ -301,7 +293,6 @@ APR_DECLARE(apr_status_t) apr_file_inherit_unset(apr_file_t *thefile)
     rv = DosQueryFHState(thefile->filedes, &state);
 
     if (rv == 0 && (state & OPEN_FLAGS_NOINHERIT) == 0) {
-        state &= OPEN_FLAGS_WRITE_THROUGH|OPEN_FLAGS_FAIL_ON_ERROR|OPEN_FLAGS_NO_CACHE;
         rv = DosSetFHState(thefile->filedes, state | OPEN_FLAGS_NOINHERIT);
     }
 

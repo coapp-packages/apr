@@ -75,7 +75,8 @@ APR_DECLARE(char *) apr_pstrdup(apr_pool_t *a, const char *s)
         return NULL;
     }
     len = strlen(s) + 1;
-    res = apr_pmemdup(a, s, len);
+    res = apr_palloc(a, len);
+    memcpy(res, s, len);
     return res;
 }
 

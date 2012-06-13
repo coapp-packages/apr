@@ -97,10 +97,7 @@ apr_status_t apr_get_oslevel(apr_oslevel_e *level)
                 }
             }
             else if (oslev.dwMajorVersion == 6) {
-                if (oslev.dwMinorVersion == 0)
-                    apr_os_level = APR_WIN_VISTA;
-                else
-                    apr_os_level = APR_WIN_7;
+                apr_os_level = APR_WIN_VISTA;
             }
             else {
                 apr_os_level = APR_WIN_XP;

@@ -19,7 +19,6 @@
 #include "apr_portable.h"
 #include "apr_thread_mutex.h"
 #include "apr_arch_inherit.h"
-#include "apr_time.h"
 
 #ifdef NETWARE
 #include "nks/dirio.h"
@@ -98,8 +97,8 @@ APR_DECLARE(apr_status_t) apr_file_open(apr_file_t **new,
     int oflags = 0;
 #if APR_HAS_THREADS
     apr_thread_mutex_t *thlock;
-#endif
     apr_status_t rv;
+#endif
 
     if ((flag & APR_FOPEN_READ) && (flag & APR_FOPEN_WRITE)) {
         oflags = O_RDWR;
@@ -133,12 +132,6 @@ APR_DECLARE(apr_status_t) apr_file_open(apr_file_t **new,
 #ifdef O_BINARY
     if (flag & APR_FOPEN_BINARY) {
         oflags |= O_BINARY;
-    }
-#endif
-
-#ifdef O_NONBLOCK
-    if (flag & APR_FOPEN_NONBLOCK) {
-        oflags |= O_NONBLOCK;
     }
 #endif
 
@@ -246,32 +239,6 @@ APR_DECLARE(apr_status_t) apr_file_open(apr_file_t **new,
                                   apr_unix_file_cleanup, 
                                   apr_unix_child_file_cleanup);
     }
-
-    if ((flag & APR_FOPEN_ROTATING) || (flag & APR_FOPEN_MANUAL_ROTATE)) {
-        (*new)->rotating = (apr_rotating_info_t *)apr_pcalloc(pool,
-                                                              sizeof(apr_rotating_info_t));
-
-        rv =  apr_file_info_get(&(*new)->rotating->finfo,
-                                APR_FINFO_DEV|APR_FINFO_INODE, *new);
-        if (rv != APR_SUCCESS) {
-            return rv;
-        }
-
-        if (flag & APR_FOPEN_MANUAL_ROTATE) {
-            (*new)->rotating->manual = 1;
-        }
-        else {
-            (*new)->rotating->manual = 0;
-        }
-        (*new)->rotating->timeout = 60;
-        (*new)->rotating->lastcheck = apr_time_sec(apr_time_now());
-        (*new)->rotating->oflags = oflags;
-        (*new)->rotating->perm = perm;
-    }
-    else {
-        (*new)->rotating = NULL;
-    }
-
     return APR_SUCCESS;
 }
 

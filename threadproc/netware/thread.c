@@ -71,10 +71,10 @@ static void *dummy_worker(void *opaque)
 }
 
 apr_status_t apr_thread_create(apr_thread_t **new,
-                                            apr_threadattr_t *attr, 
-                                            apr_thread_start_t func,
-                                            void *data,
-                                            apr_pool_t *pool)
+                               apr_threadattr_t *attr, 
+                               apr_thread_start_t func,
+                               void *data,
+                               apr_pool_t *pool)
 {
     apr_status_t stat;
     long flags = NX_THR_BIND_CONTEXT;
@@ -117,22 +117,21 @@ apr_status_t apr_thread_create(apr_thread_t **new,
     }
     
     (*new)->ctx = NXContextAlloc(
-        /* void(*start_routine)(void *arg)*/(void (*)(void *)) dummy_worker,
-        /* void *arg */                                        (*new),
-        /* int priority */                                     NX_PRIO_MED,
-        /* NXSize_t stackSize */                               stack_size,
-        /* long flags */                                       NX_CTX_NORMAL,
-        /* int *error */                                       &stat);
-        
-                                                                           
+        /* void(*start_routine)(void *arg) */ (void (*)(void *)) dummy_worker,
+        /* void *arg */                       (*new),
+        /* int priority */                    NX_PRIO_MED,
+        /* NXSize_t stackSize */              stack_size,
+        /* long flags */                      NX_CTX_NORMAL,
+        /* int *error */                      &stat);
+
     stat = NXContextSetName(
-            /* NXContext_t ctx */           (*new)->ctx,
-            /* const char *name */          threadName);
+        /* NXContext_t ctx */  (*new)->ctx,
+        /* const char *name */ threadName);
 
     stat = NXThreadCreate(
-            /* NXContext_t context */       (*new)->ctx,
-            /* long flags */                flags,
-            /* NXThreadId_t *thread_id */   &(*new)->td);
+        /* NXContext_t context */     (*new)->ctx,
+        /* long flags */              flags,
+        /* NXThreadId_t *thread_id */ &(*new)->td);
 
     if (stat == 0)
         return APR_SUCCESS;

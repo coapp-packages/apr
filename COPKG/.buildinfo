@@ -1,6 +1,8 @@
 /* target information */
 @import "version.inc";
 
+#define {    NewVersion : "${package-version++}";}
+
 #product-info  {
 	product-name: "apr";
 	version: "trunk";
@@ -12,16 +14,14 @@
 
 test {
 	set: {
+        COMP="${COMP??vc10}";
 		PLAT="${PLAT??x86, x64}";
 		BUILT="${BUILT??false}";
 	};
     default : false;
     build-command: @"
-		for %%A in (${PLAT}) do (
-            echo %CL% | findstr ISOLATION_AWARE || set CL=%CL% /D ISOLATION_AWARE_ENABLED 
-            if ""${BUILT}"" neq ""true"" ptk --nologo release --PLAT=%%A
-		)
-        REM Tests not presently implemented due to technical difficulties...
+        if ""${BUILT}"" neq ""true"" ptk --nologo release
+        REM Tests are performed automatically during the build process.
     ";
 };
 
@@ -29,14 +29,13 @@ package {
     set: COMP="${COMP??vc10}";
     set: PLAT="${PLAT??x86, x64}";
     default : false;
-    uses : sign;
+    uses : {
+        update-version,
+        sign,
+    };
     
     targets: { 
-        @"copkg\apr[vc10]-${package-version}-x86.msi",
-        @"copkg\apr-dev[vc10]-${package-version}-x86.msi",
-        @"copkg\apr-dev-common-${package-version}-any.msi",
-        @"copkg\apr[vc10]-${package-version}-x64.msi",
-        @"copkg\apr-dev[vc10]-${package-version}-x64.msi"
+        (COMP,PLAT) => @"copkg\apr-dev[${0}]-${NewVersion}-${1}.msi",
     };
     
     build-command : @"
@@ -49,7 +48,6 @@ package {
             )
         )
         popd
-        ptk update-version
     ";
 
 	clean-command: @"del COPKG\*.msi COPKG\*.wixpdb";
@@ -62,27 +60,28 @@ update-version {
     
     build-command : @"
         REM auto-increment version.inc file...
-        
+        if ""${noversion}"" == ""true"" goto :endver
         pushd COPKG
         setlocal EnableDelayedExpansion
-        for /F ""tokens=4,5,6,7  delims=.; "" %%v in (version.inc) do (
-            set /a build=%%y + 1
-            set VERSTRING=#define { package-version: %%v.%%w.%%x.!build!; }
-        )
+        set VERSTRING=#define { package-version: ${NewVersion}; }
         echo !VERSTRING! > version.inc
         popd
+        :endver
     ";
 }
 
 release {
     set: {
 		BuildCfg="Release";
+        COMP="${COMP??vc10}";
 		PLAT="${PLAT??x86, x64}";
 	};
 	
 	build-command: @"
-		for %%A in (${PLAT}) do (
-			ptk --nologo base --PLAT=%%A --BuildCfg=${BuildCfg} || goto failed
+        for %%A in (${COMP}) do (
+            for %%B in (${PLAT}) do (
+                ptk --nologo base --COMP=%%A --PLAT=%%B --BuildCfg=${BuildCfg} || goto failed
+            )
 		)
 	";
     
@@ -98,7 +97,7 @@ sign {
         if ""${BUILT}"" neq ""true"" ptk release --nologo --COMP=""${COMP}"" --PLAT=""${PLAT}""
         for %%A in (${COMP}) do (
             for %%B in (${PLAT}) do (
-                simplesigner.exe --nologo --sign output\%%A\%%B\Release\**.dll output\%%A\%%B\Release\**.dll
+                simplesigner.exe --nologo --sign output\%%A\%%B\Release\**.dll
             )
         )
     ";
@@ -124,26 +123,23 @@ base {
     requires: "openssl-dev[${COMP}]-1.0-${PLAT}-1e373a58e25250cb";
 
     targets: { 
-		"output\${COMP}\${PLAT}\LibR\apr-2.lib",
-		"output\${COMP}\${PLAT}\Release\libapr-2.lib",
-		"output\${COMP}\${PLAT}\Release\libapr-2.dll",
-		"output\${COMP}\${PLAT}\Release\libapr-2.exp",
+		"output\${COMP}\${PLAT}\LibR\apr-1.lib",
+		"output\${COMP}\${PLAT}\Release\libapr-1.lib",
+		"output\${COMP}\${PLAT}\Release\libapr-1.dll",
+		"output\${COMP}\${PLAT}\Release\libapr-1.exp",
 	};
 	
     build-command:@"
         REM this makes it so that DLLs can have their own SxS Activation Context in an embedded resource.
 		echo %_CL% | findstr ISOLATION_AWARE || set _CL=%CL% /D ISOLATION_AWARE_ENABLED
 
-        if ""${PLAT}"" == ""x86"" (
-            msbuild /p:Platform=win32 /p:Configuration=${BuildCfg??Debug} apr.sln || goto failed
-        ) else (
-            msbuild /p:Platform=${PLAT} /p:Configuration=${BuildCfg??Debug} apr.sln || goto failed
-        )
+        nmake -f Makefile.win COMP=${COMP} all || goto failed
     ";
     clean-command:@"
-       if exist ipch rmdir /s /q ipch > nul 2> nul
-       if exist output rmdir /s /q output > nul 2> nul
-       del /S /Q /A - *.sdf *.suo *.user *.exe *.pdb > nul 2>NUL
-       del /S /Q include\apr.h include\apr_ldap.h include\apu_want.h include\private\apu_select_dbm.h > nul 2>NUL
+        nmake -f Makefile.win COMP=${COMP} clean
+        if exist ipch rmdir /s /q ipch > nul 2> nul
+        if exist output rmdir /s /q output > nul 2> nul
+        del /S /Q /A - *.sdf *.suo *.user *.exe *.pdb > nul 2>NUL
+        del /S /Q include\apr.h include\apr_ldap.h include\apu_want.h include\private\apu_select_dbm.h > nul 2>NUL
     ";
 };

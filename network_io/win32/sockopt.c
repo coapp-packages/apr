@@ -134,15 +134,6 @@ APR_DECLARE(apr_status_t) apr_socket_opt_set(apr_socket_t *sock,
             return apr_get_netos_error();
         }
         break;
-    case APR_SO_BROADCAST:
-        if (on != apr_is_option_set(sock, APR_SO_BROADCAST)) {
-           if (setsockopt(sock->socketdes, SOL_SOCKET, SO_BROADCAST, 
-                           (void *)&one, sizeof(int)) == -1) {
-                return apr_get_netos_error();
-            }
-            apr_set_option(sock, APR_SO_BROADCAST, on);
-        }
-        break;
     case APR_SO_REUSEADDR:
         if (on != apr_is_option_set(sock, APR_SO_REUSEADDR)) {
             if (setsockopt(sock->socketdes, SOL_SOCKET, SO_REUSEADDR, 
@@ -187,7 +178,7 @@ APR_DECLARE(apr_status_t) apr_socket_opt_set(apr_socket_t *sock,
 
             if (setsockopt(sock->socketdes, optlevel, optname, 
                            (void *)&on, sizeof(int)) == -1) {
-                return apr_get_netos_error();
+                return errno;
             }
             apr_set_option(sock, APR_TCP_DEFER_ACCEPT, on);
         }

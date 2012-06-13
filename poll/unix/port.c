@@ -405,7 +405,7 @@ static apr_status_t impl_pollset_poll(apr_pollset_t *pollset,
             if ((pollset->flags & APR_POLLSET_WAKEABLE) &&
                 fp.desc_type == APR_POLL_FILE &&
                 fp.desc.f == pollset->wakeup_pipe[0]) {
-                apr_poll_drain_wakeup_pipe(pollset->wakeup_pipe);
+                apr_pollset_drain_wakeup_pipe(pollset);
                 rv = APR_EINTR;
             }
             else {
@@ -458,8 +458,9 @@ static apr_pollset_provider_t impl = {
 
 apr_pollset_provider_t *apr_pollset_provider_port = &impl;
 
-static apr_status_t impl_pollcb_cleanup(apr_pollcb_t *pollcb)
+static apr_status_t cb_cleanup(void *p_)
 {
+    apr_pollcb_t *pollcb = (apr_pollcb_t *) p_;
     close(pollcb->fd);
     return APR_SUCCESS;
 }
@@ -487,6 +488,7 @@ static apr_status_t impl_pollcb_create(apr_pollcb_t *pollcb,
     }
 
     pollcb->pollset.port = apr_palloc(p, size * sizeof(port_event_t));
+    apr_pool_cleanup_register(p, pollcb, cb_cleanup, apr_pool_cleanup_null);
 
     return APR_SUCCESS;
 }
@@ -539,25 +541,16 @@ static apr_status_t impl_pollcb_poll(apr_pollcb_t *pollcb,
                                      apr_pollcb_cb_t func,
                                      void *baton)
 {
+    apr_pollfd_t *pollfd;
     apr_status_t rv;
-    unsigned int nget = 1;
+    unsigned int i, nget = 1;
 
     rv = call_port_getn(pollcb->fd, pollcb->pollset.port, pollcb->nalloc,
                         &nget, timeout);
 
     if (nget) {
-        unsigned int i;
-
         for (i = 0; i < nget; i++) {
-            apr_pollfd_t *pollfd = (apr_pollfd_t *)(pollcb->pollset.port[i].portev_user);
-
-            if ((pollcb->flags & APR_POLLSET_WAKEABLE) &&
-                pollfd->desc_type == APR_POLL_FILE &&
-                pollfd->desc.f == pollcb->wakeup_pipe[0]) {
-                apr_poll_drain_wakeup_pipe(pollcb->wakeup_pipe);
-                return APR_EINTR;
-            }
-
+            pollfd = (apr_pollfd_t *)(pollcb->pollset.port[i].portev_user);
             pollfd->rtnevents = get_revent(pollcb->pollset.port[i].portev_events);
 
             rv = func(baton, pollfd);
@@ -576,7 +569,6 @@ static apr_pollcb_provider_t impl_cb = {
     impl_pollcb_add,
     impl_pollcb_remove,
     impl_pollcb_poll,
-    impl_pollcb_cleanup,
     "port"
 };
 

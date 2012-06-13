@@ -18,7 +18,7 @@ APR_MAJOR_VERSION=@APR_MAJOR_VERSION@
 INCDIR=./include
 OSDIR=$(top_srcdir)/include/arch/@OSDIR@
 DEFOSDIR=$(INCDIR)/arch/@DEFAULT_OSDIR@
-INCLUDES=-I$(INCDIR) -I$(OSDIR) -I$(DEFOSDIR) -I$(top_srcdir)/include/arch/@DEFAULT_OSDIR@ -I$(top_srcdir)/include -I$(top_srcdir)/include/private -I$(top_blddir)/include/private
+INCLUDES=-I$(INCDIR) -I$(OSDIR) -I$(DEFOSDIR) -I$(top_srcdir)/include/arch/@DEFAULT_OSDIR@ -I$(top_srcdir)/include
 
 #
 # Macros for target determination
@@ -32,17 +32,11 @@ APR_CONFIG = apr-$(APR_MAJOR_VERSION)-config
 INSTALL = @INSTALL@
 INSTALL_DATA = @INSTALL_DATA@
 
-APR_DSO_MODULES = @APR_DSO_MODULES@
-LINK_MODULE = $(LIBTOOL) $(LTFLAGS) --mode=link $(CC) $(LT_LDFLAGS) $(ALL_CFLAGS) $(ALL_LDFLAGS) $(APRUTIL_LDFLAGS) -release $(APR_MAJOR_VERSION) -module -rpath $(APR_DSO_LIBDIR)
-APR_DSO_LIBDIR = @APR_DSO_LIBDIR@
-APRUTIL_EXPORT_LIBS = @APRUTIL_EXPORT_LIBS@
-
 #
 # Rules for building specific targets, starting with 'all' for
 # building the entire package.
 #
-TARGETS = $(TARGET_LIB) $(APR_DSO_MODULES) \
-	apr.exp apr-config.out build/apr_rules.out
+TARGETS = $(TARGET_LIB) apr.exp apr-config.out build/apr_rules.out
 
 LT_VERSION = @LT_VERSION@
 
@@ -69,36 +63,19 @@ libdir=@libdir@
 includedir=@includedir@
 installbuilddir=@installbuilddir@
 
-LDADD_dbd_pgsql = @LDADD_dbd_pgsql@
-LDADD_dbd_oracle = @LDADD_dbd_oracle@
-LDADD_dbd_sqlite2 = @LDADD_dbd_sqlite2@
-LDADD_dbd_sqlite3 = @LDADD_dbd_sqlite3@
-LDADD_dbd_mysql = @LDADD_dbd_mysql@
-LDADD_dbd_freetds = @LDADD_dbd_freetds@
-LDADD_dbd_odbc = @LDADD_dbd_odbc@
-LDADD_dbm_db = @LDADD_dbm_db@
-LDADD_dbm_gdbm = @LDADD_dbm_gdbm@
-LDADD_dbm_ndbm = @LDADD_dbm_ndbm@
-LDADD_crypto_openssl = @LDADD_crypto_openssl@
-LDADD_crypto_nss = @LDADD_crypto_nss@
-
 # Create apr-config script suitable for the install tree
 apr-config.out: $(APR_CONFIG)
 	sed 's,^\(location=\).*$$,\1installed,' < $(APR_CONFIG) > $@
 
 # Create apr_rules.mk suitable for the install tree
 build/apr_rules.out: build/apr_rules.mk
-	sed 's,^\(apr_build.*=\).*$$,\1$(installbuilddir),' < build/apr_rules.mk > $@
+	sed -e 's,^\(apr_build.*=\).*$$,\1$(installbuilddir),' -e 's,^\(top_build.*=\).*$$,\1$(installbuilddir),' < build/apr_rules.mk > $@
 
-install: install-modules $(TARGETS)
+install: $(TARGETS)
 	$(APR_MKDIR) $(DESTDIR)$(libdir) $(DESTDIR)$(bindir) $(DESTDIR)$(installbuilddir) \
 		     $(DESTDIR)$(libdir)/pkgconfig $(DESTDIR)$(includedir)
 	$(INSTALL_DATA) $(top_blddir)/include/apr.h $(DESTDIR)$(includedir)
-	$(INSTALL_DATA) $(top_srcdir)/include/apu.h $(DESTDIR)$(includedir)
-	for f in $(top_srcdir)/include/apr_*.h $(top_srcdir)/include/apu_*.h; do \
-	    $(INSTALL_DATA) $${f} $(DESTDIR)$(includedir); \
-	done
-	for f in $(top_blddir)/include/apu_*.h; do \
+	for f in $(top_srcdir)/include/apr_*.h; do \
 	    $(INSTALL_DATA) $${f} $(DESTDIR)$(includedir); \
 	done
 	$(LIBTOOL) --mode=install $(INSTALL) -m 755 $(TARGET_LIB) $(DESTDIR)$(libdir)
@@ -120,15 +97,7 @@ install: install-modules $(TARGETS)
 	fi
 
 $(TARGET_LIB): $(OBJECTS)
-	$(LINK) @lib_target@ $(ALL_LIBS) $(APRUTIL_EXPORT_LIBS)
-
-install-modules: install-modules-@APR_HAVE_MODULES@
-
-install-modules-no:
-
-install-modules-yes: $(APR_DSO_MODULES)
-	$(APR_MKDIR) $(DESTDIR)$(APR_DSO_LIBDIR)
-	@for m in $(APR_DSO_MODULES); do $(LIBTOOL) $(LT_LTFLAGS) $(LTFLAGS) --mode=install $(INSTALL) -m 755 $$m $(DESTDIR)$(APR_DSO_LIBDIR); done
+	$(LINK) @lib_target@ $(ALL_LIBS)
 
 exports.c: $(HEADERS)
 	$(APR_MKEXPORT) $(HEADERS) > $@

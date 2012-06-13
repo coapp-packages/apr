@@ -13,29 +13,22 @@ VPATH = @srcdir@
 #   or with special parameters
 # TESTALL_COMPONENTS
 #   programs such as globalmutexchild which the various TESTS will invoke
-#   to validate process creation, pipes, dso mechanisms and so forth
+#   to validate process creation, pipes, dso mechansims and so forth
 
 STDTEST_PORTABLE = \
 	testlockperf@EXEEXT@ \
 	testmutexscope@EXEEXT@ \
-	testall@EXEEXT@ \
-	dbd@EXEEXT@ \
+	testall@EXEEXT@
 
-TESTS = testtime.lo teststr.lo testvsn.lo testipsub.lo testshm.lo	\
-	testmmap.lo testud.lo testtable.lo testsleep.lo testpools.lo	\
-	testfmt.lo testfile.lo testdir.lo testfileinfo.lo testrand.lo	\
-	testdso.lo testoc.lo testdup.lo testsockets.lo testproc.lo	\
-	testpoll.lo testlock.lo testsockopt.lo testpipe.lo		\
-	testthread.lo testhash.lo testargs.lo testnames.lo testuser.lo	\
-	testpath.lo testenv.lo testprocmutex.lo testfnmatch.lo		\
-	testatomic.lo testflock.lo testsock.lo testglobalmutex.lo	\
-	teststrnatcmp.lo testfilecopy.lo testtemp.lo testlfs.lo		\
-	testcond.lo testuri.lo testmemcache.lo testdate.lo		\
-	testxlate.lo testdbd.lo testrmm.lo testmd4.lo	\
-	teststrmatch.lo testpass.lo testcrypto.lo testqueue.lo		\
-	testbuckets.lo testxml.lo testdbm.lo testuuid.lo testmd5.lo	\
-	testreslist.lo testbase64.lo testhooks.lo testlfsabi.lo         \
-	testlfsabi32.lo testlfsabi64.lo
+TESTS = testtime.lo teststr.lo testvsn.lo testipsub.lo testshm.lo \
+	testmmap.lo testud.lo testtable.lo testsleep.lo testpools.lo \
+	testfmt.lo testfile.lo testdir.lo testfileinfo.lo testrand.lo \
+	testdso.lo testoc.lo testdup.lo testsockets.lo testproc.lo \
+	testpoll.lo testlock.lo testsockopt.lo testpipe.lo testthread.lo \
+	testhash.lo testargs.lo testnames.lo testuser.lo testpath.lo \
+	testenv.lo testprocmutex.lo testfnmatch.lo testatomic.lo testflock.lo \
+	testsock.lo testglobalmutex.lo teststrnatcmp.lo testfilecopy.lo \
+	testtemp.lo testlfs.lo testcond.lo
 
 OTHER_PROGRAMS = \
 	sendfile@EXEEXT@ \
@@ -74,7 +67,7 @@ INCLUDES=-I$(INCDIR) -I$(srcdir)/../include
 
 # link programs using -no-install to get real executables not
 # libtool wrapper scripts which link an executable when first run.
-LINK_PROG = $(LIBTOOL) $(LTFLAGS) --mode=link $(COMPILE) $(LT_LDFLAGS) \
+LINK_PROG = $(LIBTOOL) $(LTFLAGS) --mode=link $(LT_LDFLAGS) $(COMPILE) \
 	    @LT_NO_INSTALL@ $(ALL_LDFLAGS) -o $@
 
 # STDTEST_PORTABLE;
@@ -126,10 +119,10 @@ mod_test.lo: $(srcdir)/mod_test.c
 	  -c $(srcdir)/mod_test.c
 
 OBJECTS_mod_test = mod_test.lo
-mod_test.la: $(OBJECTS_mod_test) $(LOCAL_LIBS)
+mod_test.la: $(OBJECTS_mod_test)
 	$(LIBTOOL) $(LTFLAGS) --mode=link $(COMPILE) -rpath `pwd` -module \
 	  -avoid-version $(LT_LDFLAGS) $(ALL_LDFLAGS) -o $@ \
-	  $(OBJECTS_mod_test) $(LOCAL_LIBS)
+	  $(OBJECTS_mod_test)
 
 OBJECTS_libmod_test = mod_test.lo $(LOCAL_LIBS)
 libmod_test.la: $(OBJECTS_libmod_test)
@@ -165,34 +158,15 @@ OBJECTS_tryread = tryread.lo $(LOCAL_LIBS)
 tryread@EXEEXT@: $(OBJECTS_tryread)
 	$(LINK_PROG) $(OBJECTS_tryread) $(ALL_LIBS)
 
-OBJECTS_dbd = dbd.lo $(LOCAL_LIBS)
-dbd@EXEEXT@: $(OBJECTS_dbd)
-	$(LINK_PROG) $(OBJECTS_dbd) $(APRUTIL_LIBS)
-
 check: $(TESTALL_COMPONENTS) $(STDTEST_PORTABLE) $(STDTEST_NONPORTABLE)
 	teststatus=0; \
 	progfailed=""; \
 	for prog in $(STDTEST_PORTABLE) $(STDTEST_NONPORTABLE); do \
-	        if test "$$prog" = 'dbd'; then \
-			for driver in none @apu_dbd_tests@; do \
-				if test "$$driver" != 'none'; then \
-					@shlibpath_var@="`echo "../dbm/.libs:../dbd/.libs:$$@shlibpath_var@" | sed -e 's/::*$$//'`" \
-					./$$prog $$driver; \
-					status=$$?; \
-					if test $$status != 0; then \
-						teststatus=$$status; \
-						progfailed="$$progfailed '$$prog $$driver'"; \
-					fi; \
-				fi; \
-			done; \
-	        else \
-			@shlibpath_var@="`echo "../dbm/.libs:../dbd/.libs:$$@shlibpath_var@" | sed -e 's/::*$$//'`" \
-			./$$prog; \
-			status=$$?; \
-			if test $$status != 0; then \
-				teststatus=$$status; \
-				progfailed="$$progfailed $$prog"; \
-			fi; \
+		./$$prog; \
+		status=$$?; \
+		if test $$status != 0; then \
+			teststatus=$$status; \
+			progfailed="$$progfailed $$prog"; \
 		fi; \
 	done; \
 	if test $$teststatus != 0; then \

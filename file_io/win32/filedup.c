@@ -57,11 +57,10 @@ APR_DECLARE(apr_status_t) apr_file_dup(apr_file_t **new_file,
     apr_pool_cleanup_register((*new_file)->pool, (void *)(*new_file), file_cleanup,
                         apr_pool_cleanup_null);
 
-#if APR_FILES_AS_SOCKETS
     /* Create a pollset with room for one descriptor. */
     /* ### check return codes */
     (void) apr_pollset_create(&(*new_file)->pollset, 1, p, 0);
-#endif
+
     return APR_SUCCESS;
 #endif /* !defined(_WIN32_WCE) */
 }
@@ -187,7 +186,8 @@ APR_DECLARE(apr_status_t) apr_file_setaside(apr_file_t **new_file,
                                             apr_file_t *old_file,
                                             apr_pool_t *p)
 {
-    *new_file = (apr_file_t *)apr_pmemdup(p, old_file, sizeof(apr_file_t));
+    *new_file = (apr_file_t *)apr_palloc(p, sizeof(apr_file_t));
+    memcpy(*new_file, old_file, sizeof(apr_file_t));
     (*new_file)->pool = p;
     if (old_file->buffered) {
         (*new_file)->buffer = apr_palloc(p, old_file->bufsize);
@@ -217,10 +217,9 @@ APR_DECLARE(apr_status_t) apr_file_setaside(apr_file_t **new_file,
     apr_pool_cleanup_kill(old_file->pool, (void *)old_file,
                           file_cleanup);
 
-#if APR_FILES_AS_SOCKETS
     /* Create a pollset with room for one descriptor. */
     /* ### check return codes */
     (void) apr_pollset_create(&(*new_file)->pollset, 1, p, 0);
-#endif
+
     return APR_SUCCESS;
 }

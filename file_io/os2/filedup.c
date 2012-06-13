@@ -49,7 +49,6 @@ static apr_status_t file_dup(apr_file_t **new_file, apr_file_t *old_file, apr_po
     dup_file->buffered = old_file->buffered;
     dup_file->isopen = old_file->isopen;
     dup_file->flags = old_file->flags & ~APR_INHERIT;
-    dup_file->ungetchar = old_file->ungetchar;
     /* TODO - dup pipes correctly */
     dup_file->pipe = old_file->pipe;
 
@@ -87,7 +86,8 @@ APR_DECLARE(apr_status_t) apr_file_setaside(apr_file_t **new_file,
                                             apr_file_t *old_file,
                                             apr_pool_t *p)
 {
-    *new_file = (apr_file_t *)apr_pmemdup(p, old_file, sizeof(apr_file_t));
+    *new_file = (apr_file_t *)apr_palloc(p, sizeof(apr_file_t));
+    memcpy(*new_file, old_file, sizeof(apr_file_t));
     (*new_file)->pool = p;
 
     if (old_file->buffered) {

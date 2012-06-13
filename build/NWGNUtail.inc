@@ -51,6 +51,7 @@ endif
 # Create dependency lists based on the files available
 #
 
+
 CCOPT_DEPENDS			= \
 				$(APRBUILD)/NWGNUhead.inc \
 				$(APRBUILD)/NWGNUenvironment.inc \
@@ -93,8 +94,8 @@ endif
 
 ifeq "$(wildcard NWGNU$(NLM_NAME))" "NWGNU$(NLM_NAME)"
 $(NLM_NAME)_LINKOPT_DEPENDS	+= NWGNU$(NLM_NAME)
-CCOPT_DEPENDS			+= NWGNU$(NLM_NAME)
-CPPOPT_DEPENDS			+= NWGNU$(NLM_NAME)
+CCOPT_DEPENDS 	+= NWGNU$(NLM_NAME)
+CPPOPT_DEPENDS 	+= NWGNU$(NLM_NAME)
 endif
 
 #
@@ -104,7 +105,7 @@ endif
 ifneq ($(MAKECMDGOALS),clean)
 $(APRBUILD)/NWGNUversion.inc : $(APRBUILD)/nw_ver.awk $(APR)/include/apr_version.h
 #	@echo Generating $@
-	@echo $(DL)GEN  $@$(DL)
+	@echo GEN  $@
 	@$(AWK) -f $^ > $@
 
 -include $(APRBUILD)/NWGNUversion.inc
@@ -112,9 +113,9 @@ $(APRBUILD)/NWGNUversion.inc : $(APRBUILD)/nw_ver.awk $(APR)/include/apr_version
 ifneq "$(strip $(VERSION_STR))" ""
 VERSION_INC = $(APRBUILD)/NWGNUversion.inc
 else
-VERSION		= 2,0,0
-VERSION_STR	= 2.0.0
-VERSION_MAJMIN	= 20
+VERSION		= 1,4,0
+VERSION_STR	= 1.4.0
+VERSION_MAJMIN	= 14
 endif
 endif
 
@@ -128,43 +129,69 @@ INCLUDE_BLDCMDS	= 1
 CCOPT_NAME	= $(LIB_NAME)
 endif
 
-CCFLAGS = 
-ifneq "$(strip $(CFLAGS))" ""
-CCFLAGS += $(CFLAGS)
-endif
-ifneq "$(strip $(XCFLAGS))" ""
-CCFLAGS += $(XCFLAGS)
-endif
-ifneq "$(strip $(XINCDIRS))" ""
-CCFLAGS += $(foreach xincdir,$(strip $(XINCDIRS)),-I$(xincdir))
-endif
-ifneq "$(strip $(INCDIRS))" ""
-CCFLAGS += $(foreach incdir,$(strip $(INCDIRS)),-I$(incdir))
-endif
-ifneq "$(strip $(DEFINES))" ""
-CCFLAGS += $(DEFINES)
-endif
-ifneq "$(strip $(XDEFINES))" ""
-CCFLAGS += $(XDEFINES)
-endif
-
 ifeq "$(INCLUDE_BLDCMDS)" "1"
 
-$(OBJDIR)/%.o: %.c $(CCOPT_DEPENDS)
+$(OBJDIR)/%.o: %.c $(OBJDIR)/$(CCOPT_NAME)_cc.opt
+#	@echo Compiling $<
 	@echo $(DL)CC   $<$(DL)
+	$(CC) -o $@ $< @$(word 2, $^)
+
+$(OBJDIR)/$(CCOPT_NAME)_cc.opt: $(CCOPT_DEPENDS)
+	$(call DEL,$@)
 ifdef VERBOSE
-	@echo CCOPT_DEPENDS=$(CCOPT_DEPENDS)
+	@echo $(DL)CCOPT_DEPENDS=$^$(DL)
 endif
-	$(CC) $(CCFLAGS) -c -o $@ $<
+#	@echo Generating $@
+	@echo $(DL)GEN  $@$(DL)
+ifneq "$(strip $(CFLAGS))" ""
+	@echo $(DL)$(CFLAGS)$(DL)>> $@
+endif
+ifneq "$(strip $(XCFLAGS))" ""
+	@echo $(DL)$(XCFLAGS)$(DL)>> $@
+endif
+ifneq "$(strip $(XINCDIRS))" ""
+	@echo $(DL)$(foreach xincdir,$(strip $(subst ;,$(SPACE),$(XINCDIRS))),-I$(xincdir))$(DL)>> $@
+endif
+ifneq "$(strip $(INCDIRS))" ""
+	@echo $(DL)$(foreach incdir,$(strip $(subst ;,$(SPACE),$(INCDIRS))),-I$(incdir))$(DL)>> $@
+endif
+ifneq "$(strip $(DEFINES))" ""
+	@echo $(DL)$(DEFINES)$(DL)>> $@
+endif
+ifneq "$(strip $(XDEFINES))" ""
+	@echo $(DL)$(XDEFINES)$(DL)>> $@
+endif
 
-CCPFLAGS = $(CPFLAGS) $(CCFLAGS)
-
-$(OBJDIR)/%.o: %.cpp $(CPPOPT_DEPENDS)
+$(OBJDIR)/%.o: %.cpp $(OBJDIR)/$(CCOPT_NAME)_cpp.opt
+#	@echo Compiling $<
 	@echo $(DL)CPP  $<$(DL)
+	$(CCP) -o $@ $< @$(word 2, $^)
+
+$(OBJDIR)/$(CCOPT_NAME)_cpp.opt: $(CPPOPT_DEPENDS)
+	$(call DEL,$@)
 ifdef VERBOSE
-	@echo CPPOPT_DEPENDS=$(CPPOPT_DEPENDS)
+	@echo $(DL)CPPOPT_DEPENDS=$^$(DL)
 endif
-	$(CPP) $(CCPFLAGS) -c -o $@ $<
+#	@echo Generating $@
+	@echo $(DL)GEN  $@$(DL)
+ifneq "$(strip $(CFLAGS))" ""
+	@echo $(DL)$(CFLAGS)$(DL)>> $@
+endif
+ifneq "$(strip $(XCFLAGS))" ""
+	@echo $(DL)$(XCFLAGS)$(DL)>> $@
+endif
+ifneq "$(strip $(XINCDIRS))" ""
+	@echo $(DL)$(foreach xincdir,$(strip $(subst ;,$(SPACE),$(XINCDIRS))),-I$(xincdir))$(DL)>> $@
+endif
+ifneq "$(strip $(INCDIRS))" ""
+	@echo $(DL)$(foreach incdir,$(strip $(subst ;,$(SPACE),$(INCDIRS))),-I$(incdir))$(DL)>> $@
+endif
+ifneq "$(strip $(DEFINES))" ""
+	@echo $(DL)$(DEFINES)$(DL)>> $@
+endif
+ifneq "$(strip $(XDEFINES))" ""
+	@echo $(DL)$(XDEFINES)$(DL)>> $@
+endif
 
 endif # one target nlm or lib
 
@@ -178,33 +205,32 @@ ifeq "$(words $(strip $(TARGET_lib)))" "1"
 
 $(TARGET_lib) : $(OBJDIR)/$(LIB_NAME)_lib.lst
 	$(call DEL,$@)
+#	@echo Generating $@
 	@echo $(DL)AR   $@$(DL)
-	$(AR) $@ @$<
-ifdef RANLIB
-	$(RANLIB) $@
-endif
+	$(LIB) -o $@ @$<
 
 $(OBJDIR)/aprlib_lib.lst: $(aprlib_LIBLST_DEPENDS)
 	$(call DEL,$@)
 ifneq "$(strip $(FILES_lib_objs))" ""
+#	@echo Generating $@
 	@echo $(DL)GEN  $@$(DL)
-	@echo $(DL)$(wordlist 1, 10, $(FILES_lib_objs))$(DL)>> $@
-	@echo $(DL)$(wordlist 11, 20, $(FILES_lib_objs))$(DL)>> $@
-	@echo $(DL)$(wordlist 21, 30, $(FILES_lib_objs))$(DL)>> $@
-	@echo $(DL)$(wordlist 31, 40, $(FILES_lib_objs))$(DL)>> $@
-	@echo $(DL)$(wordlist 41, 50, $(FILES_lib_objs))$(DL)>> $@
-	@echo $(DL)$(wordlist 51, 60, $(FILES_lib_objs))$(DL)>> $@
-	@echo $(DL)$(wordlist 61, 70, $(FILES_lib_objs))$(DL)>> $@
-	@echo $(DL)$(wordlist 71, 80, $(FILES_lib_objs))$(DL)>> $@
-	@echo $(DL)$(wordlist 81, 90, $(FILES_lib_objs))$(DL)>> $@
-	@echo $(DL)$(wordlist 91, 100, $(FILES_lib_objs))$(DL)>> $@
-	@echo $(DL)$(wordlist 101, 110, $(FILES_lib_objs))$(DL)>> $@
+ifdef VERBOSE
+	@echo $(DL)FILES_lib_objs=$(words $(FILES_lib_objs))$(DL)
+endif
+	@echo $(DL)$(wordlist  1, 20, $(FILES_lib_objs))$(DL)>> $@
+	@echo $(DL)$(wordlist 21, 40, $(FILES_lib_objs))$(DL)>> $@
+	@echo $(DL)$(wordlist 41, 60, $(FILES_lib_objs))$(DL)>> $@
+	@echo $(DL)$(wordlist 61, 80, $(FILES_lib_objs))$(DL)>> $@
 endif
 
 $(OBJDIR)/%_lib.lst: $($(LIB_NAME)_LIBLST_DEPENDS)
 	$(call DEL,$@)
 ifneq "$(strip $(FILES_lib_objs))" ""
+#	@echo Generating $@
 	@echo $(DL)GEN  $@$(DL)
+ifdef VERBOSE
+	@echo FILES_lib_objs=$(words $(FILES_lib_objs))
+endif
 	@echo $(DL)$(FILES_lib_objs)$(DL)>> $@
 endif
 
@@ -224,6 +250,7 @@ endif
 ifeq "$(words $(strip $(TARGET_nlm)))" "1"
 
 $(TARGET_nlm) : $(FILES_nlm_objs) $(FILES_nlm_libs) $(OBJDIR)/$(NLM_NAME)_link.opt
+#	@echo Linking $@
 	@echo $(DL)LINK $@$(DL)
 	$(LINK) @$(OBJDIR)/$(NLM_NAME)_link.opt
 
@@ -233,6 +260,7 @@ $(TARGET_nlm) : $(FILES_nlm_objs) $(FILES_nlm_libs) $(OBJDIR)/$(NLM_NAME)_link.o
 $(OBJDIR)/$(NLM_NAME)_link.opt : $($(NLM_NAME)_LINKOPT_DEPENDS)
 	$(call DEL,$@)
 	$(call DEL,$(@:.opt=.def))
+#	@echo Generating $@
 	@echo $(DL)GEN  $@$(DL)
 	@echo $(DL)# Do not edit this file - it is created by make!$(DL) > $@
 	@echo $(DL)# All your changes will be lost!!$(DL)>> $@
@@ -251,7 +279,9 @@ else
 	@echo $(DL)-sym internal$(DL)>> $@
 endif
 	@echo $(DL)-l $(APR)/$(OBJDIR)$(DL)>> $@
-	@echo $(DL)-l $(APRXML)/$(OBJDIR)$(DL)>> $@
+	@echo $(DL)-l $(APU)/$(OBJDIR)$(DL)>> $@
+	@echo $(DL)-l $(APULDAP)/$(OBJDIR)$(DL)>> $@
+	@echo $(DL)-l $(APUXML)/$(OBJDIR)$(DL)>> $@
 	@echo $(DL)-l $(APR)/misc/netware$(DL)>> $@
 	@echo $(DL)-l $(APR)$(DL)>> $@
 	@echo $(DL)-l "$(METROWERKS)/Novell Support/Metrowerks Support/Libraries/Runtime"$(DL)>> $@
@@ -260,6 +290,9 @@ ifneq "$(IPV6)" ""
 	@echo $(DL)-l $(NOVELLLIBC)/include/winsock/IPV6$(DL)>> $@
 endif
 	@echo $(DL)-l $(NOVELLLIBC)/imports$(DL)>> $@
+ifneq "$(LDAPSDK)" ""
+	@echo $(DL)-l $(LDAPSDK)/imports$(DL)>> $@
+endif
 	@echo $(DL)-nodefaults$(DL)>> $@
 	@echo $(DL)-map $(OBJDIR)/$(NLM_NAME).map$(DL)>> $@
 ifneq "$(strip $(XLFLAGS))" ""

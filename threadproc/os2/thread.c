@@ -70,7 +70,6 @@ static void apr_thread_begin(void *arg)
 {
   apr_thread_t *thread = (apr_thread_t *)arg;
   thread->exitval = thread->func(thread, thread->data);
-  apr_pool_destroy(thread->pool);
 }
 
 
@@ -133,7 +132,6 @@ APR_DECLARE(apr_os_thread_t) apr_os_thread_current()
 APR_DECLARE(apr_status_t) apr_thread_exit(apr_thread_t *thd, apr_status_t retval)
 {
     thd->exitval = retval;
-    apr_pool_destroy(thd->pool);
     _endthread();
     return -1; /* If we get here something's wrong */
 }
@@ -154,7 +152,7 @@ APR_DECLARE(apr_status_t) apr_thread_join(apr_status_t *retval, apr_thread_t *th
         rc = 0; /* Thread had already terminated */
 
     *retval = thd->exitval;
-    return APR_FROM_OS_ERROR(rc);
+    return APR_OS2_STATUS(rc);
 }
 
 

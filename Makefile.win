@@ -18,6 +18,8 @@
 #
 #     ARCH="Win32 Release"
 #     ARCH="Win32 Debug"
+#     ARCH="Win32 Release9x"
+#     ARCH="Win32 Debug9x"
 #     ARCH="x64 Release"
 #     ARCH="x64 Debug"
 #
@@ -43,10 +45,11 @@ USEDSW=1
 
 PREFIX=..\apr-dist
 
-!IF [$(COMSPEC) /c cl /nologo /? \
-	| $(SystemRoot)\System32\find.exe "x64" >NUL ] == 0
+
+!IF [cmd /c cl /nologo /? | find.exe "x64" >NUL ] == 0
 ARCH=x64 Release
 !ELSE
+!MESSAGE x64==false
 ARCH=Win32 Release
 !ENDIF
 
@@ -58,20 +61,28 @@ ARCH=Win32 Release
 #
 !IF "$(ARCH)" == "Win32 Release"
 SLNARCH=Release|Win32
-ARCHOSPATH=Release
-LIBSOSPATH=LibR
+ARCHOSPATH=output\$(COMP)\x86\Release
+LIBSOSPATH=output\$(COMP)\x86\LibR
 !ELSEIF "$(ARCH)" == "Win32 Debug"
 SLNARCH=Debug|Win32
-ARCHOSPATH=Debug
-LIBSOSPATH=LibD
+ARCHOSPATH=output\$(COMP)\x86\Debug
+LIBSOSPATH=output\$(COMP)\x86\LibD
+!ELSEIF "$(ARCH)" == "Win32 Release9x"
+SLNARCH=Release9x|Win32
+ARCHOSPATH=output\$(COMP)\9x\Release
+LIBSOSPATH=output\$(COMP)\9x\LibR
+!ELSEIF "$(ARCH)" == "Win32 Debug9x"
+SLNARCH=Debug9x|Win32
+ARCHOSPATH=output\$(COMP)\9x\Debug
+LIBSOSPATH=output\$(COMP)\9x\LibD
 !ELSEIF "$(ARCH)" == "x64 Release"
 SLNARCH=Release|x64
-ARCHOSPATH=x64\Release
-LIBSOSPATH=x64\LibR
+ARCHOSPATH=output\$(COMP)\x64\Release
+LIBSOSPATH=output\$(COMP)\x64\LibR
 !ELSEIF "$(ARCH)" == "x64 Debug"
 SLNARCH=Debug|x64
-ARCHOSPATH=x64\Debug
-LIBSOSPATH=x64\LibD
+ARCHOSPATH=output\$(COMP)\x64\Debug
+LIBSOSPATH=output\$(COMP)\x64\LibD
 !ENDIF
 
 !IFNDEF MAKEOPT
@@ -95,11 +106,11 @@ clean:
 		CTARGET=CLEAN buildall
 
 buildall:
-	$(MAKE) $(MAKEOPT) -f apr.mak         CFG="apr - $(ARCH)" RECURSE=0 $(CTARGET)
-	$(MAKE) $(MAKEOPT) -f libapr.mak      CFG="libapr - $(ARCH)" RECURSE=0 $(CTARGET)
+	$(MAKE) $(MAKEOPT) -f apr.mak         OUTDIR="$(LIBSOSPATH)" CFG="apr - $(ARCH)" RECURSE=0 $(CTARGET)
+	$(MAKE) $(MAKEOPT) -f libapr.mak      OUTDIR="$(ARCHOSPATH)" CFG="libapr - $(ARCH)" RECURSE=0 $(CTARGET)
 	cd build
-	 $(MAKE) $(MAKEOPT) -f aprapp.mak     CFG="aprapp - $(ARCH)" RECURSE=0 $(CTARGET)
-	 $(MAKE) $(MAKEOPT) -f libaprapp.mak  CFG="libaprapp - $(ARCH)" RECURSE=0 $(CTARGET)
+	 $(MAKE) $(MAKEOPT) -f aprapp.mak     OUTDIR="..\$(LIBSOSPATH)" CFG="aprapp - $(ARCH)" RECURSE=0 $(CTARGET)
+	 $(MAKE) $(MAKEOPT) -f libaprapp.mak  OUTDIR="..\$(ARCHOSPATH)" CFG="libaprapp - $(ARCH)" RECURSE=0 $(CTARGET)
 	cd ..
 
 !ELSEIF $(USESLN) == 1
@@ -152,20 +163,20 @@ install:
 	@if NOT EXIST "$(PREFIX)\bin\."		mkdir "$(PREFIX)\bin"
 	@if NOT EXIST "$(PREFIX)\include\."	mkdir "$(PREFIX)\include"
 	@if NOT EXIST "$(PREFIX)\lib\."		mkdir "$(PREFIX)\lib"
-	copy CHANGES "$(PREFIX)\CHANGES.txt" <.y
-	copy LICENSE "$(PREFIX)\LICENSE.txt" <.y
-	copy NOTICE  "$(PREFIX)\NOTICE.txt"  <.y
+	copy CHANGES "$(PREFIX)\APR-CHANGES.txt" <.y
+	copy LICENSE "$(PREFIX)\APR-LICENSE.txt" <.y
+	copy NOTICE  "$(PREFIX)\APR-NOTICE.txt"  <.y
 	xcopy include\*.h		"$(PREFIX)\include\" /d < .a
-	copy $(LIBSOSPATH)\apr-2.lib		"$(PREFIX)\lib\" <.y
-	copy $(LIBSOSPATH)\apr-2.pdb		"$(PREFIX)\lib\" <.y
-	copy $(LIBSOSPATH)\aprapp-2.lib		"$(PREFIX)\lib\" <.y
-	copy $(LIBSOSPATH)\aprapp-2.pdb		"$(PREFIX)\lib\" <.y
-	copy $(ARCHOSPATH)\libaprapp-2.lib	"$(PREFIX)\lib\" <.y
-	copy $(ARCHOSPATH)\libaprapp-2.pdb	"$(PREFIX)\lib\" <.y
-	copy $(ARCHOSPATH)\libapr-2.lib		"$(PREFIX)\lib\" <.y
-	copy $(ARCHOSPATH)\libapr-2.exp		"$(PREFIX)\lib\" <.y
-	copy $(ARCHOSPATH)\libapr-2.dll		"$(PREFIX)\bin\" <.y
-	copy $(ARCHOSPATH)\libapr-2.pdb		"$(PREFIX)\bin\" <.y
+	copy $(LIBSOSPATH)\apr-1.lib		"$(PREFIX)\lib\" <.y
+	copy $(LIBSOSPATH)\apr-1.pdb		"$(PREFIX)\lib\" <.y
+	copy $(LIBSOSPATH)\aprapp-1.lib		"$(PREFIX)\lib\" <.y
+	copy $(LIBSOSPATH)\aprapp-1.pdb		"$(PREFIX)\lib\" <.y
+	copy $(ARCHOSPATH)\libaprapp-1.lib	"$(PREFIX)\lib\" <.y
+	copy $(ARCHOSPATH)\libaprapp-1.pdb	"$(PREFIX)\lib\" <.y
+	copy $(ARCHOSPATH)\libapr-1.lib		"$(PREFIX)\lib\" <.y
+	copy $(ARCHOSPATH)\libapr-1.exp		"$(PREFIX)\lib\" <.y
+	copy $(ARCHOSPATH)\libapr-1.dll		"$(PREFIX)\bin\" <.y
+	copy $(ARCHOSPATH)\libapr-1.pdb		"$(PREFIX)\bin\" <.y
 	del .y
 	del .a
 

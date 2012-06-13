@@ -181,16 +181,12 @@ APR_DECLARE(apr_status_t) apr_file_read(apr_file_t *thefile, void *buf, apr_size
         apr_size_t blocksize;
         apr_size_t size = *len;
 
-        if (thefile->flags & APR_FOPEN_XTHREAD) {
-            apr_thread_mutex_lock(thefile->mutex);
-        }
+        apr_thread_mutex_lock(thefile->mutex);
 
         if (thefile->direction == 1) {
             rv = apr_file_flush(thefile);
             if (rv != APR_SUCCESS) {
-                if (thefile->flags & APR_FOPEN_XTHREAD) {
-                    apr_thread_mutex_unlock(thefile->mutex);
-                }
+                apr_thread_mutex_unlock(thefile->mutex);
                 return rv;
             }
             thefile->bufpos = 0;
@@ -227,10 +223,7 @@ APR_DECLARE(apr_status_t) apr_file_read(apr_file_t *thefile, void *buf, apr_size
         if (*len) {
             rv = APR_SUCCESS;
         }
-
-        if (thefile->flags & APR_FOPEN_XTHREAD) {
-            apr_thread_mutex_unlock(thefile->mutex);
-        }
+        apr_thread_mutex_unlock(thefile->mutex);
     } else {  
         /* Unbuffered i/o */
         apr_size_t nbytes;
@@ -241,17 +234,6 @@ APR_DECLARE(apr_status_t) apr_file_read(apr_file_t *thefile, void *buf, apr_size
     }
 
     return rv;
-}
-
-APR_DECLARE(apr_status_t) apr_file_rotating_check(apr_file_t *thefile)
-{
-    return APR_ENOTIMPL;
-}
-
-APR_DECLARE(apr_status_t) apr_file_rotating_manual_check(apr_file_t *thefile,
-                                                         apr_time_t n)
-{
-    return APR_ENOTIMPL;
 }
 
 APR_DECLARE(apr_status_t) apr_file_write(apr_file_t *thefile, const void *buf, apr_size_t *nbytes)
@@ -278,9 +260,7 @@ APR_DECLARE(apr_status_t) apr_file_write(apr_file_t *thefile, const void *buf, a
         apr_size_t blocksize;
         apr_size_t size = *nbytes;
 
-        if (thefile->flags & APR_FOPEN_XTHREAD) {
-            apr_thread_mutex_lock(thefile->mutex);
-        }
+        apr_thread_mutex_lock(thefile->mutex);
 
         if (thefile->direction == 0) {
             /* Position file pointer for writing at the offset we are logically reading from */
@@ -295,7 +275,7 @@ APR_DECLARE(apr_status_t) apr_file_write(apr_file_t *thefile, const void *buf, a
 
         rv = 0;
         while (rv == 0 && size > 0) {
-            if (thefile->bufpos == thefile->bufsize)   /* write buffer is full */
+            if (thefile->bufpos == thefile->bufsize)   // write buffer is full
                 rv = apr_file_flush(thefile);
 
             blocksize = size > thefile->bufsize - thefile->bufpos ? 
@@ -306,9 +286,7 @@ APR_DECLARE(apr_status_t) apr_file_write(apr_file_t *thefile, const void *buf, a
             size -= blocksize;
         }
 
-        if (thefile->flags & APR_FOPEN_XTHREAD) {
-            apr_thread_mutex_unlock(thefile->mutex);
-        }
+        apr_thread_mutex_unlock(thefile->mutex);
         return rv;
     } else {
         if (!thefile->pipe) {
@@ -601,10 +579,3 @@ APR_DECLARE_NONSTD(int) apr_file_printf(apr_file_t *fptr,
     free(data.buf);
     return count;
 }
-
-APR_DECLARE(apr_status_t) apr_file_pipe_wait(apr_file_t *thepipe,
-                                             apr_wait_type_t direction)
-{
-    return APR_ENOTIMPL;
-}
-

@@ -1,35 +1,15 @@
 APACHE PORTABLE RUNTIME (APR) LIBRARY STATUS:        -*- coding: utf-8 -*-
 Last modified at [$Date$]
 
-The current version of this file can be found at:
-
-  * http://svn.apache.org/repos/asf/apr/apr/trunk/STATUS
-
-
-NOTICE:
-
-Effective with version 2.0 , apr-util ceases to exist.  For reference,
-the final standalone apr-util can be found in subversion at:
-
-  * http://svn.apache.org/repos/asf/apr/apr-util/branches -r784519
-
-
-Patches considered for backport are noted in their branches' STATUS:
-
-  * http://svn.apache.org/repos/asf/apr/apr/branches/0.9.x/STATUS
-  * http://svn.apache.org/repos/asf/apr/apr/branches/1.3.x/STATUS
-  * http://svn.apache.org/repos/asf/apr/apr/branches/1.4.x/STATUS
-  * http://svn.apache.org/repos/asf/apr/apr/branches/1.5.x/STATUS
-  * http://svn.apache.org/repos/asf/apr/apr-util/branches/0.9.x/STATUS
-  * http://svn.apache.org/repos/asf/apr/apr-util/branches/1.3.x/STATUS
-  * http://svn.apache.org/repos/asf/apr/apr-util/branches/1.4.x/STATUS
-  * http://svn.apache.org/repos/asf/apr/apr-util/branches/1.5.x/STATUS
-
 Releases:
     2.0.0     : in development on trunk/
     1.5.0     : in development on branches/1.5.x/
-    1.4.3     : in development on branches/1.4.x/
-    1.4.2     : tagged January 20, 2010
+    1.4.7     : in development on branches/1.4.x/    
+    1.4.6     : tagged Feb 8, 2012
+    1.4.5     : released May 22, 2011
+    1.4.4     : released May 9, 2011
+    1.4.3     : not released
+    1.4.2     : released April 3, 2010
     1.4.1     : not released
     1.4.0     : not released
     1.3.9     : released September 23, 2009
@@ -91,26 +71,12 @@ Bundled with httpd:
     2.0a2     : released March 31, 2000
     2.0a1     : released March 10, 2000
 
-Contributors looking for a mission:
-
-  * Just do an egrep on "TODO" or "XXX" in the source.
-
-  * Review the bug database at: http://issues.apache.org/bugzilla/
-
-  * Review the "PatchAvailable" bugs in the bug database:
-
-    https://issues.apache.org/bugzilla/buglist.cgi?bug_status=NEW&bug_status=ASSIGNED&bug_status=REOPENED&product=APR&keywords=PatchAvailable
-
-    After testing, you can append a comment saying "Reviewed and tested".
-
-  * Open bugs in the bug database.
-
 
 RELEASE SHOWSTOPPERS:
 
-  * apr_file_rotating_* on most platforms
 
 CURRENT VOTES:
+
 
 
 CURRENT test/testall -v EXCEPTIONS:
@@ -162,24 +128,6 @@ ONGOING REMINDERS FOR STYLE/SUBSTANCE OF CONTRIBUTING TO APR:
 
 
 RELEASE NON-SHOWSTOPPERS BUT WOULD BE REAL NICE TO WRAP THESE UP:
-
-    * Implement TOS for linux and solaris and bsd network API's.
-      The patches below implement only one of these API's, see the
-      pointer to mod_ftp in this bugzilla incident for hints to offer
-      all the necessary implementations, for starters.
-        http://qaix.com/apache-http-server/569-729-patch-add-ip-tos-support-read.shtml
-        https://issues.apache.org/bugzilla/show_bug.cgi?id=42848
-
-    * Need a proper fragmentation control API for clearing apr_pool's,
-      where the block alloc/clear/realloc sequence introduces more and
-      more unusable spaces in the physical blocks.  APR must provide
-      a mechanism to recognize such fragmented conditions, free the
-      physical pages, and allocate a new single pool block.  See also
-        http://svn.haxx.se/dev/archive-2008-10/0070.shtml
-
-    * Implement apr_pool_realloc for consumers such as apr_vformatter,
-      where the possibility to extend an allocation exists.  Given that
-      an apr function does this, external consumers should be allowed to.
 
     * Need some architecture/OS specific versions of the atomic operations.
 	progress: generic, solaris Sparc, FreeBSD5, linux, and OS/390 done
@@ -384,6 +332,20 @@ RELEASE NON-SHOWSTOPPERS BUT WOULD BE REAL NICE TO WRAP THESE UP:
         what "reasonable" should be, so be conservative, only increase this as
         necessary.
 
+    * Generate a good bug report to send to the FreeBSD hackers that details
+      the problems we have seen with threads and system calls (specifically
+      sendfile data is corrupted).  From our analysis so far, we don't think 
+      that this is an APR issue, but rather a FreeBSD kernel issue.  Our
+      current solution is to just disable threads across the board on
+      FreeBSD.
+
+      MsgID: <20010828091959.D17570@ebuilt.com>
+        Status: Fixed in -CURRENT.  MFC in about a week.  Continuing
+                testing with threads on FreeBSD.
+
+                FreeBSD PR kern/32684:
+                  http://www.freebsd.org/cgi/query-pr.cgi?pr=kern/32684
+
     * There are some optimizations that can be done to the new
       apr_proc_*() functions (on UNIX). One that may reduce pointer
       indirection would be to make the apr_proc_mutex_unix_lock_methods_t
@@ -424,14 +386,6 @@ RELEASE NON-SHOWSTOPPERS BUT WOULD BE REAL NICE TO WRAP THESE UP:
       a fn pointer v.s. a data pointer, this should be split in apr_dso.
 
 Interface Changes Postponed for APR 2.0:
-
-    * apr_proc_other_child_register()'s write_fd argument should be removed
-      or made used.  The comment in the API previously said:
-
-         write_fd duplicates the proc->out stream, it's really
-         redundant and should be replaced in the APR 1.0 API with a
-         bitflag of which proc->in/out/err handles should be health
-         checked.  no platform currently tests the pipes health.
 
     * apr_atomic_casptr() has the volatile qualifier in the wrong
       place: should take "pointer to volatile pointer to void", not

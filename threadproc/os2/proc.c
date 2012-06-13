@@ -619,7 +619,7 @@ APR_DECLARE(apr_status_t) apr_proc_wait_all_procs(apr_proc_t *proc,
         return APR_CHILD_NOTDONE;
     }
 
-    return APR_FROM_OS_ERROR(rc);
+    return APR_OS2_STATUS(rc);
 } 
 
 
@@ -640,7 +640,7 @@ APR_DECLARE(apr_status_t) apr_proc_wait(apr_proc_t *proc,
         return APR_CHILD_NOTDONE;
     }
 
-    return APR_FROM_OS_ERROR(rc);
+    return APR_OS2_STATUS(rc);
 } 
 
 
@@ -659,14 +659,6 @@ APR_DECLARE(apr_status_t) apr_procattr_user_set(apr_procattr_t *attr,
 
 APR_DECLARE(apr_status_t) apr_procattr_group_set(apr_procattr_t *attr,
                                                  const char *groupname)
-{
-    return APR_ENOTIMPL;
-}
-
-APR_DECLARE(apr_status_t) apr_procattr_perms_set_register(apr_procattr_t *attr,
-                                                 apr_perms_setfn_t *perms_set_fn,
-                                                 void *data,
-                                                 apr_fileperms_t perms)
 {
     return APR_ENOTIMPL;
 }
