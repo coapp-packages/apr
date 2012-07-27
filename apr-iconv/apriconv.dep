@@ -1,0 +1,98 @@
+# Microsoft Developer Studio Generated Dependency File, included by apriconv.mak
+
+.\lib\iconv.c : \
+	"$(PROGRAMDATA)\include\apr\apr.h"\
+	"$(PROGRAMDATA)\include\apr\apr_allocator.h"\
+	"$(PROGRAMDATA)\include\apr\apr_errno.h"\
+	"$(PROGRAMDATA)\include\apr\apr_general.h"\
+	"$(PROGRAMDATA)\include\apr\apr_pools.h"\
+	"$(PROGRAMDATA)\include\apr\apr_thread_mutex.h"\
+	"$(PROGRAMDATA)\include\apr\apr_want.h"\
+	".\include\apr_iconv.h"\
+	".\lib\iconv.h"\
+	
+
+.\lib\iconv_ces.c : \
+	"$(PROGRAMDATA)\include\apr\apr.h"\
+	"$(PROGRAMDATA)\include\apr\apr_allocator.h"\
+	"$(PROGRAMDATA)\include\apr\apr_errno.h"\
+	"$(PROGRAMDATA)\include\apr\apr_general.h"\
+	"$(PROGRAMDATA)\include\apr\apr_pools.h"\
+	"$(PROGRAMDATA)\include\apr\apr_thread_mutex.h"\
+	"$(PROGRAMDATA)\include\apr\apr_want.h"\
+	".\include\apr_iconv.h"\
+	".\lib\iconv.h"\
+	
+
+.\lib\iconv_ces_euc.c : \
+	"$(PROGRAMDATA)\include\apr\apr.h"\
+	"$(PROGRAMDATA)\include\apr\apr_allocator.h"\
+	"$(PROGRAMDATA)\include\apr\apr_errno.h"\
+	"$(PROGRAMDATA)\include\apr\apr_general.h"\
+	"$(PROGRAMDATA)\include\apr\apr_pools.h"\
+	"$(PROGRAMDATA)\include\apr\apr_thread_mutex.h"\
+	"$(PROGRAMDATA)\include\apr\apr_want.h"\
+	".\include\apr_iconv.h"\
+	".\lib\iconv.h"\
+	
+
+.\lib\iconv_ces_iso2022.c : \
+	"$(PROGRAMDATA)\include\apr\apr.h"\
+	"$(PROGRAMDATA)\include\apr\apr_allocator.h"\
+	"$(PROGRAMDATA)\include\apr\apr_errno.h"\
+	"$(PROGRAMDATA)\include\apr\apr_general.h"\
+	"$(PROGRAMDATA)\include\apr\apr_pools.h"\
+	"$(PROGRAMDATA)\include\apr\apr_thread_mutex.h"\
+	"$(PROGRAMDATA)\include\apr\apr_want.h"\
+	".\include\apr_iconv.h"\
+	".\lib\iconv.h"\
+	
+
+.\lib\iconv_int.c : \
+	"$(PROGRAMDATA)\include\apr\apr.h"\
+	"$(PROGRAMDATA)\include\apr\apr_allocator.h"\
+	"$(PROGRAMDATA)\include\apr\apr_errno.h"\
+	"$(PROGRAMDATA)\include\apr\apr_general.h"\
+	"$(PROGRAMDATA)\include\apr\apr_pools.h"\
+	"$(PROGRAMDATA)\include\apr\apr_thread_mutex.h"\
+	"$(PROGRAMDATA)\include\apr\apr_want.h"\
+	".\include\apr_iconv.h"\
+	".\lib\iconv.h"\
+	
+
+.\lib\iconv_module.c : \
+	"$(PROGRAMDATA)\include\apr\apr.h"\
+	"$(PROGRAMDATA)\include\apr\apr_allocator.h"\
+	"$(PROGRAMDATA)\include\apr\apr_dso.h"\
+	"$(PROGRAMDATA)\include\apr\apr_env.h"\
+	"$(PROGRAMDATA)\include\apr\apr_errno.h"\
+	"$(PROGRAMDATA)\include\apr\apr_file_info.h"\
+	"$(PROGRAMDATA)\include\apr\apr_file_io.h"\
+	"$(PROGRAMDATA)\include\apr\apr_general.h"\
+	"$(PROGRAMDATA)\include\apr\apr_inherit.h"\
+	"$(PROGRAMDATA)\include\apr\apr_lib.h"\
+	"$(PROGRAMDATA)\include\apr\apr_pools.h"\
+	"$(PROGRAMDATA)\include\apr\apr_strings.h"\
+	"$(PROGRAMDATA)\include\apr\apr_tables.h"\
+	"$(PROGRAMDATA)\include\apr\apr_thread_mutex.h"\
+	"$(PROGRAMDATA)\include\apr\apr_time.h"\
+	"$(PROGRAMDATA)\include\apr\apr_user.h"\
+	"$(PROGRAMDATA)\include\apr\apr_version.h"\
+	"$(PROGRAMDATA)\include\apr\apr_want.h"\
+	".\include\api_version.h"\
+	".\include\apr_iconv.h"\
+	".\lib\charset_alias.h"\
+	".\lib\iconv.h"\
+	
+
+.\lib\iconv_uc.c : \
+	"$(PROGRAMDATA)\include\apr\apr.h"\
+	"$(PROGRAMDATA)\include\apr\apr_allocator.h"\
+	"$(PROGRAMDATA)\include\apr\apr_errno.h"\
+	"$(PROGRAMDATA)\include\apr\apr_general.h"\
+	"$(PROGRAMDATA)\include\apr\apr_pools.h"\
+	"$(PROGRAMDATA)\include\apr\apr_thread_mutex.h"\
+	"$(PROGRAMDATA)\include\apr\apr_want.h"\
+	".\include\apr_iconv.h"\
+	".\lib\iconv.h"\
+	

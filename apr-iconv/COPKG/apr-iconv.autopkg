@@ -1,0 +1,81 @@
+@import "version.inc";
+@import "compat.inc";
+@import "outercurve.inc";
+
+#define { 
+    flavor: "${comp??vc10}"; 
+    arch : "${plat??x86}";
+}
+
+package {
+    name: "apr-iconv[${flavor}]";
+    version: "${package-version}";
+    arch : "${arch}";
+
+    display-name: "apr-iconv";
+    location: "http://coapp.org/repository/${OutputFilename}";
+
+    feed: "http://coapp.org/repository/packages.atom.xml";
+    publisher: "CoApp Project";
+}
+
+license[BSD] {
+    license: "..\COPYING";
+    license-type: "Custom BSD License";
+}
+
+requires {
+    package: "apr[${flavor}]-${apr-dep-version}-${Package.Architecture}-${apr-dep-publickeytoken}";
+}
+
+metadata {  
+    summary: "apr-iconv";
+    description: @"APR-iconv provides a portable iconv() implementation built on top of APR.";
+    author-version : "${author-version}";
+    bug-tracker: "https://github.com/coapp-packages/apr-iconv/issues";
+    stability : "0";
+    licenses : {
+        BSD
+    };
+}
+
+signing {
+    attributes : {
+        company="Outercurve Foundation",
+        description="APR-iconv provides a portable iconv() implementation built on top of APR.",
+        product-name="apr-iconv",
+        product-version="${package-version}",
+        file-version="${package-version}",
+    };
+
+    replace-signature: true; 
+    include: { 
+        dlls
+    };    
+}
+
+manifest[apr-iconv] {
+    assembly : {
+        "apr[${flavor}]",
+    };
+
+    include : { 
+        dlls,
+    };
+}
+
+assembly[apr-iconv[${flavor}]] {
+    include : {
+        dlls
+    };
+}
+
+files[dlls] {
+    root: @"..\output-${arch}-${flavor}";
+
+    include: {
+        "libapriconv-1.dll",
+    };
+
+    trim-path: all;
+};

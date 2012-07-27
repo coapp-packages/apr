@@ -1,0 +1,227 @@
+@import "version.inc";
+@import "compat.inc";
+
+#product-info  {
+    product-name: "apr-iconv";
+    version: "${package-version}";
+    original-source-location: "http://apache.deathculture.net//apr/apr-iconv-1.2.1-win32-src-r2.zip";
+    original-source-website: "http://apr.apache.org/download";
+    license: "BSD-like (see COPYING)";
+    packager: "Vincent Povirk <madewokherd@gmail.com>";
+}
+
+#define {
+    NewVersion : "${package-version++}";
+}
+
+base {
+	requires: {
+		"apr-dev[${COMP}]-${apr-dep-version}-${PLAT}-${apr-dep-publickeytoken}",
+	};
+
+	set: {
+		PLAT="${PLAT??x86}",
+		COMP="${COMP??vc10}",
+		BUILDOUTDIR="${BUILDOUTDIR??.}",
+		CONFIG="${CONFIG??Win32}",
+		OUTDIR="output-${PLAT}-${COMP}"
+	};
+
+	platform: "${PLAT}";
+	compiler: "${COMP}";
+
+	build-command: @"
+		if ""${BUILT}"" equ ""true"" goto end
+		rd /s /q ""${BUILDOUTDIR}\LibR""
+		rd /s /q ""${BUILDOUTDIR}\Release""
+		NMAKE /f ""apriconv.mak"" CFG=""apriconv - ${CONFIG} Release"" RECURSE=0 || goto failed
+		NMAKE /f ""libapriconv.mak"" CFG=""libapriconv - ${CONFIG} Release"" RECURSE=0 || goto failed
+		rd /s /q ""${OUTDIR}""
+		mkdir ""${OUTDIR}""
+		copy ""${BUILDOUTDIR}\LibR\apriconv-1.lib"" ""${OUTDIR}"" || goto failed
+		copy ""${BUILDOUTDIR}\Release\libapriconv-1.lib"" ""${OUTDIR}"" || goto failed
+		copy ""${BUILDOUTDIR}\Release\libapriconv-1.dll"" ""${OUTDIR}"" || goto failed
+:end
+	";
+
+	targets: {
+		@"${OUTDIR}\apriconv-1.lib",
+		@"${OUTDIR}\libapriconv-1.lib",
+		@"${OUTDIR}\libapriconv-1.dll",
+	};
+
+	clean-command: @"
+		rd /s /q ""${BUILDOUTDIR}\LibR""
+		rd /s /q ""${BUILDOUTDIR}\Release""
+		rd /s /q ""${OUTDIR}""
+	";
+}
+
+vc6 {
+	set: { COMP=vc6 };
+	uses: base;
+}
+
+vc71 {
+	set: { COMP="vc7.1" };
+	uses: base;
+}
+
+vc8 {
+	set: { COMP=vc8 };
+	uses: base;
+}
+
+vc9 {
+	set: { COMP=vc9 };
+	uses: base;
+}
+
+vc10 {
+	set: { COMP=vc10 };
+	uses: base;
+}
+
+x86 {
+	set: {
+		PLAT=x86,
+		BUILDOUTDIR=".",
+		CONFIG=Win32,
+	}
+	uses: { COMP => "${each}" };
+}
+
+x64 {
+	set: {
+		PLAT=x64,
+		BUILDOUTDIR="x64",
+		CONFIG=x64,
+	}
+	uses: { COMP => "${each}" };
+}
+
+release {
+	set: {
+		PLAT="${PLAT??x86,x64}",
+		COMP="${COMP??vc10}"
+	}
+	uses: { PLAT => "${each}" };
+}
+
+test {
+	/* No tests in this package. :( */
+	uses: release;
+}
+
+package-any {
+	targets: {
+		@"COPKG\apr-iconv-dev-common-${package-version}-any.msi",
+	};
+
+	build-command: @"
+		cd COPKG
+		autopackage apr-iconv-dev-common.autopkg || goto failed
+	";
+
+	clean-command: @"
+		del COPKG\apr-iconv-dev-common-*-any.msi
+		del COPKG\apr-iconv-dev-common-*-any.wixpdb
+	";
+}
+
+package-base {
+	targets: {
+		@"COPKG\apr-iconv[${COMP}]-${package-version}-${PLAT}.msi",
+		@"COPKG\apr-iconv-dev[${COMP}]-${package-version}-${PLAT}.msi",
+	};
+
+	build-command: @"
+		cd COPKG
+		autopackage --plat=${PLAT} --comp=${COMP} apr-iconv.autopkg apr-iconv-dev.autopkg || goto failed
+	";
+
+	clean-command: @"
+		del COPKG\apr-iconv*[${COMP}]-*-${PLAT}.msi
+		del COPKG\apr-iconv*[${COMP}]-*-${PLAT}.wixpdb
+	";
+}
+
+package-vc6 {
+	set: { COMP="vc6" };
+	uses: package-base;
+}
+
+package-vc71 {
+	set: { COMP="vc7.1" };
+	uses: package-base;
+}
+
+package-vc8 {
+	set: { COMP="vc8" };
+	uses: package-base;
+}
+
+package-vc9 {
+	set: { COMP="vc9" };
+	uses: package-base;
+}
+
+package-vc10 {
+	set: { COMP="vc10" };
+	uses: package-base;
+}
+
+package-x86 {
+	set: { PLAT="x86" };
+	uses: { COMP => "package-${each}" }
+}
+
+package-x64 {
+	set: { PLAT="x64" };
+	uses: { COMP => "package-${each}" }
+}
+
+package-arches {
+	uses: { PLAT => "package-${each}" }
+}
+
+package {
+	set: {
+		PLAT="${PLAT??x86,x64}",
+		COMP="${COMP??vc10}"
+	}
+
+	uses: release;
+
+	// FIXME: Have to recursively call ptk here because we can't enforce order between uses targets.
+	build-command: @"
+		ptk maybe-update-version || goto failed
+		ptk package-any || goto failed
+		ptk package-arches || goto failed
+	";
+
+	clean-command: @"
+		ptk clean package-any || goto failed
+		ptk clean package-arches || goto failed
+	";
+}
+
+maybe-update-version {
+	build-command: @"
+        if ""${noversion}"" neq ""true"" ptk update-version
+	";
+}
+
+update-version {
+    default : false;
+    
+    build-command : @"
+        REM auto-increment version.inc file...
+        
+        pushd COPKG
+        setlocal EnableDelayedExpansion
+        set VERSTRING=#define { package-version: ${NewVersion}; }
+        echo !VERSTRING! > version.inc
+        popd
+    ";
+}
