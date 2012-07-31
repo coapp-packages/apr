@@ -1,0 +1,48 @@
+@import "version.inc";
+@import "compat.inc";
+@import "outercurve.inc";
+
+package {
+    name: "apr-iconv-dev-common";
+    version: "${package-version}";
+    arch : "any";
+
+    display-name: "apr-iconv dev library common files";
+    location: "http://coapp.org/repository/${OutputFilename}";
+
+    feed: "http://coapp.org/repository/packages.atom.xml";
+    publisher: "CoApp Project";
+}
+
+license[BSD] {
+    license: "..\COPYING";
+    license-type: "Custom BSD License";
+}
+
+metadata {  
+    summary: "apr-iconv";
+    description: @"APR-iconv provides a portable iconv() implementation built on top of APR.";
+    author-version : "${author-version}";
+    bug-tracker: "https://github.com/coapp-packages/apr-iconv/issues";
+    stability : "0";
+    licenses : {
+        BSD
+    };
+}
+
+developer-library[apr-iconv] {
+    headers: { 
+        headers
+    };
+}
+
+files[headers] {
+    root: @"..\include";
+
+    include: {
+        "api_version.h",
+		"apr_iconv.h"
+    };
+
+    trim-path: all;
+};

@@ -27,6 +27,10 @@ NULL=
 NULL=nul
 !ENDIF 
 
+APR_PATH=..\..\apr
+API_PATH=..\..\apr-iconv
+APU_PATH=..\..\apr-util
+
 !IF  "$(CFG)" == "apr_dbd_odbc - Win32 Release"
 
 OUTDIR=.\Release
@@ -105,14 +109,14 @@ LINK32=link.exe
 LINK32_FLAGS=kernel32.lib advapi32.lib ws2_32.lib mswsock.lib ole32.lib odbc32.lib odbccp32.lib /nologo /base:"0x6EF00000" /subsystem:windows /dll /incremental:no /pdb:"$(OUTDIR)\apr_dbd_odbc-1.pdb" /debug /machine:IX86 /out:"$(OUTDIR)\apr_dbd_odbc-1.dll" /implib:"$(OUTDIR)\apr_dbd_odbc-1.lib" /MACHINE:X86 /opt:ref 
 LINK32_OBJS= \
 	"$(INTDIR)\apr_dbd_odbc.obj" \
-	"..\Release\libaprutil-1.lib"
+	"$(APU_OUT)\libaprutil-1.lib"
 
 "$(OUTDIR)\apr_dbd_odbc-1.dll" : "$(OUTDIR)" $(DEF_FILE) $(LINK32_OBJS)
     $(LINK32) @<<
   $(LINK32_FLAGS) $(LINK32_OBJS)
 <<
 
-TargetPath=.\Release\apr_dbd_odbc-1.dll
+TargetPath=$(OUTDIR)\apr_dbd_odbc-1.dll
 SOURCE="$(InputPath)"
 PostBuild_Desc=Embed .manifest
 DS_POSTBUILD_DEP=$(INTDIR)\postbld.dep
@@ -124,7 +128,7 @@ OutDir=.\Release
 # End Custom Macros
 
 $(DS_POSTBUILD_DEP) : "libaprutil - Win32 Release" "$(OUTDIR)\apr_dbd_odbc-1.dll"
-   if exist .\Release\apr_dbd_odbc-1.dll.manifest mt.exe -manifest .\Release\apr_dbd_odbc-1.dll.manifest -outputresource:.\Release\apr_dbd_odbc-1.dll;2
+   if exist $(OUTDIR)\apr_dbd_odbc-1.dll.manifest mt.exe -manifest $(OUTDIR)\apr_dbd_odbc-1.dll.manifest -outputresource:$(OUTDIR)\apr_dbd_odbc-1.dll;2
 	echo Helper for Post-build step > "$(DS_POSTBUILD_DEP)"
 
 !ELSEIF  "$(CFG)" == "apr_dbd_odbc - Win32 Debug"
@@ -205,14 +209,14 @@ LINK32=link.exe
 LINK32_FLAGS=kernel32.lib advapi32.lib ws2_32.lib mswsock.lib ole32.lib odbc32.lib odbccp32.lib /nologo /base:"0x6EF00000" /subsystem:windows /dll /incremental:no /pdb:"$(OUTDIR)\apr_dbd_odbc-1.pdb" /debug /machine:IX86 /out:"$(OUTDIR)\apr_dbd_odbc-1.dll" /implib:"$(OUTDIR)\apr_dbd_odbc-1.lib" /MACHINE:X86 
 LINK32_OBJS= \
 	"$(INTDIR)\apr_dbd_odbc.obj" \
-	"..\Debug\libaprutil-1.lib"
+	"$(APU_OUT)\libaprutil-1.lib"
 
 "$(OUTDIR)\apr_dbd_odbc-1.dll" : "$(OUTDIR)" $(DEF_FILE) $(LINK32_OBJS)
     $(LINK32) @<<
   $(LINK32_FLAGS) $(LINK32_OBJS)
 <<
 
-TargetPath=.\Debug\apr_dbd_odbc-1.dll
+TargetPath=$(OUTDIR)\apr_dbd_odbc-1.dll
 SOURCE="$(InputPath)"
 PostBuild_Desc=Embed .manifest
 DS_POSTBUILD_DEP=$(INTDIR)\postbld.dep
@@ -224,7 +228,7 @@ OutDir=.\Debug
 # End Custom Macros
 
 $(DS_POSTBUILD_DEP) : "libaprutil - Win32 Debug" "$(OUTDIR)\apr_dbd_odbc-1.dll"
-   if exist .\Debug\apr_dbd_odbc-1.dll.manifest mt.exe -manifest .\Debug\apr_dbd_odbc-1.dll.manifest -outputresource:.\Debug\apr_dbd_odbc-1.dll;2
+   if exist $(OUTDIR)\apr_dbd_odbc-1.dll.manifest mt.exe -manifest $(OUTDIR)\apr_dbd_odbc-1.dll.manifest -outputresource:$(OUTDIR)\apr_dbd_odbc-1.dll;2
 	echo Helper for Post-build step > "$(DS_POSTBUILD_DEP)"
 
 !ELSEIF  "$(CFG)" == "apr_dbd_odbc - x64 Release"
@@ -262,7 +266,7 @@ CLEAN :
     if not exist "$(OUTDIR)/$(NULL)" mkdir "$(OUTDIR)"
 
 CPP=cl.exe
-CPP_PROJ=/nologo /MD /W3 /Zi /O2 /Oy- /I "../include" /I "../../apr/include" /I "../include/private" /D "NDEBUG" /D "HAVE_SQL_H" /D "WIN32" /D "_WINDOWS" /D "APU_DSO_MODULE_BUILD" /D APU_HAVE_ODBC=1 /Fo"$(INTDIR)\\" /Fd"$(INTDIR)\apr_dbd_odbc_src" /FD /c 
+CPP_PROJ=/nologo /MD /W3 /Zi /O2 /Oy- /I "../include" /I "$(APR_PATH)/include" /I "../include/private" /D "NDEBUG" /D "HAVE_SQL_H" /D "WIN32" /D "_WINDOWS" /D "APU_DSO_MODULE_BUILD" /D APU_HAVE_ODBC=1 /Fo"$(INTDIR)\\" /Fd"$(INTDIR)\apr_dbd_odbc_src" /FD /c 
 
 .c{$(INTDIR)}.obj::
    $(CPP) @<<
@@ -302,17 +306,17 @@ BSC32_FLAGS=/nologo /o"$(OUTDIR)\apr_dbd_odbc.bsc"
 BSC32_SBRS= \
 	
 LINK32=link.exe
-LINK32_FLAGS=kernel32.lib advapi32.lib ws2_32.lib mswsock.lib ole32.lib odbc32.lib odbccp32.lib /nologo /base:"0x6EF00000" /subsystem:windows /dll /incremental:no /pdb:"$(OUTDIR)\apr_dbd_odbc-1.pdb" /debug /machine:IX86 /out:"$(OUTDIR)\apr_dbd_odbc-1.dll" /implib:"$(OUTDIR)\apr_dbd_odbc-1.lib" /MACHINE:X64 /opt:ref 
+LINK32_FLAGS=kernel32.lib advapi32.lib ws2_32.lib mswsock.lib ole32.lib odbc32.lib odbccp32.lib "$(APR_OUT)\libapr-1.lib" /nologo /base:"0x6EF00000" /subsystem:windows /dll /incremental:no /pdb:"$(OUTDIR)\apr_dbd_odbc-1.pdb" /debug /machine:IX86 /out:"$(OUTDIR)\apr_dbd_odbc-1.dll" /implib:"$(OUTDIR)\apr_dbd_odbc-1.lib" /MACHINE:X64 /opt:ref 
 LINK32_OBJS= \
 	"$(INTDIR)\apr_dbd_odbc.obj" \
-	"..\x64\Release\libaprutil-1.lib"
+	"$(APU_OUT)\libaprutil-1.lib"
 
 "$(OUTDIR)\apr_dbd_odbc-1.dll" : "$(OUTDIR)" $(DEF_FILE) $(LINK32_OBJS)
     $(LINK32) @<<
   $(LINK32_FLAGS) $(LINK32_OBJS)
 <<
 
-TargetPath=.\x64\Release\apr_dbd_odbc-1.dll
+TargetPath=$(OUTDIR)\apr_dbd_odbc-1.dll
 SOURCE="$(InputPath)"
 PostBuild_Desc=Embed .manifest
 DS_POSTBUILD_DEP=$(INTDIR)\postbld.dep
@@ -323,8 +327,9 @@ ALL : $(DS_POSTBUILD_DEP)
 OutDir=.\x64\Release
 # End Custom Macros
 
-$(DS_POSTBUILD_DEP) : "libaprutil - x64 Release" "$(OUTDIR)\apr_dbd_odbc-1.dll"
-   if exist .\x64\Release\apr_dbd_odbc-1.dll.manifest mt.exe -manifest .\x64\Release\apr_dbd_odbc-1.dll.manifest -outputresource:.\x64\Release\apr_dbd_odbc-1.dll;2
+#$(DS_POSTBUILD_DEP) : "libaprutil - x64 Release" "$(OUTDIR)\apr_dbd_odbc-1.dll"
+$(DS_POSTBUILD_DEP) : "$(OUTDIR)\apr_dbd_odbc-1.dll"
+   if exist $(OUTDIR)\apr_dbd_odbc-1.dll.manifest mt.exe -manifest $(OUTDIR)\apr_dbd_odbc-1.dll.manifest -outputresource:$(OUTDIR)\apr_dbd_odbc-1.dll;2
 	echo Helper for Post-build step > "$(DS_POSTBUILD_DEP)"
 
 !ELSEIF  "$(CFG)" == "apr_dbd_odbc - x64 Debug"
@@ -405,14 +410,14 @@ LINK32=link.exe
 LINK32_FLAGS=kernel32.lib advapi32.lib ws2_32.lib mswsock.lib ole32.lib odbc32.lib odbccp32.lib /nologo /base:"0x6EF00000" /subsystem:windows /dll /incremental:no /pdb:"$(OUTDIR)\apr_dbd_odbc-1.pdb" /debug /machine:IX86 /out:"$(OUTDIR)\apr_dbd_odbc-1.dll" /implib:"$(OUTDIR)\apr_dbd_odbc-1.lib" /MACHINE:X64 
 LINK32_OBJS= \
 	"$(INTDIR)\apr_dbd_odbc.obj" \
-	"..\x64\Debug\libaprutil-1.lib"
+	"$(APU_OUT)\libaprutil-1.lib"
 
 "$(OUTDIR)\apr_dbd_odbc-1.dll" : "$(OUTDIR)" $(DEF_FILE) $(LINK32_OBJS)
     $(LINK32) @<<
   $(LINK32_FLAGS) $(LINK32_OBJS)
 <<
 
-TargetPath=.\x64\Debug\apr_dbd_odbc-1.dll
+TargetPath=$(OUTDIR)\apr_dbd_odbc-1.dll
 SOURCE="$(InputPath)"
 PostBuild_Desc=Embed .manifest
 DS_POSTBUILD_DEP=$(INTDIR)\postbld.dep
@@ -424,7 +429,7 @@ OutDir=.\x64\Debug
 # End Custom Macros
 
 $(DS_POSTBUILD_DEP) : "libaprutil - x64 Debug" "$(OUTDIR)\apr_dbd_odbc-1.dll"
-   if exist .\x64\Debug\apr_dbd_odbc-1.dll.manifest mt.exe -manifest .\x64\Debug\apr_dbd_odbc-1.dll.manifest -outputresource:.\x64\Debug\apr_dbd_odbc-1.dll;2
+   if exist $(OUTDIR)\apr_dbd_odbc-1.dll.manifest mt.exe -manifest $(OUTDIR)\apr_dbd_odbc-1.dll.manifest -outputresource:$(OUTDIR)\apr_dbd_odbc-1.dll;2
 	echo Helper for Post-build step > "$(DS_POSTBUILD_DEP)"
 
 !ENDIF 
@@ -507,4 +512,8 @@ SOURCE=.\apr_dbd_odbc.c
 
 
 !ENDIF 
+
+"$(INTDIR)" :
+    if not exist "$(INTDIR)/$(NULL)" mkdir "$(INTDIR)"
+
 

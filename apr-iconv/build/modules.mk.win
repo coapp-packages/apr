@@ -16,186 +16,85 @@ BIND_MODE  = shared
 
 !IF "$(BUILD_MODE)" == "release" || "$(BUILD_MODE)" == "Release" \
  || "$(BUILD_MODE)" == "Win32 Release"
-
-!IF "$(BIND_MODE)" == "shared"
-API_LIBS = $(APR_SOURCE)\Release\libapr-1.lib \
-	   $(API_SOURCE)\Release\libapriconv-1.lib
+CFG_LDFLAGS = /debug /opt:ref /incremental:no /machine:X86
 CFG_CFLAGS  = /MD /Zi /O2 /Oy- /D "NDEBUG"
-CFG_LDFLAGS = /debug /opt:ref /incremental:no /machine:X86
-CFG_OUTPUT  = Release\iconv
-
-!ELSEIF "$(BIND_MODE)" == "static"
-API_LIBS = $(APR_SOURCE)\LibR\apr-1.lib \
-	   $(API_SOURCE)\LibR\apriconv-1.lib \
-	  kernel32.lib advapi32.lib ws2_32.lib mswsock.lib
-CFG_CFLAGS  = /MD /Zi /O2 /Oy- /D "NDEBUG" /D "APR_DECLARE_STATIC" /D "API_DECLARE_STATIC"
-CFG_LDFLAGS = /debug /opt:ref /incremental:no /machine:X86
-CFG_OUTPUT  = LibR\iconv
-
-!ELSE
-!ERROR Unknown bind mode "$(BIND_MODE)"
-!ENDIF
 
 !ELSEIF "$(BUILD_MODE)" == "debug" || "$(BUILD_MODE)" == "Debug" \
      || "$(BUILD_MODE)" == "Win32 Debug"
-
-!IF "$(BIND_MODE)" == "shared"
-API_LIBS = $(APR_SOURCE)\Debug\libapr-1.lib \
-	   $(API_SOURCE)\Debug\libapriconv-1.lib
 CFG_CFLAGS  = /MDd /Zi /Od /EHsc /D "_DEBUG"
 CFG_LDFLAGS = /debug /incremental:no /machine:X86
-CFG_OUTPUT  = Debug\iconv
-
-!ELSEIF "$(BIND_MODE)" == "static"
-APR_LIB = $(APR_SOURCE)\LibD\apr-1.lib \
-	  $(API_SOURCE)\LibD\apriconv-1.lib \
-	  kernel32.lib advapi32.lib ws2_32.lib mswsock.lib
-CFG_CFLAGS  = /MDd /Zi /Od /EHsc /D "_DEBUG" /D "APR_DECLARE_STATIC" /D "API_DECLARE_STATIC"
-CFG_LDFLAGS = /debug /incremental:no /machine:X86
-CFG_OUTPUT  = LibD\iconv
-
-!ELSE
-!ERROR Unknown bind mode "$(BIND_MODE)"
-!ENDIF
-
-!ELSEIF "$(BUILD_MODE)" == "Win32 Release9x"
-
-!IF "$(BIND_MODE)" == "shared"
-API_LIBS = $(APR_SOURCE)\9x\Release\libapr-1.lib \
-	   $(API_SOURCE)\Release\libapriconv-1.lib
-CFG_CFLAGS  = /MD /Zi /O2 /Oy- /D "NDEBUG"
-CFG_LDFLAGS = /debug /opt:ref /incremental:no /machine:X86
-CFG_OUTPUT  = Release\iconv
-
-!ELSEIF "$(BIND_MODE)" == "static"
-API_LIBS = $(APR_SOURCE)\9x\LibR\apr-1.lib \
-	   $(API_SOURCE)\LibR\apriconv-1.lib \
-	  kernel32.lib advapi32.lib ws2_32.lib mswsock.lib
-CFG_CFLAGS  = /MD /Zi /O2 /Oy- /D "NDEBUG" /D "APR_DECLARE_STATIC" /D "API_DECLARE_STATIC"
-CFG_LDFLAGS = /debug /opt:ref /incremental:no /machine:X86
-CFG_OUTPUT  = LibR\iconv
-
-!ELSE
-!ERROR Unknown bind mode "$(BIND_MODE)"
-!ENDIF
-
-!ELSEIF "$(BUILD_MODE)" == "Win32 Debug9x"
-
-!IF "$(BIND_MODE)" == "shared"
-API_LIBS = $(APR_SOURCE)\9x\Debug\libapr-1.lib \
-	   $(API_SOURCE)\Debug\libapriconv-1.lib
-CFG_CFLAGS  = /MDd /Zi /Od /EHsc /D "_DEBUG"
-CFG_LDFLAGS = /debug /incremental:no /machine:X86
-CFG_OUTPUT  = Debug\iconv
-
-!ELSEIF "$(BIND_MODE)" == "static"
-APR_LIB = $(APR_SOURCE)\9x\LibD\apr-1.lib \
-	  $(API_SOURCE)\LibD\apriconv-1.lib \
-	  kernel32.lib advapi32.lib ws2_32.lib mswsock.lib
-CFG_CFLAGS  = /MDd /Zi /Od /EHsc /D "_DEBUG" /D "APR_DECLARE_STATIC" /D "API_DECLARE_STATIC"
-CFG_LDFLAGS = /debug /incremental:no /machine:X86
-CFG_OUTPUT  = LibD\iconv
-
-!ELSE
-!ERROR Unknown bind mode "$(BIND_MODE)"
-!ENDIF
-
-!ELSEIF "$(BUILD_MODE)" == "Win32 ReleaseNT"
-
-!IF "$(BIND_MODE)" == "shared"
-API_LIBS = $(APR_SOURCE)\NT\Release\libapr-1.lib \
-	   $(API_SOURCE)\Release\libapriconv-1.lib
-CFG_CFLAGS  = /MD /Zi /O2 /Oy- /D "NDEBUG"
-CFG_LDFLAGS = /debug /opt:ref /incremental:no /machine:X86
-CFG_OUTPUT  = Release\iconv
-
-!ELSEIF "$(BIND_MODE)" == "static"
-API_LIBS = $(APR_SOURCE)\NT\LibR\apr-1.lib \
-	   $(API_SOURCE)\LibR\apriconv-1.lib \
-	  kernel32.lib advapi32.lib ws2_32.lib mswsock.lib
-CFG_CFLAGS  = /MD /Zi /O2 /Oy- /D "NDEBUG" /D "APR_DECLARE_STATIC" /D "API_DECLARE_STATIC"
-CFG_LDFLAGS = /debug /opt:ref /incremental:no /machine:X86
-CFG_OUTPUT  = LibR\iconv
-
-!ELSE
-!ERROR Unknown bind mode "$(BIND_MODE)"
-!ENDIF
-
-!ELSEIF "$(BUILD_MODE)" == "Win32 DebugNT"
-
-!IF "$(BIND_MODE)" == "shared"
-API_LIBS = $(APR_SOURCE)\NT\Debug\libapr-1.lib \
-	   $(API_SOURCE)\Debug\libapriconv-1.lib
-CFG_CFLAGS  = /MDd /Zi /Od /EHsc /D "_DEBUG"
-CFG_LDFLAGS = /debug /incremental:no /machine:X86
-CFG_OUTPUT  = Debug\iconv
-
-!ELSEIF "$(BIND_MODE)" == "static"
-APR_LIB = $(APR_SOURCE)\NT\LibD\apr-1.lib \
-	  $(API_SOURCE)\LibD\apriconv-1.lib \
-	  kernel32.lib advapi32.lib ws2_32.lib mswsock.lib
-CFG_CFLAGS  = /MDd /Zi /Od /EHsc /D "_DEBUG" /D "APR_DECLARE_STATIC" /D "API_DECLARE_STATIC"
-CFG_LDFLAGS = /debug /incremental:no /machine:X86
-CFG_OUTPUT  = LibD\iconv
-
-!ELSE
-!ERROR Unknown bind mode "$(BIND_MODE)"
-!ENDIF
 
 !ELSEIF "$(BUILD_MODE)" == "x64 Release"
-
-!IF "$(BIND_MODE)" == "shared"
-API_LIBS = $(APR_SOURCE)\x64\Release\libapr-1.lib \
-	   $(API_SOURCE)\x64\Release\libapriconv-1.lib
 CFG_CFLAGS  = /MD /Zi /O2 /Oy- /D "NDEBUG"
 CFG_LDFLAGS = /debug /opt:ref /incremental:no /machine:X64
-CFG_OUTPUT  = x64\Release\iconv
-
-!ELSEIF "$(BIND_MODE)" == "static"
-API_LIBS = $(APR_SOURCE)\x64\LibR\apr-1.lib \
-	   $(API_SOURCE)\x64\LibR\apriconv-1.lib \
-	  kernel32.lib advapi32.lib ws2_32.lib mswsock.lib
-CFG_CFLAGS  = /MD /Zi /O2 /Oy- /D "NDEBUG" /D "APR_DECLARE_STATIC" /D "API_DECLARE_STATIC"
-CFG_LDFLAGS = /debug /opt:ref /incremental:no /machine:X64
-CFG_OUTPUT  = x64\LibR\iconv
-
-!ELSE
-!ERROR Unknown bind mode "$(BIND_MODE)"
-!ENDIF
 
 !ELSEIF "$(BUILD_MODE)" == "x64 Debug"
-
-!IF "$(BIND_MODE)" == "shared"
-API_LIBS = $(APR_SOURCE)\x64\Debug\libapr-1.lib \
-	   $(API_SOURCE)\Debug\libapriconv-1.lib
 CFG_CFLAGS  = /MDd /Zi /Od /EHsc /D "_DEBUG"
 CFG_LDFLAGS = /debug /incremental:no /machine:X64
-CFG_OUTPUT  = Debug\iconv
-
-!ELSEIF "$(BIND_MODE)" == "static"
-APR_LIB = $(APR_SOURCE)\x64\LibD\apr-1.lib \
-	  $(API_SOURCE)\x64\LibD\apriconv-1.lib \
-	  kernel32.lib advapi32.lib ws2_32.lib mswsock.lib
-CFG_CFLAGS  = /MDd /Zi /Od /EHsc /D "_DEBUG" /D "APR_DECLARE_STATIC" /D "API_DECLARE_STATIC"
-CFG_LDFLAGS = /debug /incremental:no /machine:X64
-CFG_OUTPUT  = x64\LibD\iconv
-
-!ELSE
-!ERROR Unknown bind mode "$(BIND_MODE)"
-!ENDIF
 
 !ELSE
 !ERROR Unknown build mode "$(BUILD_MODE)"
 !ENDIF
 
+!IFDEF OUTDIR
+CFG_OUTPUT  = $(OUTDIR)\iconv
+!ELSE
+!IF "$(BIND_MODE)" == "shared"
+!IF "$(BUILD_MODE)" == "release" || "$(BUILD_MODE)" == "Release" \
+ || "$(BUILD_MODE)" == "Win32 Release"
+CFG_OUTPUT  = Release\iconv
+!ELSEIF "$(BUILD_MODE)" == "debug" || "$(BUILD_MODE)" == "Debug" \
+     || "$(BUILD_MODE)" == "Win32 Debug"
+CFG_OUTPUT  = Debug\iconv
+!ELSEIF "$(BUILD_MODE)" == "x64 Release"
+CFG_OUTPUT  = x64\Release\iconv
+!ELSEIF "$(BUILD_MODE)" == "x64 Debug"
+CFG_OUTPUT  = x64\Debug\iconv
+!ENDIF
+!ELSEIF "$(BIND_MODE)" == "static"
+!IF "$(BUILD_MODE)" == "release" || "$(BUILD_MODE)" == "Release" \
+ || "$(BUILD_MODE)" == "Win32 Release"
+CFG_OUTPUT  = LibR\iconv
+!ELSEIF "$(BUILD_MODE)" == "debug" || "$(BUILD_MODE)" == "Debug" \
+     || "$(BUILD_MODE)" == "Win32 Debug"
+CFG_OUTPUT  = LibD\iconv
+!ELSEIF "$(BUILD_MODE)" == "x64 Release"
+CFG_OUTPUT  = x64\LibR\iconv
+!ELSEIF "$(BUILD_MODE)" == "x64 Debug"
+CFG_OUTPUT  = x64\LibD\iconv
+!ENDIF
+!ENDIF
+!ENDIF
 
-APR_SOURCE   = ..\..\apr
-API_SOURCE   = ..
-OUTPUT_DIR   = $(API_SOURCE)\$(CFG_OUTPUT)
+
+!IF "$(BIND_MODE)" == "shared"
+API_LIBS = $(APR_OUT)\libapr-1.lib \
+	   $(API_OUT)\libapriconv-1.lib
+
+!ELSEIF "$(BIND_MODE)" == "static"
+API_LIBS = $(APR_OUT)\apr-1.lib \
+	   $(API_OUT)\apriconv-1.lib \
+	  kernel32.lib advapi32.lib ws2_32.lib mswsock.lib
+CFG_CFLAGS  = $(CFG_CFLAGS) /D "APR_DECLARE_STATIC" /D "API_DECLARE_STATIC"
+
+!ELSE
+!ERROR Unknown bind mode "$(BIND_MODE)"
+!ENDIF
+
+
+
+
+APR_PATH   = ..\..\apr
+API_PATH   = ..
+!IFDEF OUTDIR
+OUTPUT_DIR   = $(OUTDIR)
+!ELSE
+OUTPUT_DIR   = $(API_PATH)\$(CFG_OUTPUT)
+!ENDIF
 
 INT_CFLAGS   = /nologo $(CFG_CFLAGS) /Fd$(MODRES).pdb /Fp$(MODRES).pch \
-		/I "$(API_SOURCE)\include" /I "$(API_SOURCE)\lib" \
-		/I "$(APR_SOURCE)\include" \
+		/I "$(API_PATH)\include" /I "$(API_PATH)\lib" \
+		/I "$(APR_PATH)\include" \
 		/D "WIN32" /D "_WINDOWS" /D "_MBCS" /D "_USRDLL"
 INT_LDFLAGS  = /nologo $(CFG_LDFLAGS) /dll /subsystem:windows /incremental:no \
 		/export:iconv_module,DATA 

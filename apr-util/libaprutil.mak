@@ -27,407 +27,48 @@ NULL=
 NULL=nul
 !ENDIF 
 
+APR_PATH=..\apr
+API_PATH=..\apr-iconv
+APU_PATH=..\apr-util
 !IF  "$(CFG)" == "libaprutil - Win32 Release"
-
-OUTDIR=.\Release
+CPP_FLAG=/MD /O2 /Oy- 
+OUT_TAIL=.\Release
 INTDIR=.\Release
-# Begin Custom Macros
-OutDir=.\Release
-# End Custom Macros
-
-!IF "$(RECURSE)" == "0" 
-
-ALL : ".\include\private\apu_select_dbm.h" ".\include\private\apu_config.h" ".\include\apu_want.h" ".\include\apu.h" ".\include\apr_ldap.h" "$(OUTDIR)\libaprutil-1.dll"
-
-!ELSE 
-
-ALL : "xml - Win32 Release" ".\include\private\apu_select_dbm.h" ".\include\private\apu_config.h" ".\include\apu_want.h" ".\include\apu.h" ".\include\apr_ldap.h" "$(OUTDIR)\libaprutil-1.dll"
-
-!ENDIF 
-
-!IF "$(RECURSE)" == "1" 
-CLEAN :"xml - Win32 ReleaseCLEAN" 
-!ELSE 
-CLEAN :
-!ENDIF 
-	-@erase "$(INTDIR)\apr_base64.obj"
-	-@erase "$(INTDIR)\apr_brigade.obj"
-	-@erase "$(INTDIR)\apr_buckets.obj"
-	-@erase "$(INTDIR)\apr_buckets_alloc.obj"
-	-@erase "$(INTDIR)\apr_buckets_eos.obj"
-	-@erase "$(INTDIR)\apr_buckets_file.obj"
-	-@erase "$(INTDIR)\apr_buckets_flush.obj"
-	-@erase "$(INTDIR)\apr_buckets_heap.obj"
-	-@erase "$(INTDIR)\apr_buckets_mmap.obj"
-	-@erase "$(INTDIR)\apr_buckets_pipe.obj"
-	-@erase "$(INTDIR)\apr_buckets_pool.obj"
-	-@erase "$(INTDIR)\apr_buckets_refcount.obj"
-	-@erase "$(INTDIR)\apr_buckets_simple.obj"
-	-@erase "$(INTDIR)\apr_buckets_socket.obj"
-	-@erase "$(INTDIR)\apr_crypto.obj"
-	-@erase "$(INTDIR)\apr_date.obj"
-	-@erase "$(INTDIR)\apr_dbd.obj"
-	-@erase "$(INTDIR)\apr_dbm.obj"
-	-@erase "$(INTDIR)\apr_dbm_sdbm.obj"
-	-@erase "$(INTDIR)\apr_hooks.obj"
-	-@erase "$(INTDIR)\apr_ldap_stub.obj"
-	-@erase "$(INTDIR)\apr_ldap_url.obj"
-	-@erase "$(INTDIR)\apr_md4.obj"
-	-@erase "$(INTDIR)\apr_md5.obj"
-	-@erase "$(INTDIR)\apr_memcache.obj"
-	-@erase "$(INTDIR)\apr_queue.obj"
-	-@erase "$(INTDIR)\apr_reslist.obj"
-	-@erase "$(INTDIR)\apr_rmm.obj"
-	-@erase "$(INTDIR)\apr_sha1.obj"
-	-@erase "$(INTDIR)\apr_strmatch.obj"
-	-@erase "$(INTDIR)\apr_thread_pool.obj"
-	-@erase "$(INTDIR)\apr_uri.obj"
-	-@erase "$(INTDIR)\apr_xml.obj"
-	-@erase "$(INTDIR)\apu_dso.obj"
-	-@erase "$(INTDIR)\apu_version.obj"
-	-@erase "$(INTDIR)\getuuid.obj"
-	-@erase "$(INTDIR)\libaprutil.res"
-	-@erase "$(INTDIR)\libaprutil_src.idb"
-	-@erase "$(INTDIR)\libaprutil_src.pdb"
-	-@erase "$(INTDIR)\sdbm.obj"
-	-@erase "$(INTDIR)\sdbm_hash.obj"
-	-@erase "$(INTDIR)\sdbm_lock.obj"
-	-@erase "$(INTDIR)\sdbm_pair.obj"
-	-@erase "$(INTDIR)\uuid.obj"
-	-@erase "$(INTDIR)\xlate.obj"
-	-@erase "$(OUTDIR)\libaprutil-1.dll"
-	-@erase "$(OUTDIR)\libaprutil-1.exp"
-	-@erase "$(OUTDIR)\libaprutil-1.lib"
-	-@erase "$(OUTDIR)\libaprutil-1.pdb"
-	-@erase ".\include\apr_ldap.h"
-	-@erase ".\include\apu.h"
-	-@erase ".\include\apu_want.h"
-	-@erase ".\include\private\apu_config.h"
-	-@erase ".\include\private\apu_select_dbm.h"
-
-"$(OUTDIR)" :
-    if not exist "$(OUTDIR)/$(NULL)" mkdir "$(OUTDIR)"
-
-CPP=cl.exe
-CPP_PROJ=/nologo /MD /W3 /Zi /O2 /Oy- /I "./include" /I "../apr/include" /I "./include/private" /I "../apr-iconv/include" /I "./dbm/sdbm" /I "./xml/expat/lib" /D "NDEBUG" /D "APU_DECLARE_EXPORT" /D "APU_USE_SDBM" /D "XML_STATIC" /D "WIN32" /D "_WINDOWS" /Fo"$(INTDIR)\\" /Fd"$(INTDIR)\libaprutil_src" /FD /c 
-
-.c{$(INTDIR)}.obj::
-   $(CPP) @<<
-   $(CPP_PROJ) $< 
-<<
-
-.cpp{$(INTDIR)}.obj::
-   $(CPP) @<<
-   $(CPP_PROJ) $< 
-<<
-
-.cxx{$(INTDIR)}.obj::
-   $(CPP) @<<
-   $(CPP_PROJ) $< 
-<<
-
-.c{$(INTDIR)}.sbr::
-   $(CPP) @<<
-   $(CPP_PROJ) $< 
-<<
-
-.cpp{$(INTDIR)}.sbr::
-   $(CPP) @<<
-   $(CPP_PROJ) $< 
-<<
-
-.cxx{$(INTDIR)}.sbr::
-   $(CPP) @<<
-   $(CPP_PROJ) $< 
-<<
-
-MTL=midl.exe
-MTL_PROJ=/nologo /D "NDEBUG" /mktyplib203 /o /win32 "NUL" 
-RSC=rc.exe
-RSC_PROJ=/l 0x409 /fo"$(INTDIR)\libaprutil.res" /i "./include" /i "../apr/include" /d "NDEBUG" /d "APU_VERSION_ONLY" 
-BSC32=bscmake.exe
-BSC32_FLAGS=/nologo /o"$(OUTDIR)\libaprutil.bsc" 
-BSC32_SBRS= \
-	
-LINK32=link.exe
-LINK32_FLAGS=kernel32.lib advapi32.lib ws2_32.lib mswsock.lib ole32.lib /nologo /base:"0x6EE60000" /subsystem:windows /dll /incremental:no /pdb:"$(OUTDIR)\libaprutil-1.pdb" /debug /machine:IX86 /out:"$(OUTDIR)\libaprutil-1.dll" /implib:"$(OUTDIR)\libaprutil-1.lib" /MACHINE:X86 /opt:ref 
-LINK32_OBJS= \
-	"$(INTDIR)\apr_brigade.obj" \
-	"$(INTDIR)\apr_buckets.obj" \
-	"$(INTDIR)\apr_buckets_alloc.obj" \
-	"$(INTDIR)\apr_buckets_eos.obj" \
-	"$(INTDIR)\apr_buckets_file.obj" \
-	"$(INTDIR)\apr_buckets_flush.obj" \
-	"$(INTDIR)\apr_buckets_heap.obj" \
-	"$(INTDIR)\apr_buckets_mmap.obj" \
-	"$(INTDIR)\apr_buckets_pipe.obj" \
-	"$(INTDIR)\apr_buckets_pool.obj" \
-	"$(INTDIR)\apr_buckets_refcount.obj" \
-	"$(INTDIR)\apr_buckets_simple.obj" \
-	"$(INTDIR)\apr_buckets_socket.obj" \
-	"$(INTDIR)\apr_crypto.obj" \
-	"$(INTDIR)\apr_md4.obj" \
-	"$(INTDIR)\apr_md5.obj" \
-	"$(INTDIR)\apr_sha1.obj" \
-	"$(INTDIR)\getuuid.obj" \
-	"$(INTDIR)\uuid.obj" \
-	"$(INTDIR)\apr_dbd.obj" \
-	"$(INTDIR)\apr_dbm.obj" \
-	"$(INTDIR)\apr_dbm_sdbm.obj" \
-	"$(INTDIR)\apr_base64.obj" \
-	"$(INTDIR)\apr_hooks.obj" \
-	"$(INTDIR)\apr_ldap_stub.obj" \
-	"$(INTDIR)\apr_ldap_url.obj" \
-	"$(INTDIR)\apr_memcache.obj" \
-	"$(INTDIR)\apr_date.obj" \
-	"$(INTDIR)\apu_dso.obj" \
-	"$(INTDIR)\apr_queue.obj" \
-	"$(INTDIR)\apr_reslist.obj" \
-	"$(INTDIR)\apr_rmm.obj" \
-	"$(INTDIR)\apr_thread_pool.obj" \
-	"$(INTDIR)\apu_version.obj" \
-	"$(INTDIR)\sdbm.obj" \
-	"$(INTDIR)\sdbm_hash.obj" \
-	"$(INTDIR)\sdbm_lock.obj" \
-	"$(INTDIR)\sdbm_pair.obj" \
-	"$(INTDIR)\apr_strmatch.obj" \
-	"$(INTDIR)\apr_uri.obj" \
-	"$(INTDIR)\xlate.obj" \
-	"$(INTDIR)\apr_xml.obj" \
-	"$(INTDIR)\libaprutil.res" \
-	".\xml\expat\lib\LibR\xml.lib"
-
-"$(OUTDIR)\libaprutil-1.dll" : "$(OUTDIR)" $(DEF_FILE) $(LINK32_OBJS)
-    $(LINK32) @<<
-  $(LINK32_FLAGS) $(LINK32_OBJS)
-<<
-
-TargetPath=.\Release\libaprutil-1.dll
-SOURCE="$(InputPath)"
-PostBuild_Desc=Embed .manifest
-DS_POSTBUILD_DEP=$(INTDIR)\postbld.dep
-
-ALL : $(DS_POSTBUILD_DEP)
-
-# Begin Custom Macros
-OutDir=.\Release
-# End Custom Macros
-
-$(DS_POSTBUILD_DEP) : "xml - Win32 Release" ".\include\private\apu_select_dbm.h" ".\include\private\apu_config.h" ".\include\apu_want.h" ".\include\apu.h" ".\include\apr_ldap.h" "$(OUTDIR)\libaprutil-1.dll"
-   if exist .\Release\libaprutil-1.dll.manifest mt.exe -manifest .\Release\libaprutil-1.dll.manifest -outputresource:.\Release\libaprutil-1.dll;2
-	echo Helper for Post-build step > "$(DS_POSTBUILD_DEP)"
-
 !ELSEIF  "$(CFG)" == "libaprutil - Win32 Debug"
-
-OUTDIR=.\Debug
+CPP_FLAG=/MDd /EHsc /Od 
+OUT_TAIL=.\Debug
 INTDIR=.\Debug
-# Begin Custom Macros
-OutDir=.\Debug
-# End Custom Macros
-
-!IF "$(RECURSE)" == "0" 
-
-ALL : ".\include\private\apu_select_dbm.h" ".\include\private\apu_config.h" ".\include\apu_want.h" ".\include\apu.h" ".\include\apr_ldap.h" "$(OUTDIR)\libaprutil-1.dll"
-
-!ELSE 
-
-ALL : "xml - Win32 Debug" ".\include\private\apu_select_dbm.h" ".\include\private\apu_config.h" ".\include\apu_want.h" ".\include\apu.h" ".\include\apr_ldap.h" "$(OUTDIR)\libaprutil-1.dll"
-
-!ENDIF 
-
-!IF "$(RECURSE)" == "1" 
-CLEAN :"xml - Win32 DebugCLEAN" 
-!ELSE 
-CLEAN :
-!ENDIF 
-	-@erase "$(INTDIR)\apr_base64.obj"
-	-@erase "$(INTDIR)\apr_brigade.obj"
-	-@erase "$(INTDIR)\apr_buckets.obj"
-	-@erase "$(INTDIR)\apr_buckets_alloc.obj"
-	-@erase "$(INTDIR)\apr_buckets_eos.obj"
-	-@erase "$(INTDIR)\apr_buckets_file.obj"
-	-@erase "$(INTDIR)\apr_buckets_flush.obj"
-	-@erase "$(INTDIR)\apr_buckets_heap.obj"
-	-@erase "$(INTDIR)\apr_buckets_mmap.obj"
-	-@erase "$(INTDIR)\apr_buckets_pipe.obj"
-	-@erase "$(INTDIR)\apr_buckets_pool.obj"
-	-@erase "$(INTDIR)\apr_buckets_refcount.obj"
-	-@erase "$(INTDIR)\apr_buckets_simple.obj"
-	-@erase "$(INTDIR)\apr_buckets_socket.obj"
-	-@erase "$(INTDIR)\apr_crypto.obj"
-	-@erase "$(INTDIR)\apr_date.obj"
-	-@erase "$(INTDIR)\apr_dbd.obj"
-	-@erase "$(INTDIR)\apr_dbm.obj"
-	-@erase "$(INTDIR)\apr_dbm_sdbm.obj"
-	-@erase "$(INTDIR)\apr_hooks.obj"
-	-@erase "$(INTDIR)\apr_ldap_stub.obj"
-	-@erase "$(INTDIR)\apr_ldap_url.obj"
-	-@erase "$(INTDIR)\apr_md4.obj"
-	-@erase "$(INTDIR)\apr_md5.obj"
-	-@erase "$(INTDIR)\apr_memcache.obj"
-	-@erase "$(INTDIR)\apr_queue.obj"
-	-@erase "$(INTDIR)\apr_reslist.obj"
-	-@erase "$(INTDIR)\apr_rmm.obj"
-	-@erase "$(INTDIR)\apr_sha1.obj"
-	-@erase "$(INTDIR)\apr_strmatch.obj"
-	-@erase "$(INTDIR)\apr_thread_pool.obj"
-	-@erase "$(INTDIR)\apr_uri.obj"
-	-@erase "$(INTDIR)\apr_xml.obj"
-	-@erase "$(INTDIR)\apu_dso.obj"
-	-@erase "$(INTDIR)\apu_version.obj"
-	-@erase "$(INTDIR)\getuuid.obj"
-	-@erase "$(INTDIR)\libaprutil.res"
-	-@erase "$(INTDIR)\libaprutil_src.idb"
-	-@erase "$(INTDIR)\libaprutil_src.pdb"
-	-@erase "$(INTDIR)\sdbm.obj"
-	-@erase "$(INTDIR)\sdbm_hash.obj"
-	-@erase "$(INTDIR)\sdbm_lock.obj"
-	-@erase "$(INTDIR)\sdbm_pair.obj"
-	-@erase "$(INTDIR)\uuid.obj"
-	-@erase "$(INTDIR)\xlate.obj"
-	-@erase "$(OUTDIR)\libaprutil-1.dll"
-	-@erase "$(OUTDIR)\libaprutil-1.exp"
-	-@erase "$(OUTDIR)\libaprutil-1.lib"
-	-@erase "$(OUTDIR)\libaprutil-1.pdb"
-	-@erase ".\include\apr_ldap.h"
-	-@erase ".\include\apu.h"
-	-@erase ".\include\apu_want.h"
-	-@erase ".\include\private\apu_config.h"
-	-@erase ".\include\private\apu_select_dbm.h"
-
-"$(OUTDIR)" :
-    if not exist "$(OUTDIR)/$(NULL)" mkdir "$(OUTDIR)"
-
-CPP=cl.exe
-CPP_PROJ=/nologo /MDd /W3 /Zi /Od /I "./include" /I "../apr/include" /I "./include/private" /I "../apr-iconv/include" /I "./dbm/sdbm" /I "./xml/expat/lib" /D "_DEBUG" /D "APU_DECLARE_EXPORT" /D "APU_USE_SDBM" /D "XML_STATIC" /D "WIN32" /D "_WINDOWS" /Fo"$(INTDIR)\\" /Fd"$(INTDIR)\libaprutil_src" /FD /EHsc /c 
-
-.c{$(INTDIR)}.obj::
-   $(CPP) @<<
-   $(CPP_PROJ) $< 
-<<
-
-.cpp{$(INTDIR)}.obj::
-   $(CPP) @<<
-   $(CPP_PROJ) $< 
-<<
-
-.cxx{$(INTDIR)}.obj::
-   $(CPP) @<<
-   $(CPP_PROJ) $< 
-<<
-
-.c{$(INTDIR)}.sbr::
-   $(CPP) @<<
-   $(CPP_PROJ) $< 
-<<
-
-.cpp{$(INTDIR)}.sbr::
-   $(CPP) @<<
-   $(CPP_PROJ) $< 
-<<
-
-.cxx{$(INTDIR)}.sbr::
-   $(CPP) @<<
-   $(CPP_PROJ) $< 
-<<
-
-MTL=midl.exe
-MTL_PROJ=/nologo /D "_DEBUG" /mktyplib203 /o /win32 "NUL" 
-RSC=rc.exe
-RSC_PROJ=/l 0x409 /fo"$(INTDIR)\libaprutil.res" /i "./include" /i "../apr/include" /d "_DEBUG" /d "APU_VERSION_ONLY" 
-BSC32=bscmake.exe
-BSC32_FLAGS=/nologo /o"$(OUTDIR)\libaprutil.bsc" 
-BSC32_SBRS= \
-	
-LINK32=link.exe
-LINK32_FLAGS=kernel32.lib advapi32.lib ws2_32.lib mswsock.lib ole32.lib /nologo /base:"0x6EE60000" /subsystem:windows /dll /incremental:no /pdb:"$(OUTDIR)\libaprutil-1.pdb" /debug /machine:IX86 /out:"$(OUTDIR)\libaprutil-1.dll" /implib:"$(OUTDIR)\libaprutil-1.lib" /MACHINE:X86 
-LINK32_OBJS= \
-	"$(INTDIR)\apr_brigade.obj" \
-	"$(INTDIR)\apr_buckets.obj" \
-	"$(INTDIR)\apr_buckets_alloc.obj" \
-	"$(INTDIR)\apr_buckets_eos.obj" \
-	"$(INTDIR)\apr_buckets_file.obj" \
-	"$(INTDIR)\apr_buckets_flush.obj" \
-	"$(INTDIR)\apr_buckets_heap.obj" \
-	"$(INTDIR)\apr_buckets_mmap.obj" \
-	"$(INTDIR)\apr_buckets_pipe.obj" \
-	"$(INTDIR)\apr_buckets_pool.obj" \
-	"$(INTDIR)\apr_buckets_refcount.obj" \
-	"$(INTDIR)\apr_buckets_simple.obj" \
-	"$(INTDIR)\apr_buckets_socket.obj" \
-	"$(INTDIR)\apr_crypto.obj" \
-	"$(INTDIR)\apr_md4.obj" \
-	"$(INTDIR)\apr_md5.obj" \
-	"$(INTDIR)\apr_sha1.obj" \
-	"$(INTDIR)\getuuid.obj" \
-	"$(INTDIR)\uuid.obj" \
-	"$(INTDIR)\apr_dbd.obj" \
-	"$(INTDIR)\apr_dbm.obj" \
-	"$(INTDIR)\apr_dbm_sdbm.obj" \
-	"$(INTDIR)\apr_base64.obj" \
-	"$(INTDIR)\apr_hooks.obj" \
-	"$(INTDIR)\apr_ldap_stub.obj" \
-	"$(INTDIR)\apr_ldap_url.obj" \
-	"$(INTDIR)\apr_memcache.obj" \
-	"$(INTDIR)\apr_date.obj" \
-	"$(INTDIR)\apu_dso.obj" \
-	"$(INTDIR)\apr_queue.obj" \
-	"$(INTDIR)\apr_reslist.obj" \
-	"$(INTDIR)\apr_rmm.obj" \
-	"$(INTDIR)\apr_thread_pool.obj" \
-	"$(INTDIR)\apu_version.obj" \
-	"$(INTDIR)\sdbm.obj" \
-	"$(INTDIR)\sdbm_hash.obj" \
-	"$(INTDIR)\sdbm_lock.obj" \
-	"$(INTDIR)\sdbm_pair.obj" \
-	"$(INTDIR)\apr_strmatch.obj" \
-	"$(INTDIR)\apr_uri.obj" \
-	"$(INTDIR)\xlate.obj" \
-	"$(INTDIR)\apr_xml.obj" \
-	"$(INTDIR)\libaprutil.res" \
-	".\xml\expat\lib\LibD\xml.lib"
-
-"$(OUTDIR)\libaprutil-1.dll" : "$(OUTDIR)" $(DEF_FILE) $(LINK32_OBJS)
-    $(LINK32) @<<
-  $(LINK32_FLAGS) $(LINK32_OBJS)
-<<
-
-TargetPath=.\Debug\libaprutil-1.dll
-SOURCE="$(InputPath)"
-PostBuild_Desc=Embed .manifest
-DS_POSTBUILD_DEP=$(INTDIR)\postbld.dep
-
-ALL : $(DS_POSTBUILD_DEP)
-
-# Begin Custom Macros
-OutDir=.\Debug
-# End Custom Macros
-
-$(DS_POSTBUILD_DEP) : "xml - Win32 Debug" ".\include\private\apu_select_dbm.h" ".\include\private\apu_config.h" ".\include\apu_want.h" ".\include\apu.h" ".\include\apr_ldap.h" "$(OUTDIR)\libaprutil-1.dll"
-   if exist .\Debug\libaprutil-1.dll.manifest mt.exe -manifest .\Debug\libaprutil-1.dll.manifest -outputresource:.\Debug\libaprutil-1.dll;2
-	echo Helper for Post-build step > "$(DS_POSTBUILD_DEP)"
-
 !ELSEIF  "$(CFG)" == "libaprutil - x64 Release"
-
-OUTDIR=.\x64\Release
+CPP_FLAG=/MD /O2 /Oy- 
+OUT_TAIL=.\x64\Release
 INTDIR=.\x64\Release
-# Begin Custom Macros
-OutDir=.\x64\Release
-# End Custom Macros
+!ELSEIF  "$(CFG)" == "libaprutil - x64 Debug"
+CPP_FLAG=/MDd /EHsc /Od 
+OUT_TAIL=.\x64\Debug
+INTDIR=.\x64\Debug
+!ENDIF
+APR_OUT=$(APR_PATH)\$(OUT_TAIL)
+API_OUT=$(API_PATH)\$(OUT_TAIL)
+APU_OUT=$(APU_PATH)\$(OUT_TAIL)
 
-!IF "$(RECURSE)" == "0" 
-
-ALL : ".\include\private\apu_select_dbm.h" ".\include\private\apu_config.h" ".\include\apu_want.h" ".\include\apu.h" ".\include\apr_ldap.h" "$(OUTDIR)\libaprutil-1.dll"
-
-!ELSE 
-
-ALL : "xml - x64 Release" ".\include\private\apu_select_dbm.h" ".\include\private\apu_config.h" ".\include\apu_want.h" ".\include\apu.h" ".\include\apr_ldap.h" "$(OUTDIR)\libaprutil-1.dll"
-
-!ENDIF 
+OUTDIR=$(INTDIR)
 
 !IF "$(RECURSE)" == "1" 
+!IF  "$(CFG)" == "libaprutil - Win32 Release"
+ALL : "xml - Win32 Release" ".\include\private\apu_select_dbm.h" ".\include\private\apu_config.h" ".\include\apu_want.h" ".\include\apu.h" ".\include\apr_ldap.h" "$(OUTDIR)\libaprutil-1.dll"
+CLEAN :"xml - Win32 ReleaseCLEAN" 
+!ELSEIF  "$(CFG)" == "libaprutil - Win32 Debug"
+ALL : "xml - Win32 Debug" ".\include\private\apu_select_dbm.h" ".\include\private\apu_config.h" ".\include\apu_want.h" ".\include\apu.h" ".\include\apr_ldap.h" "$(OUTDIR)\libaprutil-1.dll"
+CLEAN :"xml - Win32 DebugCLEAN" 
+!ELSEIF  "$(CFG)" == "libaprutil - x64 Release"
+ALL : "xml - x64 Release" ".\include\private\apu_select_dbm.h" ".\include\private\apu_config.h" ".\include\apu_want.h" ".\include\apu.h" ".\include\apr_ldap.h" "$(OUTDIR)\libaprutil-1.dll"
 CLEAN :"xml - x64 ReleaseCLEAN" 
+!ELSEIF  "$(CFG)" == "libaprutil - x64 Debug"
+ALL : "xml - x64 Debug" ".\include\private\apu_select_dbm.h" ".\include\private\apu_config.h" ".\include\apu_want.h" ".\include\apu.h" ".\include\apr_ldap.h" "$(OUTDIR)\libaprutil-1.dll"
+CLEAN :"xml - x64 DebugCLEAN" 
+!ENDIF 
 !ELSE 
+ALL : ".\include\private\apu_select_dbm.h" ".\include\private\apu_config.h" ".\include\apu_want.h" ".\include\apu.h" ".\include\apr_ldap.h" "$(OUTDIR)\libaprutil-1.dll"
 CLEAN :
 !ENDIF 
 	-@erase "$(INTDIR)\apr_base64.obj"
@@ -488,8 +129,11 @@ CLEAN :
 "$(OUTDIR)" :
     if not exist "$(OUTDIR)/$(NULL)" mkdir "$(OUTDIR)"
 
+"$(INTDIR)" :
+    if not exist "$(INTDIR)/$(NULL)" mkdir "$(INTDIR)"
+
 CPP=cl.exe
-CPP_PROJ=/nologo /MD /W3 /Zi /O2 /Oy- /I "./include" /I "../apr/include" /I "./include/private" /I "../apr-iconv/include" /I "./dbm/sdbm" /I "./xml/expat/lib" /D "NDEBUG" /D "APU_DECLARE_EXPORT" /D "APU_USE_SDBM" /D "XML_STATIC" /D "WIN32" /D "_WINDOWS" /Fo"$(INTDIR)\\" /Fd"$(INTDIR)\libaprutil_src" /FD /c 
+CPP_PROJ=/nologo $(CPP_FLAG) /W3 /Zi /I "./include" /I "$(APR_PATH)/include" /I "./include/private" /I "$(API_PATH)/include" /I "./dbm/sdbm" /I "$(PROGRAMDATA)/include/expat" /D "NDEBUG" /D "APU_DECLARE_EXPORT" /D "APU_USE_SDBM" /D "XML_STATIC" /D "WIN32" /D "_WINDOWS" /Fo"$(INTDIR)\\" /Fd"$(INTDIR)\libaprutil_src" /FD /c 
 
 .c{$(INTDIR)}.obj::
    $(CPP) @<<
@@ -530,7 +174,18 @@ BSC32_FLAGS=/nologo /o"$(OUTDIR)\libaprutil.bsc"
 BSC32_SBRS= \
 	
 LINK32=link.exe
-LINK32_FLAGS=kernel32.lib advapi32.lib ws2_32.lib mswsock.lib ole32.lib /nologo /base:"0x6EE60000" /subsystem:windows /dll /incremental:no /pdb:"$(OUTDIR)\libaprutil-1.pdb" /debug /machine:IX86 /out:"$(OUTDIR)\libaprutil-1.dll" /implib:"$(OUTDIR)\libaprutil-1.lib" /MACHINE:X64 /opt:ref 
+
+LINK32_FLAGS=kernel32.lib advapi32.lib ws2_32.lib mswsock.lib ole32.lib "$(APR_OUT)\libapr-1.lib" "$(API_OUT)\libapriconv-1.lib" /nologo /base:"0x6EE60000" /subsystem:windows /dll /incremental:no /pdb:"$(OUTDIR)\libaprutil-1.pdb" /debug /machine:IX86 /out:"$(OUTDIR)\libaprutil-1.dll" /implib:"$(OUTDIR)\libaprutil-1.lib" 
+!IF  "$(CFG)" == "libaprutil - Win32 Release"
+LINK32_FLAGS=$(LINK32_FLAGS) /MACHINE:X86 "$(PROGRAMDATA)\lib\x86\libexpat.lib" /opt:ref 
+!ELSEIF  "$(CFG)" == "libaprutil - Win32 Debug"
+LINK32_FLAGS=$(LINK32_FLAGS) /MACHINE:X86 "$(PROGRAMDATA)\lib\x86\libexpat.lib" 
+!ELSEIF  "$(CFG)" == "libaprutil - x64 Release"
+LINK32_FLAGS=$(LINK32_FLAGS) /MACHINE:X64 "$(PROGRAMDATA)\lib\x64\libexpat.lib" /opt:ref 
+!ELSEIF  "$(CFG)" == "libaprutil - x64 Debug"
+LINK32_FLAGS=$(LINK32_FLAGS) /MACHINE:X64 "$(PROGRAMDATA)\lib\x64\libexpat.lib" 
+!ENDIF
+
 LINK32_OBJS= \
 	"$(INTDIR)\apr_brigade.obj" \
 	"$(INTDIR)\apr_buckets.obj" \
@@ -575,221 +230,38 @@ LINK32_OBJS= \
 	"$(INTDIR)\xlate.obj" \
 	"$(INTDIR)\apr_xml.obj" \
 	"$(INTDIR)\libaprutil.res" \
-	".\xml\expat\lib\x64\LibR\xml.lib"
+#	".\xml\expat\lib\LibR\xml.lib"
 
 "$(OUTDIR)\libaprutil-1.dll" : "$(OUTDIR)" $(DEF_FILE) $(LINK32_OBJS)
     $(LINK32) @<<
   $(LINK32_FLAGS) $(LINK32_OBJS)
 <<
 
-TargetPath=.\x64\Release\libaprutil-1.dll
+TargetPath=$(OUTDIR)\libaprutil-1.dll
 SOURCE="$(InputPath)"
 PostBuild_Desc=Embed .manifest
 DS_POSTBUILD_DEP=$(INTDIR)\postbld.dep
 
 ALL : $(DS_POSTBUILD_DEP)
-
-# Begin Custom Macros
-OutDir=.\x64\Release
-# End Custom Macros
-
-$(DS_POSTBUILD_DEP) : "xml - x64 Release" ".\include\private\apu_select_dbm.h" ".\include\private\apu_config.h" ".\include\apu_want.h" ".\include\apu.h" ".\include\apr_ldap.h" "$(OUTDIR)\libaprutil-1.dll"
-   if exist .\x64\Release\libaprutil-1.dll.manifest mt.exe -manifest .\x64\Release\libaprutil-1.dll.manifest -outputresource:.\x64\Release\libaprutil-1.dll;2
-	echo Helper for Post-build step > "$(DS_POSTBUILD_DEP)"
-
-!ELSEIF  "$(CFG)" == "libaprutil - x64 Debug"
-
-OUTDIR=.\x64\Debug
-INTDIR=.\x64\Debug
-# Begin Custom Macros
-OutDir=.\x64\Debug
-# End Custom Macros
-
-!IF "$(RECURSE)" == "0" 
-
-ALL : ".\include\private\apu_select_dbm.h" ".\include\private\apu_config.h" ".\include\apu_want.h" ".\include\apu.h" ".\include\apr_ldap.h" "$(OUTDIR)\libaprutil-1.dll"
-
-!ELSE 
-
-ALL : "xml - x64 Debug" ".\include\private\apu_select_dbm.h" ".\include\private\apu_config.h" ".\include\apu_want.h" ".\include\apu.h" ".\include\apr_ldap.h" "$(OUTDIR)\libaprutil-1.dll"
-
-!ENDIF 
 
 !IF "$(RECURSE)" == "1" 
-CLEAN :"xml - x64 DebugCLEAN" 
-!ELSE 
-CLEAN :
+!IF  "$(CFG)" == "libaprutil - Win32 Release"
+$(DS_POSTBUILD_DEP) : "xml - Win32 Release" 
+!ELSEIF  "$(CFG)" == "libaprutil - Win32 Debug"
+$(DS_POSTBUILD_DEP) : "xml - Win32 Debug" 
+!ELSEIF  "$(CFG)" == "libaprutil - x64 Release"
+$(DS_POSTBUILD_DEP) : "xml - x64 Release" 
+!ELSEIF  "$(CFG)" == "libaprutil - x64 Debug"
+$(DS_POSTBUILD_DEP) : "xml - x64 Debug" 
 !ENDIF 
-	-@erase "$(INTDIR)\apr_base64.obj"
-	-@erase "$(INTDIR)\apr_brigade.obj"
-	-@erase "$(INTDIR)\apr_buckets.obj"
-	-@erase "$(INTDIR)\apr_buckets_alloc.obj"
-	-@erase "$(INTDIR)\apr_buckets_eos.obj"
-	-@erase "$(INTDIR)\apr_buckets_file.obj"
-	-@erase "$(INTDIR)\apr_buckets_flush.obj"
-	-@erase "$(INTDIR)\apr_buckets_heap.obj"
-	-@erase "$(INTDIR)\apr_buckets_mmap.obj"
-	-@erase "$(INTDIR)\apr_buckets_pipe.obj"
-	-@erase "$(INTDIR)\apr_buckets_pool.obj"
-	-@erase "$(INTDIR)\apr_buckets_refcount.obj"
-	-@erase "$(INTDIR)\apr_buckets_simple.obj"
-	-@erase "$(INTDIR)\apr_buckets_socket.obj"
-	-@erase "$(INTDIR)\apr_crypto.obj"
-	-@erase "$(INTDIR)\apr_date.obj"
-	-@erase "$(INTDIR)\apr_dbd.obj"
-	-@erase "$(INTDIR)\apr_dbm.obj"
-	-@erase "$(INTDIR)\apr_dbm_sdbm.obj"
-	-@erase "$(INTDIR)\apr_hooks.obj"
-	-@erase "$(INTDIR)\apr_ldap_stub.obj"
-	-@erase "$(INTDIR)\apr_ldap_url.obj"
-	-@erase "$(INTDIR)\apr_md4.obj"
-	-@erase "$(INTDIR)\apr_md5.obj"
-	-@erase "$(INTDIR)\apr_memcache.obj"
-	-@erase "$(INTDIR)\apr_queue.obj"
-	-@erase "$(INTDIR)\apr_reslist.obj"
-	-@erase "$(INTDIR)\apr_rmm.obj"
-	-@erase "$(INTDIR)\apr_sha1.obj"
-	-@erase "$(INTDIR)\apr_strmatch.obj"
-	-@erase "$(INTDIR)\apr_thread_pool.obj"
-	-@erase "$(INTDIR)\apr_uri.obj"
-	-@erase "$(INTDIR)\apr_xml.obj"
-	-@erase "$(INTDIR)\apu_dso.obj"
-	-@erase "$(INTDIR)\apu_version.obj"
-	-@erase "$(INTDIR)\getuuid.obj"
-	-@erase "$(INTDIR)\libaprutil.res"
-	-@erase "$(INTDIR)\libaprutil_src.idb"
-	-@erase "$(INTDIR)\libaprutil_src.pdb"
-	-@erase "$(INTDIR)\sdbm.obj"
-	-@erase "$(INTDIR)\sdbm_hash.obj"
-	-@erase "$(INTDIR)\sdbm_lock.obj"
-	-@erase "$(INTDIR)\sdbm_pair.obj"
-	-@erase "$(INTDIR)\uuid.obj"
-	-@erase "$(INTDIR)\xlate.obj"
-	-@erase "$(OUTDIR)\libaprutil-1.dll"
-	-@erase "$(OUTDIR)\libaprutil-1.exp"
-	-@erase "$(OUTDIR)\libaprutil-1.lib"
-	-@erase "$(OUTDIR)\libaprutil-1.pdb"
-	-@erase ".\include\apr_ldap.h"
-	-@erase ".\include\apu.h"
-	-@erase ".\include\apu_want.h"
-	-@erase ".\include\private\apu_config.h"
-	-@erase ".\include\private\apu_select_dbm.h"
+!ENDIF 
 
-"$(OUTDIR)" :
-    if not exist "$(OUTDIR)/$(NULL)" mkdir "$(OUTDIR)"
-
-CPP=cl.exe
-CPP_PROJ=/nologo /MDd /W3 /Zi /Od /I "./include" /I "../apr/include" /I "./include/private" /I "../apr-iconv/include" /I "./dbm/sdbm" /I "./xml/expat/lib" /D "_DEBUG" /D "APU_DECLARE_EXPORT" /D "APU_USE_SDBM" /D "XML_STATIC" /D "WIN32" /D "_WINDOWS" /Fo"$(INTDIR)\\" /Fd"$(INTDIR)\libaprutil_src" /FD /EHsc /c 
-
-.c{$(INTDIR)}.obj::
-   $(CPP) @<<
-   $(CPP_PROJ) $< 
-<<
-
-.cpp{$(INTDIR)}.obj::
-   $(CPP) @<<
-   $(CPP_PROJ) $< 
-<<
-
-.cxx{$(INTDIR)}.obj::
-   $(CPP) @<<
-   $(CPP_PROJ) $< 
-<<
-
-.c{$(INTDIR)}.sbr::
-   $(CPP) @<<
-   $(CPP_PROJ) $< 
-<<
-
-.cpp{$(INTDIR)}.sbr::
-   $(CPP) @<<
-   $(CPP_PROJ) $< 
-<<
-
-.cxx{$(INTDIR)}.sbr::
-   $(CPP) @<<
-   $(CPP_PROJ) $< 
-<<
-
-MTL=midl.exe
-MTL_PROJ=/nologo /D "_DEBUG" /mktyplib203 /o /win32 "NUL" 
-RSC=rc.exe
-RSC_PROJ=/l 0x409 /fo"$(INTDIR)\libaprutil.res" /i "./include" /i "../apr/include" /d "_DEBUG" /d "APU_VERSION_ONLY" 
-BSC32=bscmake.exe
-BSC32_FLAGS=/nologo /o"$(OUTDIR)\libaprutil.bsc" 
-BSC32_SBRS= \
-	
-LINK32=link.exe
-LINK32_FLAGS=kernel32.lib advapi32.lib ws2_32.lib mswsock.lib ole32.lib /nologo /base:"0x6EE60000" /subsystem:windows /dll /incremental:no /pdb:"$(OUTDIR)\libaprutil-1.pdb" /debug /machine:IX86 /out:"$(OUTDIR)\libaprutil-1.dll" /implib:"$(OUTDIR)\libaprutil-1.lib" /MACHINE:X64 
-LINK32_OBJS= \
-	"$(INTDIR)\apr_brigade.obj" \
-	"$(INTDIR)\apr_buckets.obj" \
-	"$(INTDIR)\apr_buckets_alloc.obj" \
-	"$(INTDIR)\apr_buckets_eos.obj" \
-	"$(INTDIR)\apr_buckets_file.obj" \
-	"$(INTDIR)\apr_buckets_flush.obj" \
-	"$(INTDIR)\apr_buckets_heap.obj" \
-	"$(INTDIR)\apr_buckets_mmap.obj" \
-	"$(INTDIR)\apr_buckets_pipe.obj" \
-	"$(INTDIR)\apr_buckets_pool.obj" \
-	"$(INTDIR)\apr_buckets_refcount.obj" \
-	"$(INTDIR)\apr_buckets_simple.obj" \
-	"$(INTDIR)\apr_buckets_socket.obj" \
-	"$(INTDIR)\apr_crypto.obj" \
-	"$(INTDIR)\apr_md4.obj" \
-	"$(INTDIR)\apr_md5.obj" \
-	"$(INTDIR)\apr_sha1.obj" \
-	"$(INTDIR)\getuuid.obj" \
-	"$(INTDIR)\uuid.obj" \
-	"$(INTDIR)\apr_dbd.obj" \
-	"$(INTDIR)\apr_dbm.obj" \
-	"$(INTDIR)\apr_dbm_sdbm.obj" \
-	"$(INTDIR)\apr_base64.obj" \
-	"$(INTDIR)\apr_hooks.obj" \
-	"$(INTDIR)\apr_ldap_stub.obj" \
-	"$(INTDIR)\apr_ldap_url.obj" \
-	"$(INTDIR)\apr_memcache.obj" \
-	"$(INTDIR)\apr_date.obj" \
-	"$(INTDIR)\apu_dso.obj" \
-	"$(INTDIR)\apr_queue.obj" \
-	"$(INTDIR)\apr_reslist.obj" \
-	"$(INTDIR)\apr_rmm.obj" \
-	"$(INTDIR)\apr_thread_pool.obj" \
-	"$(INTDIR)\apu_version.obj" \
-	"$(INTDIR)\sdbm.obj" \
-	"$(INTDIR)\sdbm_hash.obj" \
-	"$(INTDIR)\sdbm_lock.obj" \
-	"$(INTDIR)\sdbm_pair.obj" \
-	"$(INTDIR)\apr_strmatch.obj" \
-	"$(INTDIR)\apr_uri.obj" \
-	"$(INTDIR)\xlate.obj" \
-	"$(INTDIR)\apr_xml.obj" \
-	"$(INTDIR)\libaprutil.res" \
-	".\xml\expat\lib\x64\LibD\xml.lib"
-
-"$(OUTDIR)\libaprutil-1.dll" : "$(OUTDIR)" $(DEF_FILE) $(LINK32_OBJS)
-    $(LINK32) @<<
-  $(LINK32_FLAGS) $(LINK32_OBJS)
-<<
-
-TargetPath=.\x64\Debug\libaprutil-1.dll
-SOURCE="$(InputPath)"
-PostBuild_Desc=Embed .manifest
-DS_POSTBUILD_DEP=$(INTDIR)\postbld.dep
-
-ALL : $(DS_POSTBUILD_DEP)
-
-# Begin Custom Macros
-OutDir=.\x64\Debug
-# End Custom Macros
-
-$(DS_POSTBUILD_DEP) : "xml - x64 Debug" ".\include\private\apu_select_dbm.h" ".\include\private\apu_config.h" ".\include\apu_want.h" ".\include\apu.h" ".\include\apr_ldap.h" "$(OUTDIR)\libaprutil-1.dll"
-   if exist .\x64\Debug\libaprutil-1.dll.manifest mt.exe -manifest .\x64\Debug\libaprutil-1.dll.manifest -outputresource:.\x64\Debug\libaprutil-1.dll;2
+$(DS_POSTBUILD_DEP) : ".\include\private\apu_select_dbm.h" ".\include\private\apu_config.h" ".\include\apu_want.h" ".\include\apu.h" ".\include\apr_ldap.h" "$(OUTDIR)\libaprutil-1.dll"
+	if exist $(OUTDIR)\libaprutil-1.dll.manifest mt.exe -manifest $(OUTDIR)\libaprutil-1.dll.manifest -outputresource:$(OUTDIR)\libaprutil-1.dll;2
 	echo Helper for Post-build step > "$(DS_POSTBUILD_DEP)"
 
-!ENDIF 
 
-
+    
 !IF "$(NO_EXTERNAL_DEPS)" != "1"
 !IF EXISTS("libaprutil.dep")
 !INCLUDE "libaprutil.dep"

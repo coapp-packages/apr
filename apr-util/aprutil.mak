@@ -117,7 +117,8 @@ CLEAN :
     if not exist "$(OUTDIR)/$(NULL)" mkdir "$(OUTDIR)"
 
 CPP=cl.exe
-CPP_PROJ=/nologo /MD /W3 /Zi /O2 /Oy- /I "./include" /I "../apr/include" /I "./include/private" /I "../apr-iconv/include" /I "./dbm/sdbm" /I "./xml/expat/lib" /D "NDEBUG" /D "APR_DECLARE_STATIC" /D "APU_DECLARE_STATIC" /D "API_DECLARE_STATIC" /D "APU_USE_SDBM" /D "HAVE_SQL_H" /D "XML_STATIC" /D "WIN32" /D "_WINDOWS" /Fo"$(INTDIR)\\" /Fd"$(OUTDIR)\aprutil-1" /FD /c 
+#CPP_PROJ=/nologo /MD /W3 /Zi /O2 /Oy- /I "./include" /I "../apr/include" /I "./include/private" /I "../apr-iconv/include" /I "./dbm/sdbm" /I "./xml/expat/lib" /D "NDEBUG" /D "APR_DECLARE_STATIC" /D "APU_DECLARE_STATIC" /D "API_DECLARE_STATIC" /D "APU_USE_SDBM" /D "HAVE_SQL_H" /D "XML_STATIC" /D "WIN32" /D "_WINDOWS" /Fo"$(INTDIR)\\" /Fd"$(OUTDIR)\aprutil-1" /FD /c 
+CPP_PROJ=/nologo /MD /W3 /Zi /O2 /Oy- /I "./include" /I "../apr/include" /I "./include/private" /I "../apr-iconv/include" /I "./dbm/sdbm" /I "%ProgramData%/include/expat" /D "NDEBUG" /D "APR_DECLARE_STATIC" /D "APU_DECLARE_STATIC" /D "API_DECLARE_STATIC" /D "APU_USE_SDBM" /D "HAVE_SQL_H" /D "WIN32" /D "_WINDOWS" /Fo"$(INTDIR)\\" /Fd"$(OUTDIR)\aprutil-1" /FD /c 
 
 .c{$(INTDIR)}.obj::
    $(CPP) @<<
@@ -211,7 +212,7 @@ LIB32_OBJS= \
 	"$(INTDIR)\apr_uri.obj" \
 	"$(INTDIR)\xlate.obj" \
 	"$(INTDIR)\apr_xml.obj" \
-	".\xml\expat\lib\LibR\xml.lib"
+#	".\xml\expat\lib\LibR\xml.lib"
 
 "$(OUTDIR)\aprutil-1.lib" : "$(OUTDIR)" $(DEF_FILE) $(LIB32_OBJS)
     $(LIB32) @<<
@@ -308,7 +309,8 @@ CLEAN :
     if not exist "$(OUTDIR)/$(NULL)" mkdir "$(OUTDIR)"
 
 CPP=cl.exe
-CPP_PROJ=/nologo /MDd /W3 /Zi /Od /I "./include" /I "../apr/include" /I "./include/private" /I "../apr-iconv/include" /I "./dbm/sdbm" /I "./xml/expat/lib" /D "_DEBUG" /D "APR_DECLARE_STATIC" /D "APU_DECLARE_STATIC" /D "API_DECLARE_STATIC" /D "APU_USE_SDBM" /D "HAVE_SQL_H" /D "XML_STATIC" /D "WIN32" /D "_WINDOWS" /Fo"$(INTDIR)\\" /Fd"$(OUTDIR)\aprutil-1" /FD /EHsc /c 
+#CPP_PROJ=/nologo /MDd /W3 /Zi /Od /I "./include" /I "../apr/include" /I "./include/private" /I "../apr-iconv/include" /I "./dbm/sdbm" /I "./xml/expat/lib" /D "_DEBUG" /D "APR_DECLARE_STATIC" /D "APU_DECLARE_STATIC" /D "API_DECLARE_STATIC" /D "APU_USE_SDBM" /D "HAVE_SQL_H" /D "XML_STATIC" /D "WIN32" /D "_WINDOWS" /Fo"$(INTDIR)\\" /Fd"$(OUTDIR)\aprutil-1" /FD /EHsc /c 
+CPP_PROJ=/nologo /MDd /W3 /Zi /Od /I "./include" /I "../apr/include" /I "./include/private" /I "../apr-iconv/include" /I "./dbm/sdbm" /I "%ProgramData%/include/expat" /D "_DEBUG" /D "APR_DECLARE_STATIC" /D "APU_DECLARE_STATIC" /D "API_DECLARE_STATIC" /D "APU_USE_SDBM" /D "HAVE_SQL_H" /D "WIN32" /D "_WINDOWS" /Fo"$(INTDIR)\\" /Fd"$(OUTDIR)\aprutil-1" /FD /EHsc /c 
 
 .c{$(INTDIR)}.obj::
    $(CPP) @<<
@@ -402,7 +404,7 @@ LIB32_OBJS= \
 	"$(INTDIR)\apr_uri.obj" \
 	"$(INTDIR)\xlate.obj" \
 	"$(INTDIR)\apr_xml.obj" \
-	".\xml\expat\lib\LibD\xml.lib"
+#	".\xml\expat\lib\LibD\xml.lib"
 
 "$(OUTDIR)\aprutil-1.lib" : "$(OUTDIR)" $(DEF_FILE) $(LIB32_OBJS)
     $(LIB32) @<<
@@ -499,7 +501,8 @@ CLEAN :
     if not exist "$(OUTDIR)/$(NULL)" mkdir "$(OUTDIR)"
 
 CPP=cl.exe
-CPP_PROJ=/nologo /MD /W3 /Zi /O2 /Oy- /I "./include" /I "../apr/include" /I "./include/private" /I "../apr-iconv/include" /I "./dbm/sdbm" /I "./xml/expat/lib" /D "NDEBUG" /D "APR_DECLARE_STATIC" /D "APU_DECLARE_STATIC" /D "API_DECLARE_STATIC" /D "APU_USE_SDBM" /D "HAVE_SQL_H" /D "XML_STATIC" /D "WIN32" /D "_WINDOWS" /Fo"$(INTDIR)\\" /Fd"$(OUTDIR)\aprutil-1" /FD /c 
+#CPP_PROJ=/nologo /MD /W3 /Zi /O2 /Oy- /I "./include" /I "../apr/include" /I "./include/private" /I "../apr-iconv/include" /I "./dbm/sdbm" /I "./xml/expat/lib" /D "NDEBUG" /D "APR_DECLARE_STATIC" /D "APU_DECLARE_STATIC" /D "API_DECLARE_STATIC" /D "APU_USE_SDBM" /D "HAVE_SQL_H" /D "XML_STATIC" /D "WIN32" /D "_WINDOWS" /Fo"$(INTDIR)\\" /Fd"$(OUTDIR)\aprutil-1" /FD /c 
+CPP_PROJ=/nologo /MD /W3 /Zi /O2 /Oy- /I "./include" /I "../apr/include" /I "./include/private" /I "../apr-iconv/include" /I "./dbm/sdbm" /I "%ProgramData%/include/expat" /D "APR_DECLARE_STATIC" /D "APU_DECLARE_STATIC" /D "API_DECLARE_STATIC" /D "APU_USE_SDBM" /D "HAVE_SQL_H" /D "WIN32" /D "_WINDOWS" /Fo"$(INTDIR)\\" /Fd"$(OUTDIR)\aprutil-1" /FD /c 
 
 .c{$(INTDIR)}.obj::
    $(CPP) @<<
@@ -593,7 +596,7 @@ LIB32_OBJS= \
 	"$(INTDIR)\apr_uri.obj" \
 	"$(INTDIR)\xlate.obj" \
 	"$(INTDIR)\apr_xml.obj" \
-	".\xml\expat\lib\x64\LibR\xml.lib"
+#	".\xml\expat\lib\x64\LibR\xml.lib"
 
 "$(OUTDIR)\aprutil-1.lib" : "$(OUTDIR)" $(DEF_FILE) $(LIB32_OBJS)
     $(LIB32) @<<
@@ -690,7 +693,8 @@ CLEAN :
     if not exist "$(OUTDIR)/$(NULL)" mkdir "$(OUTDIR)"
 
 CPP=cl.exe
-CPP_PROJ=/nologo /MDd /W3 /Zi /Od /I "./include" /I "../apr/include" /I "./include/private" /I "../apr-iconv/include" /I "./dbm/sdbm" /I "./xml/expat/lib" /D "_DEBUG" /D "APR_DECLARE_STATIC" /D "APU_DECLARE_STATIC" /D "API_DECLARE_STATIC" /D "APU_USE_SDBM" /D "HAVE_SQL_H" /D "XML_STATIC" /D "WIN32" /D "_WINDOWS" /Fo"$(INTDIR)\\" /Fd"$(OUTDIR)\aprutil-1" /FD /EHsc /c 
+#CPP_PROJ=/nologo /MDd /W3 /Zi /Od /I "./include" /I "../apr/include" /I "./include/private" /I "../apr-iconv/include" /I "./dbm/sdbm" /I "./xml/expat/lib" /D "_DEBUG" /D "APR_DECLARE_STATIC" /D "APU_DECLARE_STATIC" /D "API_DECLARE_STATIC" /D "APU_USE_SDBM" /D "HAVE_SQL_H" /D "XML_STATIC" /D "WIN32" /D "_WINDOWS" /Fo"$(INTDIR)\\" /Fd"$(OUTDIR)\aprutil-1" /FD /EHsc /c 
+CPP_PROJ=/nologo /MDd /W3 /Zi /Od /I "./include" /I "../apr/include" /I "./include/private" /I "../apr-iconv/include" /I "./dbm/sdbm" /I "%ProgramData%/include/expat" /D "_DEBUG" /D "APR_DECLARE_STATIC" /D "APU_DECLARE_STATIC" /D "API_DECLARE_STATIC" /D "APU_USE_SDBM" /D "HAVE_SQL_H" /D "WIN32" /D "_WINDOWS" /Fo"$(INTDIR)\\" /Fd"$(OUTDIR)\aprutil-1" /FD /EHsc /c 
 
 .c{$(INTDIR)}.obj::
    $(CPP) @<<
@@ -784,7 +788,7 @@ LIB32_OBJS= \
 	"$(INTDIR)\apr_uri.obj" \
 	"$(INTDIR)\xlate.obj" \
 	"$(INTDIR)\apr_xml.obj" \
-	".\xml\expat\lib\x64\LibD\xml.lib"
+#	".\xml\expat\lib\x64\LibD\xml.lib"
 
 "$(OUTDIR)\aprutil-1.lib" : "$(OUTDIR)" $(DEF_FILE) $(LIB32_OBJS)
     $(LIB32) @<<

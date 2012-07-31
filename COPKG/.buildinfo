@@ -1,11 +1,17 @@
 /* target information */
-@import "version.inc";
+@import "apr_version.inc";
+@import "api_version.inc";
+@import "apu_version.inc";
 
-#define {    NewVersion : "${package-version++}";}
+#define {    
+    NewAPR : "${apr-version++}";
+    NewAPI : "${api-version++}";
+    NewAPU : "${apu-version++}";
+}
 
 #product-info  {
 	product-name: "apr";
-	version: "trunk";
+	version: "1.4";
 	original-source-location: "https://github.com/apache/apr";
 	original-source-website: "http://apr.apache.org/";
 	license: "Apache License";
@@ -19,10 +25,8 @@ test {
 		BUILT="${BUILT??false}";
 	};
     default : false;
-    build-command: @"
-        if ""${BUILT}"" neq ""true"" ptk --nologo release
-        REM Tests are performed automatically during the build process.
-    ";
+    // Tests are performed automatically during the build process.
+    uses: release;
 };
 
 package {
@@ -32,26 +36,56 @@ package {
     uses : {
         update-version,
         sign,
+        apr-package,
+        api-package,
+        apu-package,
     };
-    
-    targets: { 
-        (COMP,PLAT) => @"copkg\apr-dev[${0}]-${NewVersion}-${1}.msi",
-    };
-    
+	clean-command: @"del COPKG\*.msi COPKG\*.wixpdb";
+};
+
+apr-package {
+    set: COMP="${COMP??vc10}";
+    set: PLAT="${PLAT??x86, x64}";
+    default : false;
+    targets: {(COMP,PLAT) => @"copkg\apr-dev[${0}]-${NewAPR}-${1}.msi",};
     build-command : @"
         pushd COPKG
         autopackage apr-dev-common.autopkg || goto failed
-        
-        for %%a in (${COMP}) do (
-            for %%b in (${PLAT}) do (
+        for %%a in (${COMP}) do ( for %%b in (${PLAT}) do (
                 autopackage --comp=%%a --plat=%%b apr.autopkg apr-dev.autopkg || goto failed
-            )
-        )
+        ) )
         popd
     ";
+};
 
-	clean-command: @"del COPKG\*.msi COPKG\*.wixpdb";
-	
+api-package {
+    set: COMP="${COMP??vc10}";
+    set: PLAT="${PLAT??x86, x64}";
+    default : false;
+    targets: {(COMP,PLAT) => @"copkg\apr-dev[${0}]-${NewAPI}-${1}.msi",};
+    build-command : @"
+        pushd COPKG
+        autopackage apr-iconv-dev-common.autopkg || goto failed
+        for %%a in (${COMP}) do ( for %%b in (${PLAT}) do (
+                autopackage --comp=%%a --plat=%%b apr-iconv.autopkg apr-iconv-dev.autopkg || goto failed
+        ) )
+        popd
+    ";
+};
+
+apu-package {
+    set: COMP="${COMP??vc10}";
+    set: PLAT="${PLAT??x86, x64}";
+    default : false;
+    targets: {(COMP,PLAT) => @"copkg\apr-dev[${0}]-${NewAPU}-${1}.msi",};
+    build-command : @"
+        pushd COPKG
+        autopackage apr-dev-common.autopkg || goto failed
+        for %%a in (${COMP}) do ( for %%b in (${PLAT}) do (
+                autopackage --comp=%%a --plat=%%b apr.autopkg apr-dev.autopkg || goto failed
+        ) )
+        popd
+    ";
 };
 
 
@@ -59,12 +93,16 @@ update-version {
     default : false;
     
     build-command : @"
-        REM auto-increment version.inc file...
+        REM auto-increment version.inc files...
         if ""${noversion}"" == ""true"" goto :endver
         pushd COPKG
         setlocal EnableDelayedExpansion
-        set VERSTRING=#define { package-version: ${NewVersion}; }
-        echo !VERSTRING! > version.inc
+        set VERSTRING=#define { package-version: ${NewAPR}; }
+        echo !VERSTRING! > apr_version.inc
+        set VERSTRING=#define { package-version: ${NewAPI}; }
+        echo !VERSTRING! > api_version.inc
+        set VERSTRING=#define { package-version: ${NewAPU}; }
+        echo !VERSTRING! > apu_version.inc
         popd
         :endver
     ";
@@ -78,11 +116,13 @@ release {
 	};
 	
 	build-command: @"
+        if ""${BUILT}"" equ ""true"" goto endrel
         for %%A in (${COMP}) do (
             for %%B in (${PLAT}) do (
                 ptk --nologo base --COMP=%%A --PLAT=%%B --BuildCfg=${BuildCfg} || goto failed
             )
 		)
+        :endrel
 	";
     
 };
@@ -93,8 +133,8 @@ sign {
 		PLAT="${PLAT??x86, x64}";
     };
     default : false;
+    uses: release;
     build-command: @"
-        if ""${BUILT}"" neq ""true"" ptk release --nologo --COMP=""${COMP}"" --PLAT=""${PLAT}""
         for %%A in (${COMP}) do (
             for %%B in (${PLAT}) do (
                 simplesigner.exe --nologo --sign output\%%A\%%B\Release\**.dll
@@ -123,20 +163,34 @@ base {
     requires: "openssl-dev[${COMP}]-1.0-${PLAT}-1e373a58e25250cb";
 
     targets: { 
-		"output\${COMP}\${PLAT}\LibR\apr-1.lib",
+        // apr
 		"output\${COMP}\${PLAT}\Release\libapr-1.lib",
 		"output\${COMP}\${PLAT}\Release\libapr-1.dll",
-		"output\${COMP}\${PLAT}\Release\libapr-1.exp",
+        // apr-iconv
+        "output\${COMP}\${PLAT}\Release\libapriconv-1.lib",
+        "output\${COMP}\${PLAT}\Release\libapriconv-1.dll",
+        // apr-util
+        "output\${COMP}\${PLAT}\Release\libaprutil-1.lib",
+        "output\${COMP}\${PLAT}\Release\libaprutil-1.dll",
+        "output\${COMP}\${PLAT}\Release\apr_ldap-1.lib",
+        "output\${COMP}\${PLAT}\Release\apr_ldap-1.dll",
+        "output\${COMP}\${PLAT}\Release\apr_dbd_odbc-1.lib",
+        "output\${COMP}\${PLAT}\Release\apr_dbd_odbc-1.dll",
 	};
 	
     build-command:@"
         REM this makes it so that DLLs can have their own SxS Activation Context in an embedded resource.
 		echo %_CL% | findstr ISOLATION_AWARE || set _CL=%CL% /D ISOLATION_AWARE_ENABLED
 
-        nmake -f Makefile.win COMP=${COMP} all || goto failed
+        echo Building ${COMP}-${PLAT}
+        pushd apr-util
+        nmake -f Makefile.win CRYPTO_LIST=""openssl"" COMP=${COMP} APR_PATH=""%CD%\.."" API_PATH=""%CD%\..\apr-iconv"" APU_PATH=""%CD%"" MAKEOPT=""-nologo"" APR_OUT=$(APR_PATH)\$(OUT_TAIL) COAPP=${PLAT} all || goto failed
+        popd
     ";
     clean-command:@"
+        cd apr-util
         nmake -f Makefile.win COMP=${COMP} clean
+        cd..
         if exist ipch rmdir /s /q ipch > nul 2> nul
         if exist output rmdir /s /q output > nul 2> nul
         del /S /Q /A - *.sdf *.suo *.user *.exe *.pdb > nul 2>NUL

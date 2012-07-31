@@ -61,7 +61,8 @@ ALL_TESTS = $(INTDIR)\teststrmatch.obj $(INTDIR)\testuri.obj \
 	$(INTDIR)\testdbm.obj $(INTDIR)\testreslist.obj \
 	$(INTDIR)\testxml.obj $(INTDIR)\testqueue.obj \
 	$(INTDIR)\testrmm.obj $(INTDIR)\testxlate.obj \
-	$(INTDIR)\testdate.obj $(INTDIR)\testmemcache.obj
+	$(INTDIR)\testdate.obj $(INTDIR)\testmemcache.obj\
+	$(INTDIR)\testcrypto.obj
 
 CLEAN_DATA = manyfile.bin testfile.txt data\sqlite*.db
 
@@ -86,14 +87,14 @@ APROUTDIR=$(OUTDIR)
 
 !IF "$(MODEL)" == "static"
 PROGRAM_DEPENDENCIES = \
-	$(APR_PATH)\$(APROUTDIR)\apr-1.lib \
-	..\$(OUTDIR)\aprutil-1.lib 
+	$(APROUTDIR)\apr-1.lib \
+	$(OUTDIR)\aprutil-1.lib 
 STATIC_CFLAGS = /D APR_DECLARE_STATIC /D APU_DECLARE_STATIC
 STATIC_LIBS = odbc32.lib odbccp32.lib wldap32.lib 
 !ELSE
 PROGRAM_DEPENDENCIES = \
-	$(APR_PATH)\$(APROUTDIR)\libapr-1.lib \
-	..\$(OUTDIR)\libaprutil-1.lib 
+	$(APROUTDIR)\libapr-1.lib \
+	$(OUTDIR)\libaprutil-1.lib 
 STATIC_CFLAGS =
 # APR 1.3 doesn't fully abstract ldap_ calls to permit switching providers;
 STATIC_LIBS = wldap32.lib 
@@ -156,13 +157,21 @@ PATH=$(OUTDIR);..\$(OUTDIR);..\ldap\$(OUTDIR);..\dbd\$(OUTDIR);$(API_PATH)\$(OUT
 !ENDIF
 APR_ICONV1_PATH=$(API_PATH)\$(OUTDIR)\iconv
 
+!IFDEF COAPP
+check: $(PROGRAMS) $(OTHER_PROGRAMS) coapp-signing
+!ELSE
 check: $(PROGRAMS) $(OTHER_PROGRAMS)
-	echo Testing dbd sqlite2 && $(OUTDIR)\dbd.exe sqlite2 || echo Failed
-	echo Testing dbd sqlite3 && $(OUTDIR)\dbd.exe sqlite3 || echo Failed
+!ENDIF
+#	echo Testing dbd sqlite2 && $(OUTDIR)\dbd.exe sqlite2 || echo Failed
+#	echo Testing dbd sqlite3 && $(OUTDIR)\dbd.exe sqlite3 || echo Failed
 	@for %p in ($(PROGRAMS)) do @( \
-	    echo Testing %p && %p -v || echo %p failed \
+	    echo Testing %p && %p -v $(TESTOPTS) || echo %p failed \
 	)
 
 checkall: check
+
+coapp-signing: $(PROGRAMS) $(OTHER_PROGRAMS)
+	@for /F %a in ('dir /b "$(OUTDIR)\*.exe"') do simplesigner --reference-assembly="expat[$(COMP)], Version=2.1.0.0, PublicKeyToken=1e373a58e25250cb, ProcessorArchitecture=$(COAPP)" "$(OUTDIR)\%a"
+
 
 # DO NOT REMOVE

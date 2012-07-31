@@ -27,6 +27,10 @@ NULL=
 NULL=nul
 !ENDIF 
 
+APR_PATH=..\apr
+API_PATH=..\apr-iconv
+APU_PATH=..\apr-util
+
 !IF  "$(CFG)" == "apr_ldap - Win32 Release"
 
 OUTDIR=.\Release
@@ -112,14 +116,14 @@ LINK32_OBJS= \
 	"$(INTDIR)\apr_ldap_option.obj" \
 	"$(INTDIR)\apr_ldap_rebind.obj" \
 	"$(INTDIR)\apr_ldap-1.res" \
-	"..\Release\libaprutil-1.lib"
+	"$(APU_OUT)\libaprutil-1.lib"
 
 "$(OUTDIR)\apr_ldap-1.dll" : "$(OUTDIR)" $(DEF_FILE) $(LINK32_OBJS)
     $(LINK32) @<<
   $(LINK32_FLAGS) $(LINK32_OBJS)
 <<
 
-TargetPath=.\Release\apr_ldap-1.dll
+TargetPath=$(OUTDIR)\apr_ldap-1.dll
 SOURCE="$(InputPath)"
 PostBuild_Desc=Embed .manifest
 DS_POSTBUILD_DEP=$(INTDIR)\postbld.dep
@@ -131,7 +135,7 @@ OutDir=.\Release
 # End Custom Macros
 
 $(DS_POSTBUILD_DEP) : "libaprutil - Win32 Release" "$(OUTDIR)\apr_ldap-1.dll"
-   if exist .\Release\apr_ldap-1.dll.manifest mt.exe -manifest .\Release\apr_ldap-1.dll.manifest -outputresource:.\Release\apr_ldap-1.dll;2
+   if exist $(OUTDIR)\apr_ldap-1.dll.manifest mt.exe -manifest $(OUTDIR)\apr_ldap-1.dll.manifest -outputresource:$(OUTDIR)\apr_ldap-1.dll;2
 	echo Helper for Post-build step > "$(DS_POSTBUILD_DEP)"
 
 !ELSEIF  "$(CFG)" == "apr_ldap - Win32 Debug"
@@ -219,14 +223,14 @@ LINK32_OBJS= \
 	"$(INTDIR)\apr_ldap_option.obj" \
 	"$(INTDIR)\apr_ldap_rebind.obj" \
 	"$(INTDIR)\apr_ldap-1.res" \
-	"..\Debug\libaprutil-1.lib"
+	"$(APU_OUT)\libaprutil-1.lib"
 
 "$(OUTDIR)\apr_ldap-1.dll" : "$(OUTDIR)" $(DEF_FILE) $(LINK32_OBJS)
     $(LINK32) @<<
   $(LINK32_FLAGS) $(LINK32_OBJS)
 <<
 
-TargetPath=.\Debug\apr_ldap-1.dll
+TargetPath=$(OUTDIR)\apr_ldap-1.dll
 SOURCE="$(InputPath)"
 PostBuild_Desc=Embed .manifest
 DS_POSTBUILD_DEP=$(INTDIR)\postbld.dep
@@ -238,7 +242,7 @@ OutDir=.\Debug
 # End Custom Macros
 
 $(DS_POSTBUILD_DEP) : "libaprutil - Win32 Debug" "$(OUTDIR)\apr_ldap-1.dll"
-   if exist .\Debug\apr_ldap-1.dll.manifest mt.exe -manifest .\Debug\apr_ldap-1.dll.manifest -outputresource:.\Debug\apr_ldap-1.dll;2
+   if exist $(OUTDIR)\apr_ldap-1.dll.manifest mt.exe -manifest $(OUTDIR)\apr_ldap-1.dll.manifest -outputresource:$(OUTDIR)\apr_ldap-1.dll;2
 	echo Helper for Post-build step > "$(DS_POSTBUILD_DEP)"
 
 !ELSEIF  "$(CFG)" == "apr_ldap - x64 Release"
@@ -279,7 +283,7 @@ CLEAN :
     if not exist "$(OUTDIR)/$(NULL)" mkdir "$(OUTDIR)"
 
 CPP=cl.exe
-CPP_PROJ=/nologo /MD /W3 /Zi /O2 /Oy- /I "../include" /I "../../apr/include" /I "../include/private" /D "NDEBUG" /D "WIN32" /D "_WINDOWS" /Fo"$(INTDIR)\\" /Fd"$(INTDIR)\apr_ldap_src" /FD /c 
+CPP_PROJ=/nologo /MD /W3 /Zi /O2 /Oy- /I "../include" /I "$(APR_PATH)/include" /I "../include/private" /D "NDEBUG" /D "WIN32" /D "_WINDOWS" /Fo"$(INTDIR)\\" /Fd"$(INTDIR)\apr_ldap_src" /FD /c 
 
 .c{$(INTDIR)}.obj::
    $(CPP) @<<
@@ -314,26 +318,26 @@ CPP_PROJ=/nologo /MD /W3 /Zi /O2 /Oy- /I "../include" /I "../../apr/include" /I 
 MTL=midl.exe
 MTL_PROJ=/nologo /D "NDEBUG" /mktyplib203 /o /win32 "NUL" 
 RSC=rc.exe
-RSC_PROJ=/l 0x409 /fo"$(INTDIR)\apr_ldap-1.res" /i "../include" /i "../../apr/include" /d DLL_NAME="apr_ldap" /d "NDEBUG" /d "APU_VERSION_ONLY" 
+RSC_PROJ=/l 0x409 /fo"$(INTDIR)\apr_ldap-1.res" /i "../include" /i "$(APR_PATH)/include" /d DLL_NAME="apr_ldap" /d "NDEBUG" /d "APU_VERSION_ONLY" 
 BSC32=bscmake.exe
 BSC32_FLAGS=/nologo /o"$(OUTDIR)\apr_ldap.bsc" 
 BSC32_SBRS= \
 	
 LINK32=link.exe
-LINK32_FLAGS=kernel32.lib advapi32.lib ws2_32.lib mswsock.lib wldap32.lib ole32.lib /nologo /base:"0x6EEB0000" /subsystem:windows /dll /incremental:no /pdb:"$(OUTDIR)\apr_ldap-1.pdb" /debug /machine:IX86 /out:"$(OUTDIR)\apr_ldap-1.dll" /implib:"$(OUTDIR)\apr_ldap-1.lib" /MACHINE:X64 /opt:ref 
+LINK32_FLAGS=kernel32.lib advapi32.lib ws2_32.lib mswsock.lib wldap32.lib ole32.lib "$(APR_OUT)\libapr-1.lib" /nologo /base:"0x6EEB0000" /subsystem:windows /dll /incremental:no /pdb:"$(OUTDIR)\apr_ldap-1.pdb" /debug /machine:IX86 /out:"$(OUTDIR)\apr_ldap-1.dll" /implib:"$(OUTDIR)\apr_ldap-1.lib" /MACHINE:X64 /opt:ref 
 LINK32_OBJS= \
 	"$(INTDIR)\apr_ldap_init.obj" \
 	"$(INTDIR)\apr_ldap_option.obj" \
 	"$(INTDIR)\apr_ldap_rebind.obj" \
 	"$(INTDIR)\apr_ldap-1.res" \
-	"..\x64\Release\libaprutil-1.lib"
+	"$(APU_OUT)\libaprutil-1.lib"
 
 "$(OUTDIR)\apr_ldap-1.dll" : "$(OUTDIR)" $(DEF_FILE) $(LINK32_OBJS)
     $(LINK32) @<<
   $(LINK32_FLAGS) $(LINK32_OBJS)
 <<
 
-TargetPath=.\x64\Release\apr_ldap-1.dll
+TargetPath=$(OUTDIR)\apr_ldap-1.dll
 SOURCE="$(InputPath)"
 PostBuild_Desc=Embed .manifest
 DS_POSTBUILD_DEP=$(INTDIR)\postbld.dep
@@ -344,8 +348,9 @@ ALL : $(DS_POSTBUILD_DEP)
 OutDir=.\x64\Release
 # End Custom Macros
 
-$(DS_POSTBUILD_DEP) : "libaprutil - x64 Release" "$(OUTDIR)\apr_ldap-1.dll"
-   if exist .\x64\Release\apr_ldap-1.dll.manifest mt.exe -manifest .\x64\Release\apr_ldap-1.dll.manifest -outputresource:.\x64\Release\apr_ldap-1.dll;2
+#$(DS_POSTBUILD_DEP) : "libaprutil - x64 Release" "$(OUTDIR)\apr_ldap-1.dll"
+$(DS_POSTBUILD_DEP) : "$(OUTDIR)\apr_ldap-1.dll"
+   if exist $(OUTDIR)\apr_ldap-1.dll.manifest mt.exe -manifest $(OUTDIR)\apr_ldap-1.dll.manifest -outputresource:$(OUTDIR)\apr_ldap-1.dll;2
 	echo Helper for Post-build step > "$(DS_POSTBUILD_DEP)"
 
 !ELSEIF  "$(CFG)" == "apr_ldap - x64 Debug"
@@ -433,14 +438,14 @@ LINK32_OBJS= \
 	"$(INTDIR)\apr_ldap_option.obj" \
 	"$(INTDIR)\apr_ldap_rebind.obj" \
 	"$(INTDIR)\apr_ldap-1.res" \
-	"..\x64\Debug\libaprutil-1.lib"
+	"$(APU_OUT)\libaprutil-1.lib"
 
 "$(OUTDIR)\apr_ldap-1.dll" : "$(OUTDIR)" $(DEF_FILE) $(LINK32_OBJS)
     $(LINK32) @<<
   $(LINK32_FLAGS) $(LINK32_OBJS)
 <<
 
-TargetPath=.\x64\Debug\apr_ldap-1.dll
+TargetPath=$(OUTDIR)\apr_ldap-1.dll
 SOURCE="$(InputPath)"
 PostBuild_Desc=Embed .manifest
 DS_POSTBUILD_DEP=$(INTDIR)\postbld.dep
@@ -452,7 +457,7 @@ OutDir=.\x64\Debug
 # End Custom Macros
 
 $(DS_POSTBUILD_DEP) : "libaprutil - x64 Debug" "$(OUTDIR)\apr_ldap-1.dll"
-   if exist .\x64\Debug\apr_ldap-1.dll.manifest mt.exe -manifest .\x64\Debug\apr_ldap-1.dll.manifest -outputresource:.\x64\Debug\apr_ldap-1.dll;2
+   if exist $(OUTDIR)\apr_ldap-1.dll.manifest mt.exe -manifest $(OUTDIR)\apr_ldap-1.dll.manifest -outputresource:$(OUTDIR)\apr_ldap-1.dll;2
 	echo Helper for Post-build step > "$(DS_POSTBUILD_DEP)"
 
 !ENDIF 
@@ -577,4 +582,8 @@ SOURCE=..\libaprutil.rc
 
 
 !ENDIF 
+
+"$(INTDIR)" :
+    if not exist "$(INTDIR)/$(NULL)" mkdir "$(INTDIR)"
+
 

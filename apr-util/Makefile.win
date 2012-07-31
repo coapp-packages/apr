@@ -87,6 +87,24 @@ APR_PATH=..\apr
 API_PATH=..\apr-iconv
 APU_PATH=..\apr-util
 
+!IF "$(ARCH)" == "Win32 Release"
+OUT_TAIL=.\output\$(COMP)\x86\Release
+!ELSEIF "$(ARCH)" == "Win32 Debug"
+OUT_TAIL=.\output\$(COMP)\x86\Debug
+!ELSEIF "$(ARCH)" == "Win32 Release9x"
+OUT_TAIL=.\output\$(COMP)\9x\Release
+!ELSEIF "$(ARCH)" == "Win32 Debug9x"
+OUT_TAIL=.\output\$(COMP)\9x\Debug
+!ELSEIF "$(ARCH)" == "x64 Release"
+OUT_TAIL=.\output\$(COMP)\x64\Release
+!ELSEIF "$(ARCH)" == "x64 Debug"
+OUT_TAIL=.\output\$(COMP)\x64\Debug
+!ENDIF
+
+APR_OUT=$(APR_PATH)\..\$(OUT_TAIL)
+API_OUT=$(API_PATH)\..\$(OUT_TAIL)
+APU_OUT=$(APU_PATH)\..\$(OUT_TAIL)
+
 !MESSAGE ARCH        = $(ARCH)
 !MESSAGE APR_PATH    = $(APR_PATH)
 !MESSAGE API_PATH    = $(API_PATH)  (apr-iconv)
@@ -180,50 +198,52 @@ clean:
 
 buildall:
 #builds apr
-#	cd $(APR_PATH)
-#	 $(MAKE) $(MAKEOPT) -f apr.mak         CFG="apr - $(ARCH)" RECURSE=0 $(CTARGET)
-#	 $(MAKE) $(MAKEOPT) -f libapr.mak      CFG="libapr - $(ARCH)" RECURSE=0 $(CTARGET)
-#	 cd build
-#	  $(MAKE) $(MAKEOPT) -f aprapp.mak    CFG="aprapp - $(ARCH)" RECURSE=0 $(CTARGET)
-#	  $(MAKE) $(MAKEOPT) -f libaprapp.mak CFG="libaprapp - $(ARCH)" RECURSE=0 $(CTARGET)
-#	 cd ..
+	cd $(APR_PATH)
+#	 $(MAKE) $(MAKEOPT) -f apr.mak         CFG="apr - $(ARCH)" RECURSE=0 $(CTARGET) APR_PATH="$(APR_PATH)" API_PATH="$(API_PATH)" APU_PATH="$(APU_PATH)" APR_OUT="$(APR_OUT)" API_OUT="$(API_OUT)" APU_OUT="$(APU_OUT)" OUTDIR=$(ARCHPATH)
+	 $(MAKE) $(MAKEOPT) -f libapr.mak      CFG="libapr - $(ARCH)" RECURSE=0 $(CTARGET) APR_PATH="$(APR_PATH)" API_PATH="$(API_PATH)" APU_PATH="$(APU_PATH)" APR_OUT="$(APR_OUT)" API_OUT="$(API_OUT)" APU_OUT="$(APU_OUT)" OUTDIR=$(APR_OUT)
+	 cd build
+#	  $(MAKE) $(MAKEOPT) -f aprapp.mak    CFG="aprapp - $(ARCH)" RECURSE=0 $(CTARGET) APR_PATH="$(APR_PATH)" API_PATH="$(API_PATH)" APU_PATH="$(APU_PATH)" APR_OUT="$(APR_OUT)" API_OUT="$(API_OUT)" APU_OUT="$(APU_OUT)" OUTDIR=$(ARCHPATH)
+	  $(MAKE) $(MAKEOPT) -f libaprapp.mak CFG="libaprapp - $(ARCH)" RECURSE=0 $(CTARGET) APR_PATH="$(APR_PATH)" API_PATH="$(API_PATH)" APU_PATH="$(APU_PATH)" APR_OUT="$(APR_OUT)" API_OUT="$(API_OUT)" APU_OUT="$(APU_OUT)" OUTDIR=$(APR_OUT)
+	 cd ..
 #builds apr-iconv
-#	cd $(API_PATH)
-#	 $(MAKE) $(MAKEOPT) -f apriconv.mak    CFG="apriconv - $(ARCH)" RECURSE=0 $(CTARGET)
-#	 $(MAKE) $(MAKEOPT) -f libapriconv.mak CFG="libapriconv - $(ARCH)" RECURSE=0 $(CTARGET)
-#!IF "$(CTARGET)" == "CLEAN"
-#	 $(MAKE) $(MAKEOPT) -f build\modules.mk.win clean \
-#		BUILD_MODE="$(ARCH)" BIND_MODE=shared API_SOURCE=.
-#!ELSE
-#	 cd ccs
-#	  $(MAKE) $(MAKEOPT) -f Makefile.win all \
-#		BUILD_MODE="$(ARCH)" BIND_MODE=shared
-#	 cd ..\ces
-#	  $(MAKE) $(MAKEOPT) -f Makefile.win all \
-#		BUILD_MODE="$(ARCH)" BIND_MODE=shared
-#	 cd ..
-#!ENDIF
+	cd $(API_PATH)
+#	 $(MAKE) $(MAKEOPT) -f apriconv.mak    CFG="apriconv - $(ARCH)" RECURSE=0 $(CTARGET) APR_PATH="$(APR_PATH)" API_PATH="$(API_PATH)" APU_PATH="$(APU_PATH)" APR_OUT="$(APR_OUT)" API_OUT="$(API_OUT)" APU_OUT="$(APU_OUT)" OUTDIR=$(ARCHPATH)
+	 $(MAKE) $(MAKEOPT) -f libapriconv.mak CFG="libapriconv - $(ARCH)" RECURSE=0 $(CTARGET) APR_PATH="$(APR_PATH)" API_PATH="$(API_PATH)" APU_PATH="$(APU_PATH)" APR_OUT="$(APR_OUT)" API_OUT="$(API_OUT)" APU_OUT="$(APU_OUT)" OUTDIR=$(API_OUT)
+!IF "$(CTARGET)" == "CLEAN"
+	 $(MAKE) $(MAKEOPT) -f build\modules.mk.win clean \
+		BUILD_MODE="$(ARCH)" BIND_MODE=shared API_SOURCE=.
+!ELSE
+	 cd ccs
+	  $(MAKE) $(MAKEOPT) -f Makefile.win all \
+		BUILD_MODE="$(ARCH)" BIND_MODE=shared APR_SOURCE="$(APR_PATH)" APR_PATH="$(APR_PATH)" API_PATH="$(API_PATH)" APU_PATH="$(APU_PATH)" APR_OUT="$(APR_OUT)" API_OUT="$(API_OUT)" APU_OUT="$(APU_OUT)" OUTDIR=$(API_OUT)
+	 cd ..\ces
+	  $(MAKE) $(MAKEOPT) -f Makefile.win all \
+		BUILD_MODE="$(ARCH)" BIND_MODE=shared APR_SOURCE="$(APR_PATH)" APR_PATH="$(APR_PATH)" API_PATH="$(API_PATH)" APU_PATH="$(APU_PATH)" APR_OUT="$(APR_OUT)" API_OUT="$(API_OUT)" APU_OUT="$(APU_OUT)" OUTDIR=$(API_OUT)
+	 cd .. 
+!ENDIF
 #builds expat
 #	cd $(APU_PATH)\xml\expat\lib
 #	 $(MAKE) $(MAKEOPT) -f xml.mak         CFG="xml - $(ARCH)" RECURSE=0 $(CTARGET)
 #	cd ..\..\..
 #builds aprutil
-    $(MAKE) $(MAKEOPT) -f aprutil.mak     CFG="aprutil - $(ARCH)" RECURSE=0 $(CTARGET)
-	 $(MAKE) $(MAKEOPT) -f libaprutil.mak  CFG="libaprutil - $(ARCH)" RECURSE=0 $(CTARGET)
+	cd $(APU_PATH)
+#	 $(MAKE) $(MAKEOPT) -f aprutil.mak     CFG="aprutil - $(ARCH)" RECURSE=0 $(CTARGET) APR_PATH="$(APR_PATH)" API_PATH="$(API_PATH)" APU_PATH="$(APU_PATH)" APR_OUT="$(APR_OUT)" API_OUT="$(API_OUT)" APU_OUT="$(APU_OUT)" OUTDIR=$(ARCHPATH)
+	 $(MAKE) $(MAKEOPT) -f libaprutil.mak  CFG="libaprutil - $(ARCH)" RECURSE=0 $(CTARGET) APR_PATH="$(APR_PATH)" API_PATH="$(API_PATH)" APU_PATH="$(APU_PATH)" APR_OUT="$(APR_OUT)" API_OUT="$(API_OUT)" APU_OUT="$(APU_OUT)" OUTDIR=$(APU_OUT)
+
 	cd ldap
-	 $(MAKE) $(MAKEOPT) -f apr_ldap.mak    CFG="apr_ldap - $(ARCH)" RECURSE=0 $(CTARGET)
+	 $(MAKE) $(MAKEOPT) -f apr_ldap.mak    CFG="apr_ldap - $(ARCH)" RECURSE=0 $(CTARGET) APR_PATH="$(APR_PATH)" API_PATH="$(API_PATH)" APU_PATH="$(APU_PATH)" APR_OUT="$(APR_OUT)" API_OUT="$(API_OUT)" APU_OUT="$(APU_OUT)" OUTDIR=$(APU_OUT)
 	cd ..
 	cd dbd
 	  for %d in (odbc $(DBD_LIST)) do \
-	    $(MAKE) $(MAKEOPT) -f apr_dbd_%d.mak CFG="apr_dbd_%d - $(ARCH)" RECURSE=0 $(CTARGET)
+	    $(MAKE) $(MAKEOPT) -f apr_dbd_%d.mak CFG="apr_dbd_%d - $(ARCH)" RECURSE=0 $(CTARGET) APR_PATH="$(APR_PATH)" API_PATH="$(API_PATH)" APU_PATH="$(APU_PATH)" APR_OUT="$(APR_OUT)" API_OUT="$(API_OUT)" APU_OUT="$(APU_OUT)" OUTDIR=$(APU_OUT)
 	cd ..
 	cd dbm
 	  for %d in ($(DBM_LIST) x) do if not %d == x \
-	    $(MAKE) $(MAKEOPT) -f apr_dbm_%d.mak CFG="apr_dbm_%d - $(ARCH)" RECURSE=0 $(CTARGET)
+	    $(MAKE) $(MAKEOPT) -f apr_dbm_%d.mak CFG="apr_dbm_%d - $(ARCH)" RECURSE=0 $(CTARGET) APR_PATH="$(APR_PATH)" API_PATH="$(API_PATH)" APU_PATH="$(APU_PATH)" APR_OUT="$(APR_OUT)" API_OUT="$(API_OUT)" APU_OUT="$(APU_OUT)" OUTDIR=$(APU_OUT)
 	cd ..
 	cd crypto
 	  for %d in ($(CRYPTO_LIST) x) do if not %d == x \
-	    $(MAKE) $(MAKEOPT) -f apr_crypto_%d.mak CFG="apr_crypto_%d - $(ARCH)" RECURSE=0 $(CTARGET)
+	    $(MAKE) $(MAKEOPT) -f apr_crypto_%d.mak CFG="apr_crypto_%d - $(ARCH)" RECURSE=0 $(CTARGET) APR_PATH="$(APR_PATH)" API_PATH="$(API_PATH)" APU_PATH="$(APU_PATH)" APR_OUT="$(APR_OUT)" API_OUT="$(API_OUT)" APU_OUT="$(APU_OUT)" OUTDIR=$(APU_OUT)
 	cd ..
 
 !ELSEIF $(USESLN) == 1
@@ -304,22 +324,27 @@ buildall:
 
 checkapr:
 	cd $(APR_PATH)\test
-	 $(MAKE) $(MAKEOPT) -f Makefile.win MODEL=static \
-		OUTDIR=$(LIBSOSPATH) check
+#	 $(MAKE) $(MAKEOPT) -f Makefile.win MODEL=static \
+#		OUTDIR=$(LIBSOSPATH) check
 	 $(MAKE) $(MAKEOPT) -f Makefile.win MODEL=dynamic \
-		OUTDIR=$(ARCHOSPATH) check
+		APROUTDIR=$(APR_OUT) OUTDIR=$(APR_OUT) check
 	 cd ..
-	cd $(APU_PATH)
 
 checkapu:
 	cd $(APU_PATH)
 	cd test
-	 $(MAKE) $(MAKEOPT) -f Makefile.win MODEL=static \
-		OUTDIR=$(LIBSPATH) APROUTDIR=$(LIBSOSPATH) \
-		APR_PATH=..\$(APR_PATH) API_PATH=..\$(API_PATH) check
+#	 $(MAKE) $(MAKEOPT) -f Makefile.win MODEL=static \
+#		OUTDIR=$(LIBSPATH) APROUTDIR=$(LIBSOSPATH) \
+#		APR_PATH=..\$(APR_PATH) API_PATH=..\$(API_PATH) check
+	if EXIST $(APR_PATH) ( \
 	 $(MAKE) $(MAKEOPT) -f Makefile.win MODEL=dynamic \
-		OUTDIR=$(ARCHPATH) APROUTDIR=$(ARCHOSPATH) \
-		APR_PATH=..\$(APR_PATH) API_PATH=..\$(API_PATH) check
+		OUTDIR=$(APU_OUT) APROUTDIR=$(APR_OUT) \
+		APR_PATH="$(APR_PATH)" API_PATH="$(API_PATH)" check \
+	) else ( \
+	 $(MAKE) $(MAKEOPT) -f Makefile.win MODEL=dynamic \
+		OUTDIR=$(API_OUT) APROUTDIR=$(APR_OUT) \
+		APR_PATH=..\$(APR_PATH) API_PATH=..\$(API_PATH) check TESTOPTS="$(TESTOPTS)" \
+	)
 	cd ..
 
 #checkall: checkapr checkapu
@@ -338,22 +363,22 @@ install:
 	copy NOTICE  "$(PREFIX)\NOTICE.txt"  <.y
 	xcopy $(APR_PATH)\include\*.h		"$(PREFIX)\include\" /d < .a
 	xcopy $(APU_PATH)\include\*.h		"$(PREFIX)\include\" /d < .a
-	copy $(APR_PATH)\$(LIBSOSPATH)\apr-1.lib	"$(PREFIX)\lib\" <.y
-	copy $(APR_PATH)\$(LIBSOSPATH)\apr-1.pdb	"$(PREFIX)\lib\" <.y
-	copy $(APU_PATH)\$(LIBSPATH)\aprutil-1.lib	"$(PREFIX)\lib\" <.y
-	copy $(APU_PATH)\$(LIBSPATH)\aprutil-1.pdb	"$(PREFIX)\lib\" <.y
-	copy $(APR_PATH)\$(ARCHOSPATH)\libapr-1.lib	"$(PREFIX)\lib\" <.y
-	copy $(APR_PATH)\$(ARCHOSPATH)\libapr-1.exp	"$(PREFIX)\lib\" <.y
-	copy $(APU_PATH)\$(ARCHPATH)\libaprutil-1.lib	"$(PREFIX)\lib\" <.y
-	copy $(APU_PATH)\$(ARCHPATH)\libaprutil-1.exp	"$(PREFIX)\lib\" <.y
-	copy $(APR_PATH)\$(ARCHOSPATH)\libapr-1.dll	"$(PREFIX)\bin\" <.y
-	copy $(APR_PATH)\$(ARCHOSPATH)\libapr-1.pdb	"$(PREFIX)\bin\" <.y
-	copy $(API_PATH)\$(ARCHPATH)\libapriconv-1.dll	"$(PREFIX)\bin\" <.y
-	copy $(API_PATH)\$(ARCHPATH)\libapriconv-1.pdb	"$(PREFIX)\bin\" <.y
-	copy $(APU_PATH)\$(ARCHPATH)\libaprutil-1.dll	"$(PREFIX)\bin\" <.y
-	copy $(APU_PATH)\$(ARCHPATH)\libaprutil-1.pdb	"$(PREFIX)\bin\" <.y
-	copy $(APU_PATH)\ldap\$(ARCHPATH)\apr_ldap-1.dll "$(PREFIX)\bin\" <.y
-	copy $(APU_PATH)\ldap\$(ARCHPATH)\apr_ldap-1.pdb "$(PREFIX)\bin\" <.y
+	copy $(APR_OUT)\apr-1.lib	"$(PREFIX)\lib\" <.y
+	copy $(APR_OUT)\apr-1.pdb	"$(PREFIX)\lib\" <.y
+	copy $(APU_OUT)\aprutil-1.lib	"$(PREFIX)\lib\" <.y
+	copy $(APU_OUT)\aprutil-1.pdb	"$(PREFIX)\lib\" <.y
+	copy $(APR_OUT)\libapr-1.lib	"$(PREFIX)\lib\" <.y
+	copy $(APR_OUT)\libapr-1.exp	"$(PREFIX)\lib\" <.y
+	copy $(APU_OUT)\libaprutil-1.lib	"$(PREFIX)\lib\" <.y
+	copy $(APU_OUT)\libaprutil-1.exp	"$(PREFIX)\lib\" <.y
+	copy $(APR_OUT)\libapr-1.dll	"$(PREFIX)\bin\" <.y
+	copy $(APR_OUT)\libapr-1.pdb	"$(PREFIX)\bin\" <.y
+	copy $(API_OUT)\libapriconv-1.dll	"$(PREFIX)\bin\" <.y
+	copy $(API_OUT)\libapriconv-1.pdb	"$(PREFIX)\bin\" <.y
+	copy $(APU_OUT)\libaprutil-1.dll	"$(PREFIX)\bin\" <.y
+	copy $(APU_OUT)\libaprutil-1.pdb	"$(PREFIX)\bin\" <.y
+	copy $(APU_OUT)\apr_ldap-1.dll "$(PREFIX)\bin\" <.y
+	copy $(APU_OUT)\apr_ldap-1.pdb "$(PREFIX)\bin\" <.y
 	for %d in (odbc $(DBD_LIST)) do ( \
 	  copy $(APU_PATH)\dbd\$(ARCHPATH)\apr_dbd_%d-1.dll "$(PREFIX)\bin\" <.y && \
 	  copy $(APU_PATH)\dbd\$(ARCHPATH)\apr_dbd_%d-1.pdb "$(PREFIX)\bin\" <.y \
