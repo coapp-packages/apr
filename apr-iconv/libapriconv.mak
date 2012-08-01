@@ -108,11 +108,6 @@ CPP_PROJ=/nologo $(CPP_FLAG) /W3 /Zi /I "./include" /I "$(APR_PATH)/include" /D 
    $(CPP_PROJ) $< 
 <<
 
-# {lib\}.c{$(INTDIR)}.obj::
-   # $(CPP) @<<
-   # $(CPP_PROJ) $< 
-# <<
-
 .cpp{$(INTDIR)}.obj::
    $(CPP) @<<
    $(CPP_PROJ) $< 
@@ -147,7 +142,7 @@ BSC32_FLAGS=/nologo /o"$(OUTDIR)\libapriconv.bsc"
 BSC32_SBRS= \
 	
 LINK32=link.exe
-LINK32_FLAGS=kernel32.lib advapi32.lib /nologo /base:"0x6EE50000" /subsystem:windows /dll /incremental:no /pdb:"$(OUTDIR)\libapriconv-1.pdb" /debug /out:"$(OUTDIR)\libapriconv-1.dll" /implib:"$(OUTDIR)\libapriconv-1.lib" 
+LINK32_FLAGS=kernel32.lib advapi32.lib "$(OUTDIR)\libapr-1.lib" /nologo /base:"0x6EE50000" /subsystem:windows /dll /incremental:no /pdb:"$(OUTDIR)\libapriconv-1.pdb" /debug /out:"$(OUTDIR)\libapriconv-1.dll" /implib:"$(OUTDIR)\libapriconv-1.lib" 
 !IF  "$(CFG)" == "libapriconv - Win32 Release"
 LINK32_FLAGS=$(LINK32_FLAGS) /MACHINE:X86 "$(PROGRAMDATA)\lib\x86\libexpat.lib" /opt:ref 
 !ELSEIF  "$(CFG)" == "libapriconv - Win32 Debug"
@@ -186,115 +181,12 @@ DS_POSTBUILD_DEP=$(INTDIR)\postbld.dep
 !IF "$(NO_EXTERNAL_DEPS)" != "1"
 !IF EXISTS("libapriconv.dep")
 !INCLUDE "libapriconv.dep"
-# .\lib\iconv.c : \
-	# "$(APR_PATH)\include\apr.h"\
-	# "$(APR_PATH)\include\apr_allocator.h"\
-	# "$(APR_PATH)\include\apr_errno.h"\
-	# "$(APR_PATH)\include\apr_general.h"\
-	# "$(APR_PATH)\include\apr_pools.h"\
-	# "$(APR_PATH)\include\apr_thread_mutex.h"\
-	# "$(APR_PATH)\include\apr_want.h"\
-	# ".\include\apr_iconv.h"\
-	# ".\lib\iconv.h"
-	
-# .\lib\iconv_ces.c : \
-	# "$(APR_PATH)\include\apr.h"\
-	# "$(APR_PATH)\include\apr_allocator.h"\
-	# "$(APR_PATH)\include\apr_errno.h"\
-	# "$(APR_PATH)\include\apr_general.h"\
-	# "$(APR_PATH)\include\apr_pools.h"\
-	# "$(APR_PATH)\include\apr_thread_mutex.h"\
-	# "$(APR_PATH)\include\apr_want.h"\
-	# ".\include\apr_iconv.h"\
-	# ".\lib\iconv.h"
-	
-# .\lib\iconv_ces_euc.c : \
-	# "$(APR_PATH)\include\apr.h"\
-	# "$(APR_PATH)\include\apr_allocator.h"\
-	# "$(APR_PATH)\include\apr_errno.h"\
-	# "$(APR_PATH)\include\apr_general.h"\
-	# "$(APR_PATH)\include\apr_pools.h"\
-	# "$(APR_PATH)\include\apr_thread_mutex.h"\
-	# "$(APR_PATH)\include\apr_want.h"\
-	# ".\include\apr_iconv.h"\
-	# ".\lib\iconv.h"
-	
-# .\lib\iconv_ces_iso2022.c : \
-	# "$(APR_PATH)\include\apr.h"\
-	# "$(APR_PATH)\include\apr_allocator.h"\
-	# "$(APR_PATH)\include\apr_errno.h"\
-	# "$(APR_PATH)\include\apr_general.h"\
-	# "$(APR_PATH)\include\apr_pools.h"\
-	# "$(APR_PATH)\include\apr_thread_mutex.h"\
-	# "$(APR_PATH)\include\apr_want.h"\
-	# ".\include\apr_iconv.h"\
-	# ".\lib\iconv.h"
-	
-# .\lib\iconv_int.c : \
-	# "$(APR_PATH)\include\apr.h"\
-	# "$(APR_PATH)\include\apr_allocator.h"\
-	# "$(APR_PATH)\include\apr_errno.h"\
-	# "$(APR_PATH)\include\apr_general.h"\
-	# "$(APR_PATH)\include\apr_pools.h"\
-	# "$(APR_PATH)\include\apr_thread_mutex.h"\
-	# "$(APR_PATH)\include\apr_want.h"\
-	# ".\include\apr_iconv.h"\
-	# ".\lib\iconv.h"
-	
-# .\lib\iconv_module.c : \
-	# "$(APR_PATH)\include\apr.h"\
-	# "$(APR_PATH)\include\apr_allocator.h"\
-	# "$(APR_PATH)\include\apr_dso.h"\
-	# "$(APR_PATH)\include\apr_env.h"\
-	# "$(APR_PATH)\include\apr_errno.h"\
-	# "$(APR_PATH)\include\apr_file_info.h"\
-	# "$(APR_PATH)\include\apr_file_io.h"\
-	# "$(APR_PATH)\include\apr_general.h"\
-	# "$(APR_PATH)\include\apr_inherit.h"\
-	# "$(APR_PATH)\include\apr_lib.h"\
-	# "$(APR_PATH)\include\apr_pools.h"\
-	# "$(APR_PATH)\include\apr_strings.h"\
-	# "$(APR_PATH)\include\apr_tables.h"\
-	# "$(APR_PATH)\include\apr_thread_mutex.h"\
-	# "$(APR_PATH)\include\apr_time.h"\
-	# "$(APR_PATH)\include\apr_user.h"\
-	# "$(APR_PATH)\include\apr_version.h"\
-	# "$(APR_PATH)\include\apr_want.h"\
-	# ".\include\api_version.h"\
-	# ".\include\apr_iconv.h"\
-	# ".\lib\charset_alias.h"\
-	# ".\lib\iconv.h"
-	
-# .\lib\iconv_uc.c : \
-	# "$(APR_PATH)\include\apr.h"\
-	# "$(APR_PATH)\include\apr_allocator.h"\
-	# "$(APR_PATH)\include\apr_errno.h"\
-	# "$(APR_PATH)\include\apr_general.h"\
-	# "$(APR_PATH)\include\apr_pools.h"\
-	# "$(APR_PATH)\include\apr_thread_mutex.h"\
-	# "$(APR_PATH)\include\apr_want.h"\
-	# ".\include\apr_iconv.h"\
-	# ".\lib\iconv.h"
-	
-# .\libapriconv.rc : \
-	# "$(APR_PATH)\include\apr.h"\
-	# "$(APR_PATH)\include\apr_allocator.h"\
-	# "$(APR_PATH)\include\apr_errno.h"\
-	# "$(APR_PATH)\include\apr_general.h"\
-	# "$(APR_PATH)\include\apr_pools.h"\
-	# "$(APR_PATH)\include\apr_thread_mutex.h"\
-	# "$(APR_PATH)\include\apr_version.h"\
-	# "$(APR_PATH)\include\apr_want.h"\
-	# ".\include\api_version.h"\
-	# ".\include\apr_iconv.h"
-
 !ELSE 
 !MESSAGE Warning: cannot find "libapriconv.dep"
 !ENDIF 
 !ENDIF 
 
 
-#!IF "$(CFG)" == "libapriconv - Win32 Release" || "$(CFG)" == "libapriconv - Win32 Debug" || "$(CFG)" == "libapriconv - x64 Release" || "$(CFG)" == "libapriconv - x64 Debug"
 SOURCE=.\lib\iconv.c
 
 
@@ -342,8 +234,6 @@ SOURCE=.\lib\iconv_uc.c
 	$(CPP) $(CPP_PROJ) $(SOURCE)
 
 
-#!IF  "$(CFG)" == "libapriconv - Win32 Release"
-
 "libapr - Win32 Release" : 
    cd ".\..\apr"
    $(MAKE) /$(MAKEFLAGS) /F ".\libapr.mak" CFG="libapr - Win32 Release" 
@@ -353,8 +243,6 @@ SOURCE=.\lib\iconv_uc.c
    cd ".\..\apr"
    $(MAKE) /$(MAKEFLAGS) /F ".\libapr.mak" CFG="libapr - Win32 Release" RECURSE=1 CLEAN 
    cd "..\apr-iconv"
-
-#!ELSEIF  "$(CFG)" == "libapriconv - Win32 Debug"
 
 "libapr - Win32 Debug" : 
    cd ".\..\apr"
@@ -366,8 +254,6 @@ SOURCE=.\lib\iconv_uc.c
    $(MAKE) /$(MAKEFLAGS) /F ".\libapr.mak" CFG="libapr - Win32 Debug" RECURSE=1 CLEAN 
    cd "..\apr-iconv"
 
-#!ELSEIF  "$(CFG)" == "libapriconv - x64 Release"
-
 "libapr - x64 Release" : 
    cd ".\..\apr"
    $(MAKE) /$(MAKEFLAGS) /F ".\libapr.mak" CFG="libapr - x64 Release" 
@@ -377,8 +263,6 @@ SOURCE=.\lib\iconv_uc.c
    cd ".\..\apr"
    $(MAKE) /$(MAKEFLAGS) /F ".\libapr.mak" CFG="libapr - x64 Release" RECURSE=1 CLEAN 
    cd "..\apr-iconv"
-
-#!ELSEIF  "$(CFG)" == "libapriconv - x64 Debug"
 
 "libapr - x64 Debug" : 
    cd ".\..\apr"
@@ -390,7 +274,6 @@ SOURCE=.\lib\iconv_uc.c
    $(MAKE) /$(MAKEFLAGS) /F ".\libapr.mak" CFG="libapr - x64 Debug" RECURSE=1 CLEAN 
    cd "..\apr-iconv"
 
-#!ENDIF 
 
 SOURCE=.\libapriconv.rc
 
@@ -399,5 +282,4 @@ SOURCE=.\libapriconv.rc
 
 
 
-#!ENDIF 
 

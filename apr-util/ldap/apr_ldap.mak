@@ -31,241 +31,74 @@ APR_PATH=..\apr
 API_PATH=..\apr-iconv
 APU_PATH=..\apr-util
 
+!IFNDEF OUTDIR
 !IF  "$(CFG)" == "apr_ldap - Win32 Release"
-
 OUTDIR=.\Release
-INTDIR=.\Release
-# Begin Custom Macros
-OutDir=.\Release
-# End Custom Macros
-
-!IF "$(RECURSE)" == "0" 
-
-ALL : "$(OUTDIR)\apr_ldap-1.dll"
-
-!ELSE 
-
-ALL : "libaprutil - Win32 Release" "$(OUTDIR)\apr_ldap-1.dll"
-
-!ENDIF 
-
-!IF "$(RECURSE)" == "1" 
-CLEAN :"libaprutil - Win32 ReleaseCLEAN" 
-!ELSE 
-CLEAN :
-!ENDIF 
-	-@erase "$(INTDIR)\apr_ldap-1.res"
-	-@erase "$(INTDIR)\apr_ldap_init.obj"
-	-@erase "$(INTDIR)\apr_ldap_option.obj"
-	-@erase "$(INTDIR)\apr_ldap_rebind.obj"
-	-@erase "$(INTDIR)\apr_ldap_src.idb"
-	-@erase "$(INTDIR)\apr_ldap_src.pdb"
-	-@erase "$(OUTDIR)\apr_ldap-1.dll"
-	-@erase "$(OUTDIR)\apr_ldap-1.exp"
-	-@erase "$(OUTDIR)\apr_ldap-1.lib"
-	-@erase "$(OUTDIR)\apr_ldap-1.pdb"
-
-"$(OUTDIR)" :
-    if not exist "$(OUTDIR)/$(NULL)" mkdir "$(OUTDIR)"
-
-CPP=cl.exe
-CPP_PROJ=/nologo /MD /W3 /Zi /O2 /Oy- /I "../include" /I "../../apr/include" /I "../include/private" /D "NDEBUG" /D "WIN32" /D "_WINDOWS" /Fo"$(INTDIR)\\" /Fd"$(INTDIR)\apr_ldap_src" /FD /c 
-
-.c{$(INTDIR)}.obj::
-   $(CPP) @<<
-   $(CPP_PROJ) $< 
-<<
-
-.cpp{$(INTDIR)}.obj::
-   $(CPP) @<<
-   $(CPP_PROJ) $< 
-<<
-
-.cxx{$(INTDIR)}.obj::
-   $(CPP) @<<
-   $(CPP_PROJ) $< 
-<<
-
-.c{$(INTDIR)}.sbr::
-   $(CPP) @<<
-   $(CPP_PROJ) $< 
-<<
-
-.cpp{$(INTDIR)}.sbr::
-   $(CPP) @<<
-   $(CPP_PROJ) $< 
-<<
-
-.cxx{$(INTDIR)}.sbr::
-   $(CPP) @<<
-   $(CPP_PROJ) $< 
-<<
-
-MTL=midl.exe
-MTL_PROJ=/nologo /D "NDEBUG" /mktyplib203 /o /win32 "NUL" 
-RSC=rc.exe
-RSC_PROJ=/l 0x409 /fo"$(INTDIR)\apr_ldap-1.res" /i "../include" /i "../../apr/include" /d DLL_NAME="apr_ldap" /d "NDEBUG" /d "APU_VERSION_ONLY" 
-BSC32=bscmake.exe
-BSC32_FLAGS=/nologo /o"$(OUTDIR)\apr_ldap.bsc" 
-BSC32_SBRS= \
-	
-LINK32=link.exe
-LINK32_FLAGS=kernel32.lib advapi32.lib ws2_32.lib mswsock.lib wldap32.lib ole32.lib /nologo /base:"0x6EEB0000" /subsystem:windows /dll /incremental:no /pdb:"$(OUTDIR)\apr_ldap-1.pdb" /debug /machine:IX86 /out:"$(OUTDIR)\apr_ldap-1.dll" /implib:"$(OUTDIR)\apr_ldap-1.lib" /MACHINE:X86 /opt:ref 
-LINK32_OBJS= \
-	"$(INTDIR)\apr_ldap_init.obj" \
-	"$(INTDIR)\apr_ldap_option.obj" \
-	"$(INTDIR)\apr_ldap_rebind.obj" \
-	"$(INTDIR)\apr_ldap-1.res" \
-	"$(APU_OUT)\libaprutil-1.lib"
-
-"$(OUTDIR)\apr_ldap-1.dll" : "$(OUTDIR)" $(DEF_FILE) $(LINK32_OBJS)
-    $(LINK32) @<<
-  $(LINK32_FLAGS) $(LINK32_OBJS)
-<<
-
-TargetPath=$(OUTDIR)\apr_ldap-1.dll
-SOURCE="$(InputPath)"
-PostBuild_Desc=Embed .manifest
-DS_POSTBUILD_DEP=$(INTDIR)\postbld.dep
-
-ALL : $(DS_POSTBUILD_DEP)
-
-# Begin Custom Macros
-OutDir=.\Release
-# End Custom Macros
-
-$(DS_POSTBUILD_DEP) : "libaprutil - Win32 Release" "$(OUTDIR)\apr_ldap-1.dll"
-   if exist $(OUTDIR)\apr_ldap-1.dll.manifest mt.exe -manifest $(OUTDIR)\apr_ldap-1.dll.manifest -outputresource:$(OUTDIR)\apr_ldap-1.dll;2
-	echo Helper for Post-build step > "$(DS_POSTBUILD_DEP)"
-
 !ELSEIF  "$(CFG)" == "apr_ldap - Win32 Debug"
-
 OUTDIR=.\Debug
-INTDIR=.\Debug
-# Begin Custom Macros
-OutDir=.\Debug
-# End Custom Macros
-
-!IF "$(RECURSE)" == "0" 
-
-ALL : "$(OUTDIR)\apr_ldap-1.dll"
-
-!ELSE 
-
-ALL : "libaprutil - Win32 Debug" "$(OUTDIR)\apr_ldap-1.dll"
-
-!ENDIF 
-
-!IF "$(RECURSE)" == "1" 
-CLEAN :"libaprutil - Win32 DebugCLEAN" 
-!ELSE 
-CLEAN :
-!ENDIF 
-	-@erase "$(INTDIR)\apr_ldap-1.res"
-	-@erase "$(INTDIR)\apr_ldap_init.obj"
-	-@erase "$(INTDIR)\apr_ldap_option.obj"
-	-@erase "$(INTDIR)\apr_ldap_rebind.obj"
-	-@erase "$(INTDIR)\apr_ldap_src.idb"
-	-@erase "$(INTDIR)\apr_ldap_src.pdb"
-	-@erase "$(OUTDIR)\apr_ldap-1.dll"
-	-@erase "$(OUTDIR)\apr_ldap-1.exp"
-	-@erase "$(OUTDIR)\apr_ldap-1.lib"
-	-@erase "$(OUTDIR)\apr_ldap-1.pdb"
-
-"$(OUTDIR)" :
-    if not exist "$(OUTDIR)/$(NULL)" mkdir "$(OUTDIR)"
-
-CPP=cl.exe
-CPP_PROJ=/nologo /MDd /W3 /Zi /Od /I "../include" /I "../../apr/include" /I "../include/private" /D "_DEBUG" /D "WIN32" /D "_WINDOWS" /Fo"$(INTDIR)\\" /Fd"$(INTDIR)\apr_ldap_src" /FD /EHsc /c 
-
-.c{$(INTDIR)}.obj::
-   $(CPP) @<<
-   $(CPP_PROJ) $< 
-<<
-
-.cpp{$(INTDIR)}.obj::
-   $(CPP) @<<
-   $(CPP_PROJ) $< 
-<<
-
-.cxx{$(INTDIR)}.obj::
-   $(CPP) @<<
-   $(CPP_PROJ) $< 
-<<
-
-.c{$(INTDIR)}.sbr::
-   $(CPP) @<<
-   $(CPP_PROJ) $< 
-<<
-
-.cpp{$(INTDIR)}.sbr::
-   $(CPP) @<<
-   $(CPP_PROJ) $< 
-<<
-
-.cxx{$(INTDIR)}.sbr::
-   $(CPP) @<<
-   $(CPP_PROJ) $< 
-<<
-
-MTL=midl.exe
-MTL_PROJ=/nologo /D "_DEBUG" /mktyplib203 /o /win32 "NUL" 
-RSC=rc.exe
-RSC_PROJ=/l 0x409 /fo"$(INTDIR)\apr_ldap-1.res" /i "../include" /i "../../apr/include" /d DLL_NAME="apr_ldap" /d "_DEBUG" /d "APU_VERSION_ONLY" 
-BSC32=bscmake.exe
-BSC32_FLAGS=/nologo /o"$(OUTDIR)\apr_ldap.bsc" 
-BSC32_SBRS= \
-	
-LINK32=link.exe
-LINK32_FLAGS=kernel32.lib advapi32.lib ws2_32.lib mswsock.lib wldap32.lib ole32.lib /nologo /base:"0x6EEB0000" /subsystem:windows /dll /incremental:no /pdb:"$(OUTDIR)\apr_ldap-1.pdb" /debug /machine:IX86 /out:"$(OUTDIR)\apr_ldap-1.dll" /implib:"$(OUTDIR)\apr_ldap-1.lib" /MACHINE:X86 
-LINK32_OBJS= \
-	"$(INTDIR)\apr_ldap_init.obj" \
-	"$(INTDIR)\apr_ldap_option.obj" \
-	"$(INTDIR)\apr_ldap_rebind.obj" \
-	"$(INTDIR)\apr_ldap-1.res" \
-	"$(APU_OUT)\libaprutil-1.lib"
-
-"$(OUTDIR)\apr_ldap-1.dll" : "$(OUTDIR)" $(DEF_FILE) $(LINK32_OBJS)
-    $(LINK32) @<<
-  $(LINK32_FLAGS) $(LINK32_OBJS)
-<<
-
-TargetPath=$(OUTDIR)\apr_ldap-1.dll
-SOURCE="$(InputPath)"
-PostBuild_Desc=Embed .manifest
-DS_POSTBUILD_DEP=$(INTDIR)\postbld.dep
-
-ALL : $(DS_POSTBUILD_DEP)
-
-# Begin Custom Macros
-OutDir=.\Debug
-# End Custom Macros
-
-$(DS_POSTBUILD_DEP) : "libaprutil - Win32 Debug" "$(OUTDIR)\apr_ldap-1.dll"
-   if exist $(OUTDIR)\apr_ldap-1.dll.manifest mt.exe -manifest $(OUTDIR)\apr_ldap-1.dll.manifest -outputresource:$(OUTDIR)\apr_ldap-1.dll;2
-	echo Helper for Post-build step > "$(DS_POSTBUILD_DEP)"
-
 !ELSEIF  "$(CFG)" == "apr_ldap - x64 Release"
-
 OUTDIR=.\x64\Release
+!ELSEIF  "$(CFG)" == "apr_ldap - x64 Debug"
+OUTDIR=.\x64\Debug
+!ENDIF
+!ENDIF
+
+!IF  "$(CFG)" == "apr_ldap - Win32 Release"
+INTDIR=.\Release
+CPP_PROJ_VAR=/MD /O2 /Oy- /D "NDEBUG"
+MTL_PROJ_VAR=/D "NDEBUG" 
+RSC_PROJ_VAR=/d "NDEBUG" 
+LINK32_FLAGS_VAR=/MACHINE:X86 /opt:ref
+!ELSEIF  "$(CFG)" == "apr_ldap - Win32 Debug"
+INTDIR=.\Debug
+CPP_PROJ_VAR=/MDd /Od /D "_DEBUG" /EHsc 
+MTL_PROJ_VAR=/D "_DEBUG" 
+RSC_PROJ_VAR=/d "_DEBUG" 
+LINK32_FLAGS_VAR=/MACHINE:X86 
+!ELSEIF  "$(CFG)" == "apr_ldap - x64 Release"
 INTDIR=.\x64\Release
-# Begin Custom Macros
-OutDir=.\x64\Release
-# End Custom Macros
+CPP_PROJ_VAR=/MD /O2 /Oy- /D "NDEBUG"
+MTL_PROJ_VAR=/D "NDEBUG" 
+RSC_PROJ_VAR=/d "NDEBUG" 
+LINK32_FLAGS_VAR=/MACHINE:X64 /opt:ref
+!ELSEIF  "$(CFG)" == "apr_ldap - x64 Debug"
+INTDIR=.\x64\Debug
+CPP_PROJ_VAR=/MDd /Od /D "_DEBUG" /EHsc 
+MTL_PROJ_VAR=/D "_DEBUG" 
+RSC_PROJ_VAR=/d "_DEBUG" 
+LINK32_FLAGS_VAR=/MACHINE:X64 
+!ENDIF
 
-!IF "$(RECURSE)" == "0" 
+CPP=cl.exe
+CPP_PROJ=/nologo /W3 /Zi /I "../include" /I "$(APR_PATH)/include" /I "../include/private" /D "WIN32" /D "_WINDOWS" /Fo"$(INTDIR)\\" /Fd"$(INTDIR)\apr_ldap_src" /FD /c  $(CPP_PROJ_VAR) 
+MTL=midl.exe
+MTL_PROJ=/nologo /mktyplib203 /o /win32 "NUL" $(MTL_PROJ_VAR) 
+RSC=rc.exe
+RSC_PROJ=/l 0x409 /fo"$(INTDIR)\apr_ldap-1.res" /i "../include" /i "$(APR_PATH)/include" /d DLL_NAME="apr_ldap" /d "APU_VERSION_ONLY" $(RSC_PROJ_VAR) 
+BSC32=bscmake.exe
+BSC32_FLAGS=/nologo /o"$(OUTDIR)\apr_ldap.bsc" 
+BSC32_SBRS= \
 
-ALL : "$(OUTDIR)\apr_ldap-1.dll"
+LINK32=link.exe
+LINK32_FLAGS=kernel32.lib advapi32.lib ws2_32.lib mswsock.lib wldap32.lib ole32.lib "$(APR_OUT)\libapr-1.lib" /nologo /base:"0x6EEB0000" /subsystem:windows /dll /incremental:no /pdb:"$(OUTDIR)\apr_ldap-1.pdb" /debug /machine:IX86 /out:"$(OUTDIR)\apr_ldap-1.dll" /implib:"$(OUTDIR)\apr_ldap-1.lib" $(LINK32_FLAGS_VAR) 
 
-!ELSE 
-
-ALL : "libaprutil - x64 Release" "$(OUTDIR)\apr_ldap-1.dll"
-
-!ENDIF 
 
 !IF "$(RECURSE)" == "1" 
+!IF  "$(CFG)" == "apr_ldap - Win32 Release"
+ALL : "libaprutil - Win32 Release" "$(OUTDIR)\apr_ldap-1.dll"
+CLEAN :"libaprutil - Win32 ReleaseCLEAN" 
+!ELSEIF  "$(CFG)" == "apr_ldap - Win32 Debug"
+ALL : "libaprutil - Win32 Debug" "$(OUTDIR)\apr_ldap-1.dll"
+CLEAN :"libaprutil - Win32 DebugCLEAN" 
+!ELSEIF  "$(CFG)" == "apr_ldap - x64 Release"
+ALL : "libaprutil - x64 Release" "$(OUTDIR)\apr_ldap-1.dll"
 CLEAN :"libaprutil - x64 ReleaseCLEAN" 
+!ELSEIF  "$(CFG)" == "apr_ldap - x64 Debug"
+ALL : "libaprutil - x64 Debug" "$(OUTDIR)\apr_ldap-1.dll"
+CLEAN :"libaprutil - x64 DebugCLEAN" 
+!ENDIF
 !ELSE 
+ALL : "$(OUTDIR)\apr_ldap-1.dll"
 CLEAN :
 !ENDIF 
 	-@erase "$(INTDIR)\apr_ldap-1.res"
@@ -281,9 +114,6 @@ CLEAN :
 
 "$(OUTDIR)" :
     if not exist "$(OUTDIR)/$(NULL)" mkdir "$(OUTDIR)"
-
-CPP=cl.exe
-CPP_PROJ=/nologo /MD /W3 /Zi /O2 /Oy- /I "../include" /I "$(APR_PATH)/include" /I "../include/private" /D "NDEBUG" /D "WIN32" /D "_WINDOWS" /Fo"$(INTDIR)\\" /Fd"$(INTDIR)\apr_ldap_src" /FD /c 
 
 .c{$(INTDIR)}.obj::
    $(CPP) @<<
@@ -315,16 +145,6 @@ CPP_PROJ=/nologo /MD /W3 /Zi /O2 /Oy- /I "../include" /I "$(APR_PATH)/include" /
    $(CPP_PROJ) $< 
 <<
 
-MTL=midl.exe
-MTL_PROJ=/nologo /D "NDEBUG" /mktyplib203 /o /win32 "NUL" 
-RSC=rc.exe
-RSC_PROJ=/l 0x409 /fo"$(INTDIR)\apr_ldap-1.res" /i "../include" /i "$(APR_PATH)/include" /d DLL_NAME="apr_ldap" /d "NDEBUG" /d "APU_VERSION_ONLY" 
-BSC32=bscmake.exe
-BSC32_FLAGS=/nologo /o"$(OUTDIR)\apr_ldap.bsc" 
-BSC32_SBRS= \
-	
-LINK32=link.exe
-LINK32_FLAGS=kernel32.lib advapi32.lib ws2_32.lib mswsock.lib wldap32.lib ole32.lib "$(APR_OUT)\libapr-1.lib" /nologo /base:"0x6EEB0000" /subsystem:windows /dll /incremental:no /pdb:"$(OUTDIR)\apr_ldap-1.pdb" /debug /machine:IX86 /out:"$(OUTDIR)\apr_ldap-1.dll" /implib:"$(OUTDIR)\apr_ldap-1.lib" /MACHINE:X64 /opt:ref 
 LINK32_OBJS= \
 	"$(INTDIR)\apr_ldap_init.obj" \
 	"$(INTDIR)\apr_ldap_option.obj" \
@@ -344,123 +164,9 @@ DS_POSTBUILD_DEP=$(INTDIR)\postbld.dep
 
 ALL : $(DS_POSTBUILD_DEP)
 
-# Begin Custom Macros
-OutDir=.\x64\Release
-# End Custom Macros
-
-#$(DS_POSTBUILD_DEP) : "libaprutil - x64 Release" "$(OUTDIR)\apr_ldap-1.dll"
 $(DS_POSTBUILD_DEP) : "$(OUTDIR)\apr_ldap-1.dll"
    if exist $(OUTDIR)\apr_ldap-1.dll.manifest mt.exe -manifest $(OUTDIR)\apr_ldap-1.dll.manifest -outputresource:$(OUTDIR)\apr_ldap-1.dll;2
 	echo Helper for Post-build step > "$(DS_POSTBUILD_DEP)"
-
-!ELSEIF  "$(CFG)" == "apr_ldap - x64 Debug"
-
-OUTDIR=.\x64\Debug
-INTDIR=.\x64\Debug
-# Begin Custom Macros
-OutDir=.\x64\Debug
-# End Custom Macros
-
-!IF "$(RECURSE)" == "0" 
-
-ALL : "$(OUTDIR)\apr_ldap-1.dll"
-
-!ELSE 
-
-ALL : "libaprutil - x64 Debug" "$(OUTDIR)\apr_ldap-1.dll"
-
-!ENDIF 
-
-!IF "$(RECURSE)" == "1" 
-CLEAN :"libaprutil - x64 DebugCLEAN" 
-!ELSE 
-CLEAN :
-!ENDIF 
-	-@erase "$(INTDIR)\apr_ldap-1.res"
-	-@erase "$(INTDIR)\apr_ldap_init.obj"
-	-@erase "$(INTDIR)\apr_ldap_option.obj"
-	-@erase "$(INTDIR)\apr_ldap_rebind.obj"
-	-@erase "$(INTDIR)\apr_ldap_src.idb"
-	-@erase "$(INTDIR)\apr_ldap_src.pdb"
-	-@erase "$(OUTDIR)\apr_ldap-1.dll"
-	-@erase "$(OUTDIR)\apr_ldap-1.exp"
-	-@erase "$(OUTDIR)\apr_ldap-1.lib"
-	-@erase "$(OUTDIR)\apr_ldap-1.pdb"
-
-"$(OUTDIR)" :
-    if not exist "$(OUTDIR)/$(NULL)" mkdir "$(OUTDIR)"
-
-CPP=cl.exe
-CPP_PROJ=/nologo /MDd /W3 /Zi /Od /I "../include" /I "../../apr/include" /I "../include/private" /D "_DEBUG" /D "WIN32" /D "_WINDOWS" /Fo"$(INTDIR)\\" /Fd"$(INTDIR)\apr_ldap_src" /FD /EHsc /c 
-
-.c{$(INTDIR)}.obj::
-   $(CPP) @<<
-   $(CPP_PROJ) $< 
-<<
-
-.cpp{$(INTDIR)}.obj::
-   $(CPP) @<<
-   $(CPP_PROJ) $< 
-<<
-
-.cxx{$(INTDIR)}.obj::
-   $(CPP) @<<
-   $(CPP_PROJ) $< 
-<<
-
-.c{$(INTDIR)}.sbr::
-   $(CPP) @<<
-   $(CPP_PROJ) $< 
-<<
-
-.cpp{$(INTDIR)}.sbr::
-   $(CPP) @<<
-   $(CPP_PROJ) $< 
-<<
-
-.cxx{$(INTDIR)}.sbr::
-   $(CPP) @<<
-   $(CPP_PROJ) $< 
-<<
-
-MTL=midl.exe
-MTL_PROJ=/nologo /D "_DEBUG" /mktyplib203 /o /win32 "NUL" 
-RSC=rc.exe
-RSC_PROJ=/l 0x409 /fo"$(INTDIR)\apr_ldap-1.res" /i "../include" /i "../../apr/include" /d DLL_NAME="apr_ldap" /d "_DEBUG" /d "APU_VERSION_ONLY" 
-BSC32=bscmake.exe
-BSC32_FLAGS=/nologo /o"$(OUTDIR)\apr_ldap.bsc" 
-BSC32_SBRS= \
-	
-LINK32=link.exe
-LINK32_FLAGS=kernel32.lib advapi32.lib ws2_32.lib mswsock.lib wldap32.lib ole32.lib /nologo /base:"0x6EEB0000" /subsystem:windows /dll /incremental:no /pdb:"$(OUTDIR)\apr_ldap-1.pdb" /debug /machine:IX86 /out:"$(OUTDIR)\apr_ldap-1.dll" /implib:"$(OUTDIR)\apr_ldap-1.lib" /MACHINE:X64 
-LINK32_OBJS= \
-	"$(INTDIR)\apr_ldap_init.obj" \
-	"$(INTDIR)\apr_ldap_option.obj" \
-	"$(INTDIR)\apr_ldap_rebind.obj" \
-	"$(INTDIR)\apr_ldap-1.res" \
-	"$(APU_OUT)\libaprutil-1.lib"
-
-"$(OUTDIR)\apr_ldap-1.dll" : "$(OUTDIR)" $(DEF_FILE) $(LINK32_OBJS)
-    $(LINK32) @<<
-  $(LINK32_FLAGS) $(LINK32_OBJS)
-<<
-
-TargetPath=$(OUTDIR)\apr_ldap-1.dll
-SOURCE="$(InputPath)"
-PostBuild_Desc=Embed .manifest
-DS_POSTBUILD_DEP=$(INTDIR)\postbld.dep
-
-ALL : $(DS_POSTBUILD_DEP)
-
-# Begin Custom Macros
-OutDir=.\x64\Debug
-# End Custom Macros
-
-$(DS_POSTBUILD_DEP) : "libaprutil - x64 Debug" "$(OUTDIR)\apr_ldap-1.dll"
-   if exist $(OUTDIR)\apr_ldap-1.dll.manifest mt.exe -manifest $(OUTDIR)\apr_ldap-1.dll.manifest -outputresource:$(OUTDIR)\apr_ldap-1.dll;2
-	echo Helper for Post-build step > "$(DS_POSTBUILD_DEP)"
-
-!ENDIF 
 
 
 !IF "$(NO_EXTERNAL_DEPS)" != "1"
@@ -472,7 +178,6 @@ $(DS_POSTBUILD_DEP) : "libaprutil - x64 Debug" "$(OUTDIR)\apr_ldap-1.dll"
 !ENDIF 
 
 
-!IF "$(CFG)" == "apr_ldap - Win32 Release" || "$(CFG)" == "apr_ldap - Win32 Debug" || "$(CFG)" == "apr_ldap - x64 Release" || "$(CFG)" == "apr_ldap - x64 Debug"
 SOURCE=.\apr_ldap_init.c
 
 "$(INTDIR)\apr_ldap_init.obj" : $(SOURCE) "$(INTDIR)"
@@ -488,18 +193,6 @@ SOURCE=.\apr_ldap_rebind.c
 "$(INTDIR)\apr_ldap_rebind.obj" : $(SOURCE) "$(INTDIR)"
 
 
-!IF  "$(CFG)" == "apr_ldap - Win32 Release"
-
-!ELSEIF  "$(CFG)" == "apr_ldap - Win32 Debug"
-
-!ELSEIF  "$(CFG)" == "apr_ldap - x64 Release"
-
-!ELSEIF  "$(CFG)" == "apr_ldap - x64 Debug"
-
-!ENDIF 
-
-!IF  "$(CFG)" == "apr_ldap - Win32 Release"
-
 "libaprutil - Win32 Release" : 
    cd "\tmp\apr-util"
    $(MAKE) /$(MAKEFLAGS) /F ".\libaprutil.mak" CFG="libaprutil - Win32 Release" 
@@ -509,8 +202,6 @@ SOURCE=.\apr_ldap_rebind.c
    cd "\tmp\apr-util"
    $(MAKE) /$(MAKEFLAGS) /F ".\libaprutil.mak" CFG="libaprutil - Win32 Release" RECURSE=1 CLEAN 
    cd ".\ldap"
-
-!ELSEIF  "$(CFG)" == "apr_ldap - Win32 Debug"
 
 "libaprutil - Win32 Debug" : 
    cd "\tmp\apr-util"
@@ -522,8 +213,6 @@ SOURCE=.\apr_ldap_rebind.c
    $(MAKE) /$(MAKEFLAGS) /F ".\libaprutil.mak" CFG="libaprutil - Win32 Debug" RECURSE=1 CLEAN 
    cd ".\ldap"
 
-!ELSEIF  "$(CFG)" == "apr_ldap - x64 Release"
-
 "libaprutil - x64 Release" : 
    cd "\tmp\apr-util"
    $(MAKE) /$(MAKEFLAGS) /F ".\libaprutil.mak" CFG="libaprutil - x64 Release" 
@@ -533,8 +222,6 @@ SOURCE=.\apr_ldap_rebind.c
    cd "\tmp\apr-util"
    $(MAKE) /$(MAKEFLAGS) /F ".\libaprutil.mak" CFG="libaprutil - x64 Release" RECURSE=1 CLEAN 
    cd ".\ldap"
-
-!ELSEIF  "$(CFG)" == "apr_ldap - x64 Debug"
 
 "libaprutil - x64 Debug" : 
    cd "\tmp\apr-util"
@@ -546,42 +233,13 @@ SOURCE=.\apr_ldap_rebind.c
    $(MAKE) /$(MAKEFLAGS) /F ".\libaprutil.mak" CFG="libaprutil - x64 Debug" RECURSE=1 CLEAN 
    cd ".\ldap"
 
-!ENDIF 
 
 SOURCE=..\libaprutil.rc
 
-!IF  "$(CFG)" == "apr_ldap - Win32 Release"
-
 
 "$(INTDIR)\apr_ldap-1.res" : $(SOURCE) "$(INTDIR)"
-	$(RSC) /l 0x409 /fo"$(INTDIR)\apr_ldap-1.res" /i "../include" /i "../../apr/include" /i "\tmp\apr-util" /d DLL_NAME="apr_ldap" /d "NDEBUG" /d "APU_VERSION_ONLY" $(SOURCE)
+	$(RSC) /l 0x409 /fo"$(INTDIR)\apr_ldap-1.res" /i "../include" /i "$(APR_PATH)/include" /i "\tmp\apr-util" /d DLL_NAME="apr_ldap" /d "APU_VERSION_ONLY" $(RSC_PROJ_VAR) $(SOURCE)
 
-
-!ELSEIF  "$(CFG)" == "apr_ldap - Win32 Debug"
-
-
-"$(INTDIR)\apr_ldap-1.res" : $(SOURCE) "$(INTDIR)"
-	$(RSC) /l 0x409 /fo"$(INTDIR)\apr_ldap-1.res" /i "../include" /i "../../apr/include" /i "\tmp\apr-util" /d DLL_NAME="apr_ldap" /d "_DEBUG" /d "APU_VERSION_ONLY" $(SOURCE)
-
-
-!ELSEIF  "$(CFG)" == "apr_ldap - x64 Release"
-
-
-"$(INTDIR)\apr_ldap-1.res" : $(SOURCE) "$(INTDIR)"
-	$(RSC) /l 0x409 /fo"$(INTDIR)\apr_ldap-1.res" /i "../include" /i "../../apr/include" /i "\tmp\apr-util" /d DLL_NAME="apr_ldap" /d "NDEBUG" /d "APU_VERSION_ONLY" $(SOURCE)
-
-
-!ELSEIF  "$(CFG)" == "apr_ldap - x64 Debug"
-
-
-"$(INTDIR)\apr_ldap-1.res" : $(SOURCE) "$(INTDIR)"
-	$(RSC) /l 0x409 /fo"$(INTDIR)\apr_ldap-1.res" /i "../include" /i "../../apr/include" /i "\tmp\apr-util" /d DLL_NAME="apr_ldap" /d "_DEBUG" /d "APU_VERSION_ONLY" $(SOURCE)
-
-
-!ENDIF 
-
-
-!ENDIF 
 
 "$(INTDIR)" :
     if not exist "$(INTDIR)/$(NULL)" mkdir "$(INTDIR)"

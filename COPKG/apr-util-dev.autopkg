@@ -1,5 +1,5 @@
-@import "api_version.inc";
-@import "api_compat.inc";
+@import "apu_version.inc";
+@import "apu_compat.inc";
 @import "outercurve.inc";
 
 #define { 
@@ -8,11 +8,11 @@
 }
 
 package {
-    name: "apr-iconv-dev[${flavor}]";
+    name: "apr-util-dev[${flavor}]";
     version: "${package-version}";
     arch : "${arch}";
 
-    display-name: "apr-iconv developer library";
+    display-name: "apr-util developer library";
     location: "http://coapp.org/repository/${OutputFilename}";
 
     feed: "http://coapp.org/repository/packages.atom.xml";
@@ -20,27 +20,27 @@ package {
 }
 
 license[BSD] {
-    license: "..\apr-iconv\COPYING";
+    license: "..\apr-util\COPYING";
     license-type: "Custom BSD License";
 }
 
 requires {
-    package: "apr-iconv[${flavor}]-${package-version}-${Package.Architecture}-${Package.PublicKeyToken}";
-    package: "apr-iconv-dev-common-${package-version}-any-${Package.PublicKeyToken}";
+    package: "apr-util[${flavor}]-${package-version}-${Package.Architecture}-${Package.PublicKeyToken}";
+    package: "apr-util-dev-common-${package-version}-any-${Package.PublicKeyToken}";
 }
 
 metadata {  
-    summary: "apr-iconv";
-    description: @"APR-iconv provides a portable iconv() implementation built on top of APR.";
+    summary: "apr-util";
+    description: @"APR-util provides various utilities built on top of APR.";
     author-version : "${author-version}";
-    bug-tracker: "https://github.com/coapp-packages/apr-iconv/issues";
+    bug-tracker: "https://github.com/coapp-packages/apr/issues";
     stability : "0";
     licenses : {
         BSD
     };
 }
 
-developer-library[apr-iconv[${flavor}]] {
+developer-library[apr-util[${flavor}]] {
     libraries : {
         libs,
     };
@@ -50,7 +50,9 @@ files[libs] {
     root: @"..\output\${flavor}\${arch}\Release";
 
     include: {
-        "libapriconv-1.lib",
+        "libaprutil-1.lib",
+        "apr_ldap-1.lib",
+        "apr_dbd_odbc-1.lib",
     };
 
     trim-path: all;

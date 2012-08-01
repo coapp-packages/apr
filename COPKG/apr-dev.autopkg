@@ -1,5 +1,5 @@
 @import "version.inc";
-@import "compat.inc";
+@import "apr_compat.inc";
 @import "outercurve.inc";
 
 #define { 
@@ -35,16 +35,6 @@ requires {
     package: "expat[${flavor}]-2.0.1-${Package.Architecture}-${Package.PublicKeyToken}";
 }
 
-files[staticlibs] {
-    root: @"..\output\${flavor}\${arch}\LibR\";
-    
-    include: {
-        "apr-1.lib",
-    };
-    
-    trim-path: all;
-};
-
 files[libs] {
     root: @"..\output\${flavor}\${arch}\Release\";
     
@@ -58,6 +48,5 @@ files[libs] {
 developer-library[apr[${flavor}]] {
     libraries : {
         libs,
-		staticlibs
     };
 }

@@ -1,5 +1,5 @@
-@import "version.inc" ;
-@import "compat.inc";
+@import "apr_version.inc" ;
+@import "apr_compat.inc";
 @import "outercurve.inc" ;
 
 package {

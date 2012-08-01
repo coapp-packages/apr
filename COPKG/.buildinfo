@@ -80,9 +80,9 @@ apu-package {
     targets: {(COMP,PLAT) => @"copkg\apr-dev[${0}]-${NewAPU}-${1}.msi",};
     build-command : @"
         pushd COPKG
-        autopackage apr-dev-common.autopkg || goto failed
+        autopackage apr-util-dev-common.autopkg || goto failed
         for %%a in (${COMP}) do ( for %%b in (${PLAT}) do (
-                autopackage --comp=%%a --plat=%%b apr.autopkg apr-dev.autopkg || goto failed
+                autopackage --comp=%%a --plat=%%b apr-util.autopkg apr-util-dev.autopkg || goto failed
         ) )
         popd
     ";
@@ -120,6 +120,7 @@ release {
         for %%A in (${COMP}) do (
             for %%B in (${PLAT}) do (
                 ptk --nologo base --COMP=%%A --PLAT=%%B --BuildCfg=${BuildCfg} || goto failed
+                ptk --nologo clean base --COMP=%%A --PLAT=%%B --BuildCfg=${BuildCfg} || goto failed
             )
 		)
         :endrel
@@ -184,7 +185,7 @@ base {
 
         echo Building ${COMP}-${PLAT}
         pushd apr-util
-        nmake -f Makefile.win CRYPTO_LIST=""openssl"" COMP=${COMP} APR_PATH=""%CD%\.."" API_PATH=""%CD%\..\apr-iconv"" APU_PATH=""%CD%"" MAKEOPT=""-nologo"" APR_OUT=$(APR_PATH)\$(OUT_TAIL) COAPP=${PLAT} all || goto failed
+        nmake -f Makefile.win CRYPTO_LIST=""openssl"" COMP=${COMP} APR_PATH=""%CD%\.."" API_PATH=""%CD%\..\apr-iconv"" APU_PATH=""%CD%"" MAKEOPT=""-nologo"" APR_OUT=$(APR_PATH)\$(OUT_TAIL) COAPP=${PLAT} TESTOPTS=""-x testxlate -x testreslist"" all || goto failed
         popd
     ";
     clean-command:@"
@@ -192,8 +193,9 @@ base {
         nmake -f Makefile.win COMP=${COMP} clean
         cd..
         if exist ipch rmdir /s /q ipch > nul 2> nul
-        if exist output rmdir /s /q output > nul 2> nul
-        del /S /Q /A - *.sdf *.suo *.user *.exe *.pdb > nul 2>NUL
+        del /s /q *.obj
+        REM if exist output rmdir /s /q output > nul 2> nul
+        REM del /S /Q /A - *.sdf *.suo *.user *.exe *.pdb > nul 2>NUL
         del /S /Q include\apr.h include\apr_ldap.h include\apu_want.h include\private\apu_select_dbm.h > nul 2>NUL
     ";
 };

@@ -1,5 +1,5 @@
-@import "api_version.inc";
-@import "api_compat.inc";
+@import "apu_version.inc";
+@import "apu_compat.inc";
 @import "outercurve.inc";
 
 #define { 
@@ -8,11 +8,11 @@
 }
 
 package {
-    name: "apr-iconv[${flavor}]";
+    name: "apr-util[${flavor}]";
     version: "${package-version}";
     arch : "${arch}";
 
-    display-name: "apr-iconv";
+    display-name: "apr-util";
     location: "http://coapp.org/repository/${OutputFilename}";
 
     feed: "http://coapp.org/repository/packages.atom.xml";
@@ -20,19 +20,20 @@ package {
 }
 
 license[BSD] {
-    license: "..\apr-iconv\COPYING";
+    license: "..\apr-util\COPYING";
     license-type: "Custom BSD License";
 }
 
 requires {
     package: "apr[${flavor}]-${apr-dep-version}-${Package.Architecture}-${apr-dep-publickeytoken}";
+    package: "apr-iconv[${flavor}]-${api-dep-version}-${Package.Architecture}-${api-dep-publickeytoken}";
 }
 
 metadata {  
-    summary: "apr-iconv";
-    description: @"APR-iconv provides a portable iconv() implementation built on top of APR.";
+    summary: "apr-util";
+    description: @"APR-util provides various utilities built on top of APR.";
     author-version : "${author-version}";
-    bug-tracker: "https://github.com/coapp-packages/apr-iconv/issues";
+    bug-tracker: "https://github.com/coapp-packages/apr/issues";
     stability : "0";
     licenses : {
         BSD
@@ -42,8 +43,8 @@ metadata {
 signing {
     attributes : {
         company="Outercurve Foundation",
-        description="APR-iconv provides a portable iconv() implementation built on top of APR.",
-        product-name="apr-iconv",
+        description="APR-util provides various utilities built on top of APR.",
+        product-name="apr-util",
         product-version="${package-version}",
         file-version="${package-version}",
     };
@@ -54,7 +55,7 @@ signing {
     };    
 }
 
-manifest[apr-iconv] {
+manifest[apr-util] {
     assembly : {
         "apr[${flavor}]",
     };
@@ -64,7 +65,7 @@ manifest[apr-iconv] {
     };
 }
 
-assembly[apr-iconv[${flavor}]] {
+assembly[apr-util[${flavor}]] {
     include : {
         dlls
     };
@@ -74,7 +75,9 @@ files[dlls] {
     root: @"..\output\${flavor}\${arch}\Release";
 
     include: {
-        "libapriconv-1.dll",
+        "libaprutil-1.dll",
+        "apr_ldap-1.dll",
+        "apr_dbd_odbc-1.dll",
     };
 
     trim-path: all;
