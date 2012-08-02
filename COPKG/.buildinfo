@@ -39,11 +39,6 @@ package {
         pack-api,
         pack-apu,
     };
-   build-command : @"
-       ptk pack-apr || goto failed
-       ptk pack-api || goto failed
-       ptk pack-apu || goto failed
-   ";
 	clean-command: @"del COPKG\*.msi COPKG\*.wixpdb";
 };
 
@@ -70,7 +65,7 @@ pack-api {
     set: COMP="${COMP??vc10}";
     set: PLAT="${PLAT??x86, x64}";
     default : false;
-    targets: {(COMP,PLAT) => @"copkg\apr-dev[${0}]-${NewAPI}-${1}.msi",};
+    targets: {(COMP,PLAT) => @"copkg\apr-iconv-dev[${0}]-${NewAPI}-${1}.msi",};
     uses : {
         update-api,
         sign,
@@ -89,7 +84,7 @@ pack-apu {
     set: COMP="${COMP??vc10}";
     set: PLAT="${PLAT??x86, x64}";
     default : false;
-    targets: {(COMP,PLAT) => @"copkg\apr-dev[${0}]-${NewAPU}-${1}.msi",};
+    targets: {(COMP,PLAT) => @"copkg\apr-util-dev[${0}]-${NewAPU}-${1}.msi",};
     uses : {
         update-apu,
         sign,
@@ -183,13 +178,16 @@ sign {
     set: {
         COMP="${COMP??vc10}";
 		PLAT="${PLAT??x86, x64}";
+        ENTRY="${${ENTRY??0}++}";
     };
     default : false;
     uses: release;
     build-command: @"
-        for %%A in (${COMP}) do (
-            for %%B in (${PLAT}) do (
-                simplesigner.exe --nologo --sign output\%%A\%%B\Release\**.dll
+        if ${ENTRY} leq 1 (
+            for %%A in (${COMP}) do (
+                for %%B in (${PLAT}) do (
+                    simplesigner.exe --nologo --sign output\%%A\%%B\Release\**.dll
+                )
             )
         )
     ";
