@@ -4,9 +4,9 @@
 @import "apu_version.inc";
 
 #define {    
-    NewAPR : "${apr-version++}";
-    NewAPI : "${api-version++}";
-    NewAPU : "${apu-version++}";
+    NewAPR : "${apr_version++}";
+    NewAPI : "${api_version++}";
+    NewAPU : "${apu_version++}";
 }
 
 #product-info  {
@@ -34,16 +34,22 @@ package {
     set: PLAT="${PLAT??x86, x64}";
     default : false;
     uses : {
+        // pack-apr,
+        // pack-api,
+        // pack-apu,
+//        release,
         update-version,
         sign,
-        apr-package,
-        api-package,
-        apu-package,
     };
+   build-command : @"
+       ptk pack-apr
+       ptk pack-api
+       ptk pack-apu
+   ";
 	clean-command: @"del COPKG\*.msi COPKG\*.wixpdb";
 };
 
-apr-package {
+pack-apr {
     set: COMP="${COMP??vc10}";
     set: PLAT="${PLAT??x86, x64}";
     default : false;
@@ -58,7 +64,7 @@ apr-package {
     ";
 };
 
-api-package {
+pack-api {
     set: COMP="${COMP??vc10}";
     set: PLAT="${PLAT??x86, x64}";
     default : false;
@@ -73,7 +79,7 @@ api-package {
     ";
 };
 
-apu-package {
+pack-apu {
     set: COMP="${COMP??vc10}";
     set: PLAT="${PLAT??x86, x64}";
     default : false;
@@ -97,11 +103,11 @@ update-version {
         if ""${noversion}"" == ""true"" goto :endver
         pushd COPKG
         setlocal EnableDelayedExpansion
-        set VERSTRING=#define { package-version: ${NewAPR}; }
+        set VERSTRING=#define { apr_version: ${NewAPR}; }
         echo !VERSTRING! > apr_version.inc
-        set VERSTRING=#define { package-version: ${NewAPI}; }
+        set VERSTRING=#define { api_version: ${NewAPI}; }
         echo !VERSTRING! > api_version.inc
-        set VERSTRING=#define { package-version: ${NewAPU}; }
+        set VERSTRING=#define { apu_version: ${NewAPU}; }
         echo !VERSTRING! > apu_version.inc
         popd
         :endver

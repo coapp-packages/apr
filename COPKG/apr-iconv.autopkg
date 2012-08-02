@@ -9,7 +9,7 @@
 
 package {
     name: "apr-iconv[${flavor}]";
-    version: "${package-version}";
+    version: "${api_version}";
     arch : "${arch}";
 
     display-name: "apr-iconv";
@@ -44,8 +44,8 @@ signing {
         company="Outercurve Foundation",
         description="APR-iconv provides a portable iconv() implementation built on top of APR.",
         product-name="apr-iconv",
-        product-version="${package-version}",
-        file-version="${package-version}",
+        product-version="${api_version}",
+        file-version="${api_version}",
     };
 
     replace-signature: true; 

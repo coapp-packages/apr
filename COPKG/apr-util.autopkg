@@ -9,7 +9,7 @@
 
 package {
     name: "apr-util[${flavor}]";
-    version: "${package-version}";
+    version: "${apu_version}";
     arch : "${arch}";
 
     display-name: "apr-util";
@@ -45,8 +45,8 @@ signing {
         company="Outercurve Foundation",
         description="APR-util provides various utilities built on top of APR.",
         product-name="apr-util",
-        product-version="${package-version}",
-        file-version="${package-version}",
+        product-version="${apu_version}",
+        file-version="${apu_version}",
     };
 
     replace-signature: true; 

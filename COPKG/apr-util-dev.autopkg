@@ -9,7 +9,7 @@
 
 package {
     name: "apr-util-dev[${flavor}]";
-    version: "${package-version}";
+    version: "${apu_version}";
     arch : "${arch}";
 
     display-name: "apr-util developer library";
@@ -25,8 +25,8 @@ license[BSD] {
 }
 
 requires {
-    package: "apr-util[${flavor}]-${package-version}-${Package.Architecture}-${Package.PublicKeyToken}";
-    package: "apr-util-dev-common-${package-version}-any-${Package.PublicKeyToken}";
+    package: "apr-util[${flavor}]-${apu_version}-${Package.Architecture}-${Package.PublicKeyToken}";
+    package: "apr-util-dev-common-${apu_version}-any-${Package.PublicKeyToken}";
 }
 
 metadata {  

@@ -9,7 +9,7 @@
 
 package {
     name: "apr[${flavor}]";
-    version: "${package-version}";
+    version: "${apr_version}";
     arch : "${arch}";
     
     display-name: "apr";
@@ -82,8 +82,8 @@ signing {
         company="Outercurve Foundation",
         description="apr",
         product-name="apr",
-        product-version="${package-version}",
-        file-version="${package-version}",
+        product-version="${apr_version}",
+        file-version="${apr_version}",
     };
     
     replace-signature: true; 

@@ -9,7 +9,7 @@
 
 package {
     name: "apr-iconv-dev[${flavor}]";
-    version: "${package-version}";
+    version: "${api_version}";
     arch : "${arch}";
 
     display-name: "apr-iconv developer library";
@@ -25,8 +25,8 @@ license[BSD] {
 }
 
 requires {
-    package: "apr-iconv[${flavor}]-${package-version}-${Package.Architecture}-${Package.PublicKeyToken}";
-    package: "apr-iconv-dev-common-${package-version}-any-${Package.PublicKeyToken}";
+    package: "apr-iconv[${flavor}]-${api_version}-${Package.Architecture}-${Package.PublicKeyToken}";
+    package: "apr-iconv-dev-common-${api_version}-any-${Package.PublicKeyToken}";
 }
 
 metadata {  

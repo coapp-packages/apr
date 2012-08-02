@@ -9,7 +9,7 @@
 
 package {
     name: "apr-dev[${flavor}]";
-    version: "${package-version}";
+    version: "${apr_version}";
     arch : "${arch}";
 
     display-name: "apr developer library";
@@ -30,8 +30,8 @@ metadata {
 }
 
 requires {
-    package: "apr-dev-common-${package-version}-any-${Package.PublicKeyToken}";
-    package: "apr[${flavor}]-${package-version}-${Package.Architecture}-${Package.PublicKeyToken}";
+    package: "apr-dev-common-${apr_version}-any-${Package.PublicKeyToken}";
+    package: "apr[${flavor}]-${apr_version}-${Package.Architecture}-${Package.PublicKeyToken}";
     package: "expat[${flavor}]-2.0.1-${Package.Architecture}-${Package.PublicKeyToken}";
 }
 
