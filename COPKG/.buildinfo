@@ -42,9 +42,9 @@ package {
         sign,
     };
    build-command : @"
-       ptk pack-apr
-       ptk pack-api
-       ptk pack-apu
+       ptk pack-apr || goto failed
+       ptk pack-api || goto failed
+       ptk pack-apu || goto failed
    ";
 	clean-command: @"del COPKG\*.msi COPKG\*.wixpdb";
 };
@@ -111,6 +111,15 @@ update-version {
         echo !VERSTRING! > apu_version.inc
         popd
         :endver
+    ";
+}
+
+commit-version {
+    default : false;
+    
+    build-command : @"
+        git add COPKG\apr_version.inc COPKG\api_version.inc COPKG\apu_version.inc
+        git commit -m "increment versions after build"
     ";
 }
 
