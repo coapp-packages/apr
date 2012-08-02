@@ -142,7 +142,7 @@ BSC32_FLAGS=/nologo /o"$(OUTDIR)\libapriconv.bsc"
 BSC32_SBRS= \
 	
 LINK32=link.exe
-LINK32_FLAGS=kernel32.lib advapi32.lib "$(OUTDIR)\libapr-1.lib" /nologo /base:"0x6EE50000" /subsystem:windows /dll /incremental:no /pdb:"$(OUTDIR)\libapriconv-1.pdb" /debug /out:"$(OUTDIR)\libapriconv-1.dll" /implib:"$(OUTDIR)\libapriconv-1.lib" 
+LINK32_FLAGS=kernel32.lib advapi32.lib "$(APR_OUT)\libapr-1.lib" /nologo /base:"0x6EE50000" /subsystem:windows /dll /incremental:no /pdb:"$(OUTDIR)\libapriconv-1.pdb" /debug /out:"$(OUTDIR)\libapriconv-1.dll" /implib:"$(OUTDIR)\libapriconv-1.lib" 
 !IF  "$(CFG)" == "libapriconv - Win32 Release"
 LINK32_FLAGS=$(LINK32_FLAGS) /MACHINE:X86 "$(PROGRAMDATA)\lib\x86\libexpat.lib" /opt:ref 
 !ELSEIF  "$(CFG)" == "libapriconv - Win32 Debug"
@@ -162,7 +162,6 @@ LINK32_OBJS= \
 	"$(INTDIR)\iconv_module.obj" \
 	"$(INTDIR)\iconv_uc.obj" \
 	"$(INTDIR)\libapriconv.res" \
-	"$(PROGRAMDATA)\lib\x64\libapr-1.lib"
 
 "$(OUTDIR)\libapriconv-1.dll" : "$(OUTDIR)" $(DEF_FILE) $(LINK32_OBJS)
     $(LINK32) @<<
