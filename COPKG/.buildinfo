@@ -34,12 +34,10 @@ package {
     set: PLAT="${PLAT??x86, x64}";
     default : false;
     uses : {
-        // pack-apr,
-        // pack-api,
-        // pack-apu,
-//        release,
-        update-version,
         sign,
+        pack-apr,
+        pack-api,
+        pack-apu,
     };
    build-command : @"
        ptk pack-apr || goto failed
@@ -53,6 +51,10 @@ pack-apr {
     set: COMP="${COMP??vc10}";
     set: PLAT="${PLAT??x86, x64}";
     default : false;
+    uses : {
+        update-apr,
+        sign,
+    };
     targets: {(COMP,PLAT) => @"copkg\apr-dev[${0}]-${NewAPR}-${1}.msi",};
     build-command : @"
         pushd COPKG
@@ -69,6 +71,10 @@ pack-api {
     set: PLAT="${PLAT??x86, x64}";
     default : false;
     targets: {(COMP,PLAT) => @"copkg\apr-dev[${0}]-${NewAPI}-${1}.msi",};
+    uses : {
+        update-api,
+        sign,
+    };
     build-command : @"
         pushd COPKG
         autopackage apr-iconv-dev-common.autopkg || goto failed
@@ -84,6 +90,10 @@ pack-apu {
     set: PLAT="${PLAT??x86, x64}";
     default : false;
     targets: {(COMP,PLAT) => @"copkg\apr-dev[${0}]-${NewAPU}-${1}.msi",};
+    uses : {
+        update-apu,
+        sign,
+    };
     build-command : @"
         pushd COPKG
         autopackage apr-util-dev-common.autopkg || goto failed
@@ -95,7 +105,7 @@ pack-apu {
 };
 
 
-update-version {
+update-apr {
     default : false;
     
     build-command : @"
@@ -105,8 +115,34 @@ update-version {
         setlocal EnableDelayedExpansion
         set VERSTRING=#define { apr_version: ${NewAPR}; }
         echo !VERSTRING! > apr_version.inc
+        popd
+        :endver
+    ";
+}
+
+update-api {
+    default : false;
+    
+    build-command : @"
+        REM auto-increment version.inc files...
+        if ""${noversion}"" == ""true"" goto :endver
+        pushd COPKG
+        setlocal EnableDelayedExpansion
         set VERSTRING=#define { api_version: ${NewAPI}; }
         echo !VERSTRING! > api_version.inc
+        popd
+        :endver
+    ";
+}
+
+update-apu {
+    default : false;
+    
+    build-command : @"
+        REM auto-increment version.inc files...
+        if ""${noversion}"" == ""true"" goto :endver
+        pushd COPKG
+        setlocal EnableDelayedExpansion
         set VERSTRING=#define { apu_version: ${NewAPU}; }
         echo !VERSTRING! > apu_version.inc
         popd
