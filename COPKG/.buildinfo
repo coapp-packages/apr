@@ -119,7 +119,7 @@ commit-version {
     
     build-command : @"
         git add COPKG\apr_version.inc COPKG\api_version.inc COPKG\apu_version.inc
-        git commit -m "increment versions after build"
+        git commit -m ""increment versions after build""
     ";
 }
 
