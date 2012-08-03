@@ -149,8 +149,8 @@ commit-version {
     default : false;
     
     build-command : @"
-        git add COPKG\apr_version.inc COPKG\api_version.inc COPKG\apu_version.inc
-        git commit -m ""increment versions after build""
+        cmd /c git add COPKG\apr_version.inc COPKG\api_version.inc COPKG\apu_version.inc
+        cmd /c git commit -m ""increment versions after build""
     ";
 }
 
@@ -230,7 +230,7 @@ base {
 	
     build-command:@"
         REM this makes it so that DLLs can have their own SxS Activation Context in an embedded resource.
-		echo %_CL% | findstr ISOLATION_AWARE || set _CL=%CL% /D ISOLATION_AWARE_ENABLED
+		echo %CL% | findstr ISOLATION_AWARE || set CL=%CL% /D ISOLATION_AWARE_ENABLED /U NOUSER /D COAPP
 
         echo Building ${COMP}-${PLAT}
         pushd apr-util
