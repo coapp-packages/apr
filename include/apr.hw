@@ -80,17 +80,14 @@
  */
 #define _WIN32_WINNT 0x0501
 #endif
-#ifndef NOUSER
-#define NOUSER
+#ifdef NOUSER
+#undef NOUSER
 #endif
 #ifndef NOMCX
 #define NOMCX
 #endif
 #ifndef NOIME
 #define NOIME
-#endif
-#ifdef COAPP
-#undef NOUSER
 #endif
 #include <windows.h>
 /* 
