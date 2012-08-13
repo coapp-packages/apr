@@ -26,20 +26,10 @@ metadata {
 files[headers] {
     root: "..\\include";
     include: {
-        "*.h"
-    };
-    
-    trim-path:all;
-}
-
-files[headers2] {
-    root: @"..\include\arch\win32";
-    include: {
-        "*.h"
+        "**.h"
     };
     
     trim-path: minimal;
-    destination: @"arch\win32";
 }
 
 files[docs] {
@@ -54,7 +44,6 @@ files[docs] {
 developer-library[apr] {
     headers: { 
         headers,
-        headers2
     };
     
     docs: {
