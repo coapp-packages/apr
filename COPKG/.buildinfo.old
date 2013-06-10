@@ -1,0 +1,250 @@
+/* target information */
+@import "apr_version.inc";
+@import "api_version.inc";
+@import "apu_version.inc";
+
+#define {    
+    NewAPR : "${apr_version++}";
+    NewAPI : "${api_version++}";
+    NewAPU : "${apu_version++}";
+}
+
+#product-info  {
+	product-name: "apr";
+	version: "1.4";
+	original-source-location: "https://github.com/apache/apr";
+	original-source-website: "http://apr.apache.org/";
+	license: "Apache License";
+	packager: "Hamish C";
+}
+
+test {
+	set: {
+        COMP="${COMP??vc10}";
+		PLAT="${PLAT??x86, x64}";
+		BUILT="${BUILT??false}";
+	};
+    default : false;
+    // Tests are performed automatically during the build process.
+    uses: release;
+};
+
+package {
+    set: COMP="${COMP??vc10}";
+    set: PLAT="${PLAT??x86, x64}";
+    default : false;
+    uses : {
+        sign,
+        pack-apr,
+        pack-api,
+        pack-apu,
+    };
+	clean-command: @"del COPKG\*.msi COPKG\*.wixpdb";
+};
+
+pack-apr {
+    set: COMP="${COMP??vc10}";
+    set: PLAT="${PLAT??x86, x64}";
+    default : false;
+    uses : {
+        update-apr,
+        sign,
+    };
+    targets: {(COMP,PLAT) => @"copkg\apr-dev[${0}]-${NewAPR}-${1}.msi",};
+    build-command : @"
+        pushd COPKG
+        autopackage apr-dev-common.autopkg || goto failed
+        for %%a in (${COMP}) do ( for %%b in (${PLAT}) do (
+                autopackage --comp=%%a --plat=%%b apr.autopkg apr-dev.autopkg || goto failed
+        ) )
+        popd
+    ";
+};
+
+pack-api {
+    set: COMP="${COMP??vc10}";
+    set: PLAT="${PLAT??x86, x64}";
+    default : false;
+    targets: {(COMP,PLAT) => @"copkg\apr-iconv-dev[${0}]-${NewAPI}-${1}.msi",};
+    uses : {
+        update-api,
+        sign,
+    };
+    build-command : @"
+        pushd COPKG
+        autopackage apr-iconv-dev-common.autopkg || goto failed
+        for %%a in (${COMP}) do ( for %%b in (${PLAT}) do (
+                autopackage --comp=%%a --plat=%%b apr-iconv.autopkg apr-iconv-dev.autopkg || goto failed
+        ) )
+        popd
+    ";
+};
+
+pack-apu {
+    set: COMP="${COMP??vc10}";
+    set: PLAT="${PLAT??x86, x64}";
+    default : false;
+    targets: {(COMP,PLAT) => @"copkg\apr-util-dev[${0}]-${NewAPU}-${1}.msi",};
+    uses : {
+        update-apu,
+        sign,
+    };
+    build-command : @"
+        pushd COPKG
+        autopackage apr-util-dev-common.autopkg || goto failed
+        for %%a in (${COMP}) do ( for %%b in (${PLAT}) do (
+                autopackage --comp=%%a --plat=%%b apr-util.autopkg apr-util-dev.autopkg || goto failed
+        ) )
+        popd
+    ";
+};
+
+
+update-apr {
+    default : false;
+    
+    build-command : @"
+        REM auto-increment version.inc files...
+        if ""${noversion}"" == ""true"" goto :endver
+        pushd COPKG
+        setlocal EnableDelayedExpansion
+        set VERSTRING=#define { apr_version: ${NewAPR}; }
+        echo !VERSTRING! > apr_version.inc
+        popd
+        :endver
+    ";
+}
+
+update-api {
+    default : false;
+    
+    build-command : @"
+        REM auto-increment version.inc files...
+        if ""${noversion}"" == ""true"" goto :endver
+        pushd COPKG
+        setlocal EnableDelayedExpansion
+        set VERSTRING=#define { api_version: ${NewAPI}; }
+        echo !VERSTRING! > api_version.inc
+        popd
+        :endver
+    ";
+}
+
+update-apu {
+    default : false;
+    
+    build-command : @"
+        REM auto-increment version.inc files...
+        if ""${noversion}"" == ""true"" goto :endver
+        pushd COPKG
+        setlocal EnableDelayedExpansion
+        set VERSTRING=#define { apu_version: ${NewAPU}; }
+        echo !VERSTRING! > apu_version.inc
+        popd
+        :endver
+    ";
+}
+
+commit-version {
+    default : false;
+    
+    build-command : @"
+        cmd /c git add COPKG\apr_version.inc COPKG\api_version.inc COPKG\apu_version.inc
+        cmd /c git commit -m ""increment versions after build""
+    ";
+}
+
+release {
+    set: {
+		BuildCfg="Release";
+        COMP="${COMP??vc10}";
+		PLAT="${PLAT??x86, x64}";
+	};
+	
+	build-command: @"
+        if ""${BUILT}"" equ ""true"" goto endrel
+        for %%A in (${COMP}) do (
+            for %%B in (${PLAT}) do (
+                ptk --nologo base --COMP=%%A --PLAT=%%B --BuildCfg=${BuildCfg} || goto failed
+                ptk --nologo clean base --COMP=%%A --PLAT=%%B --BuildCfg=${BuildCfg} || goto failed
+            )
+		)
+        :endrel
+	";
+    
+};
+
+sign {
+    set: {
+        COMP="${COMP??vc10}";
+		PLAT="${PLAT??x86, x64}";
+        ENTRY="${${ENTRY??0}++}";
+    };
+    default : false;
+    uses: release;
+    build-command: @"
+        if ${ENTRY} leq 1 (
+            for %%A in (${COMP}) do (
+                for %%B in (${PLAT}) do (
+                    simplesigner.exe --nologo --sign output\%%A\%%B\Release\**.dll
+                )
+            )
+        )
+    ";
+};
+
+x86 {
+    set: PLAT=x86;
+    uses: base;
+};
+
+x64 {
+    set: PLAT=x64;
+    uses: base;
+};
+
+base {
+    set: PLAT="${PLAT??x86}";
+    set: COMP="${COMP??vc10}";
+    compiler: "${COMP}";
+    platform: "${PLAT}";
+
+    requires: "expat-dev[${COMP}]-2.0-${PLAT}-1e373a58e25250cb";
+    requires: "openssl-dev[${COMP}]-1.0-${PLAT}-1e373a58e25250cb";
+
+    targets: { 
+        // apr
+		"output\${COMP}\${PLAT}\Release\libapr-1.lib",
+		"output\${COMP}\${PLAT}\Release\libapr-1.dll",
+        // apr-iconv
+        "output\${COMP}\${PLAT}\Release\libapriconv-1.lib",
+        "output\${COMP}\${PLAT}\Release\libapriconv-1.dll",
+        // apr-util
+        "output\${COMP}\${PLAT}\Release\libaprutil-1.lib",
+        "output\${COMP}\${PLAT}\Release\libaprutil-1.dll",
+        "output\${COMP}\${PLAT}\Release\apr_ldap-1.lib",
+        "output\${COMP}\${PLAT}\Release\apr_ldap-1.dll",
+        "output\${COMP}\${PLAT}\Release\apr_dbd_odbc-1.lib",
+        "output\${COMP}\${PLAT}\Release\apr_dbd_odbc-1.dll",
+	};
+	
+    build-command:@"
+        REM this makes it so that DLLs can have their own SxS Activation Context in an embedded resource.
+		echo %CL% | findstr ISOLATION_AWARE || set CL=%CL% /D ISOLATION_AWARE_ENABLED /U NOUSER /D COAPP
+
+        echo Building ${COMP}-${PLAT}
+        pushd apr-util
+        nmake -f Makefile.win CRYPTO_LIST=""openssl"" COMP=${COMP} APR_PATH=""%CD%\.."" API_PATH=""%CD%\..\apr-iconv"" APU_PATH=""%CD%"" MAKEOPT=""-nologo"" APR_OUT=$(APR_PATH)\$(OUT_TAIL) COAPP=${PLAT} TESTOPTS=""-x testxlate -x testreslist"" all || goto failed
+        popd
+    ";
+    clean-command:@"
+        cd apr-util
+        nmake -f Makefile.win COMP=${COMP} clean
+        cd..
+        if exist ipch rmdir /s /q ipch > nul 2> nul
+        del /s /q *.obj
+        REM if exist output rmdir /s /q output > nul 2> nul
+        REM del /S /Q /A - *.sdf *.suo *.user *.exe *.pdb > nul 2>NUL
+        del /S /Q include\apr.h include\apr_ldap.h include\apu_want.h include\private\apu_select_dbm.h > nul 2>NUL
+    ";
+};

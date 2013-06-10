@@ -1,0 +1,7 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildThisFileDirectory)packages\expat\build\native\expat.targets" Condition="exists('$(MSBuildThisFileDirectory)packages\expat\build\native\expat.targets')"/>
+  <Import Project="$(MSBuildThisFileDirectory)packages\expat.redist\build\native\expat.redist.targets" Condition="exists('$(MSBuildThisFileDirectory)packages\expat.redist\build\native\expat.redist.targets')"/>
+  <Import Project="$(MSBuildThisFileDirectory)packages\libiconv\build\native\libiconv.targets" Condition="exists('$(MSBuildThisFileDirectory)packages\libiconv\build\native\libiconv.targets')"/>
+  <Import Project="$(MSBuildThisFileDirectory)packages\libiconv.redist\build\native\libiconv.redist.targets" Condition="exists('$(MSBuildThisFileDirectory)packages\libiconv.redist\build\native\libiconv.redist.targets')"/>
+</Project>

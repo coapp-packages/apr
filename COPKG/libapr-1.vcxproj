@@ -1,0 +1,142 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="PreBuildCmds;PreBuildTargets;Build;PostBuildCmds;PostBuildTargets" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+
+  <PropertyGroup Label="ConfigurationSettings">
+    <CoAppEtcDirectory>$(registry:HKEY_LOCAL_MACHINE\Software\Outercurve\CoApp.Powershell\etc)</CoAppEtcDirectory>
+    <!-- set to Application or DynamicLibrary (DynamicLibrary can get altered to StaticLibrary by PTK -->
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+
+    <!-- Common Compiler Defines (semicolon delimited) -->
+    <Defines>WIN32;WINNT;_WINDOWS;$(Defines);</Defines>
+    <Defines Condition="'$(UsesConfigurationType.ToLower())'=='static' OR '$(UsesConfigurationType.ToLower())'=='ltcg'">APR_DECLARE_STATIC;$(Defines);</Defines>
+    <Defines Condition="'$(UsesConfigurationType.ToLower())'!='static' AND '$(UsesConfigurationType.ToLower())'!='ltcg'">APR_DECLARE_EXPORT;$(Defines);</Defines>
+    <Defines Condition="$(Configuration.ToLower().IndexOf('debug'))==-1">NDEBUG;_NDEBUG;$(Defines);</Defines>
+    <Defines Condition="$(Configuration.ToLower().IndexOf('debug'))!=-1">DEBUG;_DEBUG;$(Defines);</Defines>
+
+    <!-- Additional Include folders (semicolon delimited) -->
+    <IncludeDirectories>../include;../include/arch;../include/arch/win32;</IncludeDirectories>
+    <IncludeDirectories>../include/arch/win32;$(IncludeDirectories);</IncludeDirectories>
+
+    <!-- Additional Library folders (semicolon delimited) -->
+    <LibraryDirectories></LibraryDirectories>
+
+    <!-- Libraries to Link with -->
+    <Libraries>kernel32.lib;advapi32.lib;ws2_32.lib;mswsock.lib;ole32.lib;shell32.lib;rpcrt4.lib</Libraries>
+    
+    <!-- Batch script to run before Build-->
+    <PreBuild></PreBuild>
+
+    <!-- Batch script to run after Build-->
+    <PostBuild></PostBuild>
+
+    <!-- Targets to run before Build (semcolon delimited)-->
+    <PreBuildTargets></PreBuildTargets>
+
+    <!-- Targets to run before Build (semcolon delimited)-->
+    <PostBuildTargets></PostBuildTargets>
+  
+    <!-- for Dynamic libs, you can specify the Module .DEF file path -->
+    <ModuleDefinitionFile></ModuleDefinitionFile>
+  </PropertyGroup>
+
+  <Import Condition="Exists('$(CoAppEtcDirectory)\common-header.vcxproj')" Project="$(CoAppEtcDirectory)\common-header.vcxproj" />
+  <ItemDefinitionGroup>
+    <ResourceCompile>
+      <PreprocessorDefinitions>APR_VERSION_ONLY;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>$(MSBuildThisFileDirectory)..\include\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ResourceCompile>
+    <Link>
+      <BaseAddress>0x6EEC0000</BaseAddress>
+    </Link>
+  </ItemDefinitionGroup> 
+
+  <ItemGroup>
+    <!-- Include the source files to compile here -->
+    <ClCompile Include="..\atomic\win32\apr_atomic.c" />
+    <ClCompile Include="..\dso\win32\dso.c" />
+    <ClCompile Include="..\file_io\win32\buffer.c" />
+    <ClCompile Include="..\file_io\unix\copy.c" />
+    <ClCompile Include="..\file_io\win32\dir.c" />
+    <ClCompile Include="..\file_io\unix\fileacc.c" />
+    <ClCompile Include="..\file_io\win32\filedup.c" />
+    <ClCompile Include="..\file_io\win32\filepath.c" />
+    <ClCompile Include="..\file_io\unix\filepath_util.c" />
+    <ClCompile Include="..\file_io\win32\filestat.c" />
+    <ClCompile Include="..\file_io\win32\filesys.c" />
+    <ClCompile Include="..\file_io\win32\flock.c" />
+    <ClCompile Include="..\file_io\unix\fullrw.c" />
+    <ClCompile Include="..\file_io\unix\mktemp.c" />
+    <ClCompile Include="..\file_io\win32\open.c" />
+    <ClCompile Include="..\file_io\win32\pipe.c" />
+    <ClCompile Include="..\file_io\win32\readwrite.c" />
+    <ClCompile Include="..\file_io\win32\seek.c" />
+    <ClCompile Include="..\file_io\unix\tempdir.c" />
+    <ClCompile Include="..\locks\win32\proc_mutex.c" />
+    <ClCompile Include="..\locks\win32\thread_cond.c" />
+    <ClCompile Include="..\locks\win32\thread_mutex.c" />
+    <ClCompile Include="..\locks\win32\thread_rwlock.c" />
+    <ClCompile Include="..\memory\unix\apr_pools.c" />
+    <ClCompile Include="..\misc\win32\apr_app.c">
+      <ExcludedFromBuild>true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\misc\win32\charset.c" />
+    <ClCompile Include="..\misc\win32\env.c" />
+    <ClCompile Include="..\misc\unix\errorcodes.c" />
+    <ClCompile Include="..\misc\unix\getopt.c" />
+    <ClCompile Include="..\misc\win32\internal.c" />
+    <ClCompile Include="..\misc\win32\misc.c" />
+    <ClCompile Include="..\misc\unix\otherchild.c" />
+    <ClCompile Include="..\misc\win32\rand.c" />
+    <ClCompile Include="..\misc\win32\start.c" />
+    <ClCompile Include="..\misc\win32\utf8.c" />
+    <ClCompile Include="..\misc\unix\version.c" />
+    <ClCompile Include="..\mmap\unix\common.c" />
+    <ClCompile Include="..\mmap\win32\mmap.c" />
+    <ClCompile Include="..\network_io\unix\inet_ntop.c" />
+    <ClCompile Include="..\network_io\unix\inet_pton.c" />
+    <ClCompile Include="..\network_io\unix\multicast.c" />
+    <ClCompile Include="..\network_io\win32\sendrecv.c" />
+    <ClCompile Include="..\network_io\unix\sockaddr.c" />
+    <ClCompile Include="..\network_io\unix\socket_util.c" />
+    <ClCompile Include="..\network_io\win32\sockets.c" />
+    <ClCompile Include="..\network_io\win32\sockopt.c" />
+    <ClCompile Include="..\passwd\apr_getpass.c" />
+    <ClCompile Include="..\poll\unix\poll.c">
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);../include/arch/unix;</AdditionalIncludeDirectories>
+    </ClCompile>
+    <ClCompile Include="..\poll\unix\pollcb.c">
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);../include/arch/unix;</AdditionalIncludeDirectories>
+    </ClCompile>
+    <ClCompile Include="..\poll\unix\pollset.c">
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);../include/arch/unix;</AdditionalIncludeDirectories>
+    </ClCompile>
+    <ClCompile Include="..\poll\unix\select.c">
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);../include/arch/unix;</AdditionalIncludeDirectories>
+    </ClCompile>
+    <ClCompile Include="..\random\unix\apr_random.c" />
+    <ClCompile Include="..\random\unix\sha2.c" />
+    <ClCompile Include="..\random\unix\sha2_glue.c" />
+    <ClCompile Include="..\shmem\win32\shm.c" />
+    <ClCompile Include="..\strings\apr_cpystrn.c" />
+    <ClCompile Include="..\strings\apr_fnmatch.c" />
+    <ClCompile Include="..\strings\apr_snprintf.c" />
+    <ClCompile Include="..\strings\apr_strings.c" />
+    <ClCompile Include="..\strings\apr_strnatcmp.c" />
+    <ClCompile Include="..\strings\apr_strtok.c" />
+    <ClCompile Include="..\tables\apr_hash.c" />
+    <ClCompile Include="..\tables\apr_tables.c" />
+    <ClCompile Include="..\threadproc\win32\proc.c" />
+    <ClCompile Include="..\threadproc\win32\signals.c" />
+    <ClCompile Include="..\threadproc\win32\thread.c" />
+    <ClCompile Include="..\threadproc\win32\threadpriv.c" />
+    <ClCompile Include="..\time\win32\time.c" />
+    <ClCompile Include="..\time\win32\timestr.c" />
+    <ClCompile Include="..\user\win32\groupinfo.c" />
+    <ClCompile Include="..\user\win32\userinfo.c" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="..\libapr.rc" />
+  </ItemGroup>
+
+  <Import Condition="Exists('$(CoAppEtcDirectory)\common-footer.vcxproj')" Project="$(CoAppEtcDirectory)\common-footer.vcxproj" />
+</Project>

@@ -1,0 +1,114 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="PreBuildCmds;PreBuildTargets;Build;PostBuildCmds;PostBuildTargets" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+
+  <PropertyGroup Label="ConfigurationSettings">
+    <CoAppEtcDirectory>$(registry:HKEY_LOCAL_MACHINE\Software\Outercurve\CoApp.Powershell\etc)</CoAppEtcDirectory>
+    <!-- set to Application or DynamicLibrary (DynamicLibrary can get altered to StaticLibrary by PTK -->
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+
+    <!-- Common Compiler Defines (semicolon delimited) -->
+    <Defines>WIN32;WINNT;_WINDOWS;APU_USE_SDBM;$(Defines);</Defines>
+    <Defines Condition="'$(UsesConfigurationType.ToLower())'=='static' OR '$(UsesConfigurationType.ToLower())'=='ltcg'">APU_DECLARE_STATIC;$(Defines);</Defines>
+    <Defines Condition="'$(UsesConfigurationType.ToLower())'!='static' AND '$(UsesConfigurationType.ToLower())'!='ltcg'">APU_DECLARE_EXPORT;$(Defines);</Defines>
+    <Defines Condition="$(Configuration.ToLower().IndexOf('debug'))==-1">NDEBUG;_NDEBUG;$(Defines);</Defines>
+    <Defines Condition="$(Configuration.ToLower().IndexOf('debug'))!=-1">DEBUG;_DEBUG;$(Defines);</Defines>
+
+    <!-- Additional Include folders (semicolon delimited) -->
+    <IncludeDirectories>..\include;..\apr-util\include;..\apr-util\include\private;..\apr-util\dbm\sdbm;</IncludeDirectories>
+
+    <!-- Additional Library folders (semicolon delimited) -->
+    <LibraryDirectories></LibraryDirectories>
+
+    <!-- Libraries to Link with -->
+    <Libraries>kernel32.lib;advapi32.lib;ws2_32.lib;mswsock.lib;ole32.lib;shell32.lib;rpcrt4.lib;libapr-1.lib;libapriconv-1.lib</Libraries>
+    
+    <!-- Batch script to run before Build-->
+    <PreBuild></PreBuild>
+
+    <!-- Batch script to run after Build-->
+    <PostBuild></PostBuild>
+
+    <!-- Targets to run before Build (semcolon delimited)-->
+    <PreBuildTargets></PreBuildTargets>
+
+    <!-- Targets to run before Build (semcolon delimited)-->
+    <PostBuildTargets></PostBuildTargets>
+  
+    <!-- for Dynamic libs, you can specify the Module .DEF file path -->
+    <ModuleDefinitionFile></ModuleDefinitionFile>
+  </PropertyGroup>
+
+  <Import Condition="Exists('$(CoAppEtcDirectory)\common-header.vcxproj')" Project="$(CoAppEtcDirectory)\common-header.vcxproj" />
+  <ItemDefinitionGroup>
+    <ResourceCompile>
+      <PreprocessorDefinitions>APU_VERSION_ONLY;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>$(MSBuildThisFileDirectory)..\include\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ResourceCompile>
+    <Link>
+      <BaseAddress>0x6EE60000</BaseAddress>
+    </Link>
+  </ItemDefinitionGroup> 
+
+  <ItemGroup>
+    <!-- Include the source files to compile here -->
+    <ClCompile Include="..\apr-util\buckets\apr_brigade.c" />
+    <ClCompile Include="..\apr-util\buckets\apr_buckets.c" />
+    <ClCompile Include="..\apr-util\buckets\apr_buckets_alloc.c" />
+    <ClCompile Include="..\apr-util\buckets\apr_buckets_eos.c" />
+    <ClCompile Include="..\apr-util\buckets\apr_buckets_file.c" />
+    <ClCompile Include="..\apr-util\buckets\apr_buckets_flush.c" />
+    <ClCompile Include="..\apr-util\buckets\apr_buckets_heap.c" />
+    <ClCompile Include="..\apr-util\buckets\apr_buckets_mmap.c" />
+    <ClCompile Include="..\apr-util\buckets\apr_buckets_pipe.c" />
+    <ClCompile Include="..\apr-util\buckets\apr_buckets_pool.c" />
+    <ClCompile Include="..\apr-util\buckets\apr_buckets_refcount.c" />
+    <ClCompile Include="..\apr-util\buckets\apr_buckets_simple.c" />
+    <ClCompile Include="..\apr-util\buckets\apr_buckets_socket.c" />
+    <ClCompile Include="..\apr-util\crypto\apr_crypto.c" />
+    <ClCompile Include="..\apr-util\crypto\apr_md4.c" />
+    <ClCompile Include="..\apr-util\crypto\apr_md5.c" />
+    <ClCompile Include="..\apr-util\crypto\apr_sha1.c" />
+    <ClCompile Include="..\apr-util\crypto\getuuid.c" />
+    <ClCompile Include="..\apr-util\crypto\uuid.c" />
+    <ClCompile Include="..\apr-util\dbd\apr_dbd.c" />
+    <ClCompile Include="..\apr-util\dbm\apr_dbm.c" />
+    <ClCompile Include="..\apr-util\dbm\apr_dbm_sdbm.c" />
+    <ClCompile Include="..\apr-util\encoding\apr_base64.c" />
+    <ClCompile Include="..\apr-util\hooks\apr_hooks.c" />
+    <ClCompile Include="..\apr-util\ldap\apr_ldap_stub.c" />
+    <ClCompile Include="..\apr-util\ldap\apr_ldap_url.c" />
+    <ClCompile Include="..\apr-util\memcache\apr_memcache.c" />
+    <ClCompile Include="..\apr-util\misc\apr_date.c" />
+    <ClCompile Include="..\apr-util\misc\apr_queue.c" />
+    <ClCompile Include="..\apr-util\misc\apr_reslist.c" />
+    <ClCompile Include="..\apr-util\misc\apr_rmm.c" />
+    <ClCompile Include="..\apr-util\misc\apr_thread_pool.c" />
+    <ClCompile Include="..\apr-util\misc\apu_dso.c" />
+    <ClCompile Include="..\apr-util\misc\apu_version.c" />
+    <ClCompile Include="..\apr-util\dbm\sdbm\sdbm.c" />
+    <ClCompile Include="..\apr-util\dbm\sdbm\sdbm_hash.c" />
+    <ClCompile Include="..\apr-util\dbm\sdbm\sdbm_lock.c" />
+    <ClCompile Include="..\apr-util\dbm\sdbm\sdbm_pair.c" />
+    <ClCompile Include="..\apr-util\strmatch\apr_strmatch.c" />
+    <ClCompile Include="..\apr-util\uri\apr_uri.c" />
+    <ClCompile Include="..\apr-util\xlate\xlate.c" />
+    <ClCompile Include="..\apr-util\xml\apr_xml.c" />
+    <ClCompile Include="..\apr-util\dbd\apr_dbd_freetds.c"> <ExcludedFromBuild>true</ExcludedFromBuild> </ClCompile>
+    <ClCompile Include="..\apr-util\dbd\apr_dbd_mysql.c"> <ExcludedFromBuild>true</ExcludedFromBuild> </ClCompile>
+    <ClCompile Include="..\apr-util\dbd\apr_dbd_odbc.c"> <ExcludedFromBuild>true</ExcludedFromBuild> </ClCompile>
+    <ClCompile Include="..\apr-util\dbd\apr_dbd_oracle.c"> <ExcludedFromBuild>true</ExcludedFromBuild> </ClCompile>
+    <ClCompile Include="..\apr-util\dbd\apr_dbd_pgsql.c"> <ExcludedFromBuild>true</ExcludedFromBuild> </ClCompile>
+    <ClCompile Include="..\apr-util\dbd\apr_dbd_sqlite2.c"> <ExcludedFromBuild>true</ExcludedFromBuild> </ClCompile>
+    <ClCompile Include="..\apr-util\dbd\apr_dbd_sqlite3.c"> <ExcludedFromBuild>true</ExcludedFromBuild> </ClCompile>
+    <ClCompile Include="..\apr-util\dbm\apr_dbm_berkeleydb.c"> <ExcludedFromBuild>true</ExcludedFromBuild> </ClCompile>
+    <ClCompile Include="..\apr-util\dbm\apr_dbm_gdbm.c"> <ExcludedFromBuild>true</ExcludedFromBuild> </ClCompile>
+    <ClCompile Include="..\apr-util\ldap\apr_ldap_init.c"> <ExcludedFromBuild>true</ExcludedFromBuild> </ClCompile>
+    <ClCompile Include="..\apr-util\ldap\apr_ldap_option.c"> <ExcludedFromBuild>true</ExcludedFromBuild> </ClCompile>
+    <ClCompile Include="..\apr-util\ldap\apr_ldap_rebind.c"> <ExcludedFromBuild>true</ExcludedFromBuild> </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="..\apr-util\libaprutil.rc" />
+  </ItemGroup>
+
+  <Import Condition="Exists('$(CoAppEtcDirectory)\common-footer.vcxproj')" Project="$(CoAppEtcDirectory)\common-footer.vcxproj" />
+</Project>

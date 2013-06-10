@@ -1,0 +1,68 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="PreBuildCmds;PreBuildTargets;Build;PostBuildCmds;PostBuildTargets" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+
+  <PropertyGroup Label="ConfigurationSettings">
+    <CoAppEtcDirectory>$(registry:HKEY_LOCAL_MACHINE\Software\Outercurve\CoApp.Powershell\etc)</CoAppEtcDirectory>
+    <!-- set to Application or DynamicLibrary (DynamicLibrary can get altered to StaticLibrary by PTK -->
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+
+    <!-- Common Compiler Defines (semicolon delimited) -->
+    <Defines>WIN32;WINNT;_WINDOWS;$(Defines);</Defines>
+    <Defines Condition="'$(UsesConfigurationType.ToLower())'=='static' OR '$(UsesConfigurationType.ToLower())'=='ltcg'">API_DECLARE_STATIC;$(Defines);</Defines>
+    <Defines Condition="'$(UsesConfigurationType.ToLower())'!='static' AND '$(UsesConfigurationType.ToLower())'!='ltcg'">API_DECLARE_EXPORT;$(Defines);</Defines>
+    <Defines Condition="$(Configuration.ToLower().IndexOf('debug'))==-1">NDEBUG;_NDEBUG;$(Defines);</Defines>
+    <Defines Condition="$(Configuration.ToLower().IndexOf('debug'))!=-1">DEBUG;_DEBUG;$(Defines);</Defines>
+
+    <!-- Additional Include folders (semicolon delimited) -->
+    <IncludeDirectories>../apr-iconv/include;../include;../include/arch/win32;</IncludeDirectories>
+    <IncludeDirectories>../include/arch/win32;$(IncludeDirectories);</IncludeDirectories>
+
+    <!-- Additional Library folders (semicolon delimited) -->
+    <LibraryDirectories></LibraryDirectories>
+
+    <!-- Libraries to Link with -->
+    <Libraries>kernel32.lib;advapi32.lib;libapr-1.lib;</Libraries>
+    
+    <!-- Batch script to run before Build-->
+    <PreBuild></PreBuild>
+
+    <!-- Batch script to run after Build-->
+    <PostBuild></PostBuild>
+
+    <!-- Targets to run before Build (semcolon delimited)-->
+    <PreBuildTargets></PreBuildTargets>
+
+    <!-- Targets to run before Build (semcolon delimited)-->
+    <PostBuildTargets></PostBuildTargets>
+  
+    <!-- for Dynamic libs, you can specify the Module .DEF file path -->
+    <ModuleDefinitionFile></ModuleDefinitionFile>
+  </PropertyGroup>
+
+  <Import Condition="Exists('$(CoAppEtcDirectory)\common-header.vcxproj')" Project="$(CoAppEtcDirectory)\common-header.vcxproj" />
+  <ItemDefinitionGroup>
+    <ResourceCompile>
+      <PreprocessorDefinitions>API_VERSION_ONLY;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>$(MSBuildThisFileDirectory)..\apr-iconv\include\;$(MSBuildThisFileDirectory)..\include\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ResourceCompile>
+    <Link>
+      <BaseAddress>0x6EE50000</BaseAddress>
+    </Link>
+  </ItemDefinitionGroup> 
+
+  <ItemGroup>
+    <!-- Include the source files to compile here -->
+    <ClCompile Include="..\apr-iconv\lib\iconv.c" />
+    <ClCompile Include="..\apr-iconv\lib\iconv_ces.c" />
+    <ClCompile Include="..\apr-iconv\lib\iconv_ces_euc.c" />
+    <ClCompile Include="..\apr-iconv\lib\iconv_ces_iso2022.c" />
+    <ClCompile Include="..\apr-iconv\lib\iconv_int.c" />
+    <ClCompile Include="..\apr-iconv\lib\iconv_module.c" />
+    <ClCompile Include="..\apr-iconv\lib\iconv_uc.c" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="..\apr-iconv\libapriconv.rc" />
+  </ItemGroup>
+
+  <Import Condition="Exists('$(CoAppEtcDirectory)\common-footer.vcxproj')" Project="$(CoAppEtcDirectory)\common-footer.vcxproj" />
+</Project>
