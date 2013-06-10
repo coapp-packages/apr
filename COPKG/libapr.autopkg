@@ -1,0 +1,63 @@
+nuget {
+	nuspec {
+		id = libapr;
+		version : 1.4.6.1;
+		title: "Apache Portable Runtime";
+		authors: {APR contributors};
+		owners: {CoApp Project, Tim Rogers};
+		licenseUrl: "http://www.apache.org/licenses/LICENSE-2.0";
+		projectUrl: "http://github.com/coapp-packages/apr";
+		requireLicenseAcceptance:false;
+		description: @"The mission of the Apache Portable Runtime (APR) project is to create and maintain software libraries that provide a predictable and consistent interface to underlying platform-specific implementations. The primary goal is to provide an API to which software developers may code and be assured of predictable if not identical behaviour regardless of the platform on which their software is built, relieving them of the need to code special-case conditions to work around or take advantage of platform-specific deficiencies or features.
+
+    Homepage: http://apr.apache.org";
+		releaseNotes: "Release of APR 1.4.6 libraries.";
+		copyright: Copyright 2013;
+		tags: { apr, libapr, native, CoApp };
+
+	};
+
+    dependencies {
+        packages : {
+            expat/2.1.0.10;
+        };
+    }
+
+	files {
+		include: {
+			..\include\**\*.h,
+        };
+
+		docs: {  ..\docs\**\* };
+
+		source += {
+			..\**\*.c,
+			..\**\*.h,
+		};
+
+		("v100,v110", "Win32,x64", "release,debug", "Dynamic") => {
+			[${0},${1},${2},${3}] {
+				lib:    { .\output\${0}\${1}\${2}\${3}\libapr-1.lib };
+				bin:    { .\output\${0}\${1}\${2}\${3}\libapr-1.dll };
+				symbols:{ .\output\${0}\${1}\${2}\${3}\libapr-1.pdb };
+			};
+		};
+        
+		("v100,v110", "Win32,x64", "release,debug", "Static,ltcg") => {
+			[${0},${1},${2},${3}] {
+				lib:     { .\output\${0}\${1}\${2}\${3}\libapr-1.lib };
+			};
+		};
+
+    };
+
+	targets {
+        [dynamic]
+		 Defines += HAS_LIBAPR;
+        [static]
+		 Defines += HAS_APR;
+        [ltcg]
+		 Defines += HAS_APR;
+	};
+}
+
