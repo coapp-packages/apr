@@ -14,7 +14,7 @@ default {
     
     .Exec {
         Condition="Exists('$(MSBuildThisFileDirectory)packages.config')";
-        Command = @"nuget install $(MSBuildThisFileDirectory)packages.config -x -OutputDirectory .\packages >nul";
+        Command = @"nuget install $(MSBuildThisFileDirectory)packages.config -x -OutputDirectory .\packages";
     };
 
     ("v110, v100", "Win32, x64", "Debug,Release", "Dynamic, Static, ltcg") => {
